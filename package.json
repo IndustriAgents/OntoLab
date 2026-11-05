@@ -55,7 +55,7 @@
     "@neon/config": "^1.9.1",
     "@neon/env": "^1.6.2",
     "@rdfjs/data-model": "^2.1.1",
-    "@rdfjs/dataset": "^2.0.2",
+    "@rdfjs/dataset": "^2.0.3",
     "@tanstack/react-query": "^5.104.0",
     "@xmldom/xmldom": "0.8.15",
     "ajv": "^8.20.0",
