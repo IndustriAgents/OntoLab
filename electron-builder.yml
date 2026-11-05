@@ -1,0 +1,22 @@
+appId: com.industriagents.ontolab
+productName: OntoLab
+artifactName: OntoLab-${version}-${arch}.${ext}
+icon: .desktop/icon.png
+directories:
+  output: release
+files:
+  - .desktop/**/*
+  - package.json
+asar: true
+asarUnpack:
+  - node_modules/onnxruntime-node/**/*
+npmRebuild: false
+mac:
+  category: public.app-category.developer-tools
+  minimumSystemVersion: "13.0"
+  target: dmg
+win:
+  target: nsis
+linux:
+  target: AppImage
+  category: Development

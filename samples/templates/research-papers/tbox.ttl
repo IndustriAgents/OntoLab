@@ -1,0 +1,284 @@
+@prefix :        <https://w3id.org/ontolab/templates/research-papers#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema:  <https://schema.org/> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix bibo:    <http://purl.org/ontology/bibo/> .
+@prefix fabio:   <http://purl.org/spar/fabio/> .
+@prefix cito:    <http://purl.org/spar/cito/> .
+
+<https://w3id.org/ontolab/templates/research-papers> a owl:Ontology ;
+    rdfs:label "OntoLab Research Papers Template" ;
+    rdfs:comment "Compact starter schema for extracting scholarly articles, authors, affiliations, venues, datasets, methods, tasks, metrics, reported results, citations and funding from research papers." .
+
+#################  CLASSES  #################
+
+:Paper a owl:Class ;
+    rdfs:label "Paper" ;
+    rdfs:comment "A scholarly article that reports research, identified by its title, authors and DOI." ;
+    rdfs:seeAlso bibo:AcademicArticle , schema:ScholarlyArticle .
+
+:JournalArticle a owl:Class ;
+    rdfs:subClassOf :Paper ;
+    owl:disjointWith :ConferencePaper , :Preprint ;
+    rdfs:label "Journal Article" ;
+    rdfs:comment "A paper published in a peer-reviewed journal issue or volume." ;
+    rdfs:seeAlso fabio:JournalArticle .
+
+:ConferencePaper a owl:Class ;
+    rdfs:subClassOf :Paper ;
+    owl:disjointWith :Preprint ;
+    rdfs:label "Conference Paper" ;
+    rdfs:comment "A paper published in the proceedings of a conference or workshop." ;
+    rdfs:seeAlso fabio:ConferencePaper .
+
+:Preprint a owl:Class ;
+    rdfs:subClassOf :Paper ;
+    rdfs:label "Preprint" ;
+    rdfs:comment "A paper posted to a repository such as arXiv or bioRxiv before or without formal peer review." ;
+    rdfs:seeAlso fabio:Preprint .
+
+:Author a owl:Class ;
+    owl:disjointWith :Organization , :Paper ;
+    rdfs:label "Author" ;
+    rdfs:comment "A person listed in the byline of a paper as having contributed to it." ;
+    rdfs:seeAlso foaf:Person , schema:Person .
+
+:Organization a owl:Class ;
+    rdfs:label "Organization" ;
+    rdfs:comment "A formal body involved in research, either as an employer of authors or as a provider of funding." ;
+    rdfs:seeAlso foaf:Organization , schema:Organization .
+
+:Institution a owl:Class ;
+    rdfs:subClassOf :Organization ;
+    rdfs:label "Institution" ;
+    rdfs:comment "A university, research institute, lab or company that an author is affiliated with." ;
+    rdfs:seeAlso schema:ResearchOrganization .
+
+:FundingAgency a owl:Class ;
+    rdfs:subClassOf :Organization ;
+    rdfs:label "Funding Agency" ;
+    rdfs:comment "An organization, such as a national science foundation or charity, that awards research grants." ;
+    rdfs:seeAlso schema:FundingAgency .
+
+:Venue a owl:Class ;
+    rdfs:label "Venue" ;
+    rdfs:comment "The outlet in which a paper is published or presented." .
+
+:Journal a owl:Class ;
+    rdfs:subClassOf :Venue ;
+    owl:disjointWith :Conference ;
+    rdfs:label "Journal" ;
+    rdfs:comment "A periodical that publishes peer-reviewed articles in volumes and issues." ;
+    rdfs:seeAlso bibo:Journal .
+
+:Conference a owl:Class ;
+    rdfs:subClassOf :Venue ;
+    rdfs:label "Conference" ;
+    rdfs:comment "A scholarly meeting, such as NeurIPS or ACL, whose proceedings publish accepted papers." ;
+    rdfs:seeAlso bibo:Conference .
+
+:Dataset a owl:Class ;
+    owl:disjointWith :Method , :Paper ;
+    rdfs:label "Dataset" ;
+    rdfs:comment "A named collection of data, such as ImageNet or MIMIC-III, used to train or evaluate methods." ;
+    rdfs:seeAlso schema:Dataset .
+
+:Method a owl:Class ;
+    owl:disjointWith :Task ;
+    rdfs:label "Method" ;
+    rdfs:comment "A model, algorithm, technique or experimental approach proposed or used in a paper, such as a transformer or random forest." .
+
+:Task a owl:Class ;
+    rdfs:label "Task" ;
+    rdfs:comment "A research problem that methods are applied to, such as image classification or named-entity recognition." .
+
+:EvaluationMetric a owl:Class ;
+    rdfs:label "Evaluation Metric" ;
+    rdfs:comment "A measure used to score performance on a task, such as accuracy, F1, BLEU or AUROC." .
+
+:Result a owl:Class ;
+    owl:disjointWith :EvaluationMetric ;
+    rdfs:label "Result" ;
+    rdfs:comment "A single reported score: the value a method achieved on a dataset for a task, measured with a metric, as stated in a results table or text." .
+
+:Grant a owl:Class ;
+    rdfs:label "Grant" ;
+    rdfs:comment "A funding award, identified by a grant number, that supported the research reported in a paper." ;
+    rdfs:seeAlso schema:Grant .
+
+#################  OBJECT PROPERTIES  #################
+
+:hasAuthor a owl:ObjectProperty ;
+    rdfs:label "has author" ;
+    rdfs:comment "Links a paper to one of its authors." ;
+    rdfs:domain :Paper ;
+    rdfs:range :Author ;
+    rdfs:seeAlso dcterms:creator .
+
+:affiliatedWith a owl:ObjectProperty ;
+    rdfs:label "affiliated with" ;
+    rdfs:comment "Links an author to an institution they list as their affiliation." ;
+    rdfs:domain :Author ;
+    rdfs:range :Institution ;
+    rdfs:seeAlso schema:affiliation .
+
+:publishedIn a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "published in" ;
+    rdfs:comment "Links a paper to the journal or conference in which it appeared." ;
+    rdfs:domain :Paper ;
+    rdfs:range :Venue .
+
+:cites a owl:ObjectProperty ;
+    rdfs:label "cites" ;
+    rdfs:comment "Links a paper to another paper listed in its references." ;
+    rdfs:domain :Paper ;
+    rdfs:range :Paper ;
+    rdfs:seeAlso cito:cites .
+
+:usesDataset a owl:ObjectProperty ;
+    rdfs:label "uses dataset" ;
+    rdfs:comment "Links a paper to a dataset it uses for training, evaluation or analysis." ;
+    rdfs:domain :Paper ;
+    rdfs:range :Dataset .
+
+:proposesMethod a owl:ObjectProperty ;
+    rdfs:label "proposes method" ;
+    rdfs:comment "Links a paper to a new method it introduces as its contribution." ;
+    rdfs:domain :Paper ;
+    rdfs:range :Method .
+
+:addressesTask a owl:ObjectProperty ;
+    rdfs:label "addresses task" ;
+    rdfs:comment "Links a paper to a research task it studies." ;
+    rdfs:domain :Paper ;
+    rdfs:range :Task .
+
+:reportsResult a owl:ObjectProperty ;
+    rdfs:label "reports result" ;
+    rdfs:comment "Links a paper to a result stated in it." ;
+    rdfs:domain :Paper ;
+    rdfs:range :Result .
+
+:achievedBy a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "achieved by" ;
+    rdfs:comment "Links a result to the method, proposed or baseline, that produced it." ;
+    rdfs:domain :Result ;
+    rdfs:range :Method .
+
+:evaluatedOn a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "evaluated on" ;
+    rdfs:comment "Links a result to the dataset or benchmark split it was measured on." ;
+    rdfs:domain :Result ;
+    rdfs:range :Dataset .
+
+:measuredWith a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "measured with" ;
+    rdfs:comment "Links a result to the evaluation metric its value is expressed in." ;
+    rdfs:domain :Result ;
+    rdfs:range :EvaluationMetric .
+
+:resultForTask a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "result for task" ;
+    rdfs:comment "Links a result to the task whose performance it reports." ;
+    rdfs:domain :Result ;
+    rdfs:range :Task .
+
+:fundedBy a owl:ObjectProperty ;
+    rdfs:label "funded by" ;
+    rdfs:comment "Links a paper to a grant acknowledged as supporting it." ;
+    rdfs:domain :Paper ;
+    rdfs:range :Grant ;
+    rdfs:seeAlso schema:funding .
+
+:awardedBy a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "awarded by" ;
+    rdfs:comment "Links a grant to the funding agency that awarded it." ;
+    rdfs:domain :Grant ;
+    rdfs:range :FundingAgency ;
+    rdfs:seeAlso schema:funder .
+
+#################  DATA PROPERTIES  #################
+
+:paperTitle a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "paper title" ;
+    rdfs:comment "The full title of a paper." ;
+    rdfs:domain :Paper ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso dcterms:title .
+
+:doi a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "DOI" ;
+    rdfs:comment "The Digital Object Identifier of a paper, such as 10.1145/3292500.3330701." ;
+    rdfs:domain :Paper ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso bibo:doi .
+
+:publicationYear a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "publication year" ;
+    rdfs:comment "The year in which a paper was published or first posted." ;
+    rdfs:domain :Paper ;
+    rdfs:range xsd:integer ;
+    rdfs:seeAlso dcterms:issued .
+
+:abstractText a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "abstract" ;
+    rdfs:comment "The abstract or summary paragraph of a paper." ;
+    rdfs:domain :Paper ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso dcterms:abstract .
+
+:authorName a owl:DatatypeProperty ;
+    rdfs:label "author name" ;
+    rdfs:comment "The name of an author as printed in a paper's byline." ;
+    rdfs:domain :Author ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso foaf:name .
+
+:orcid a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "ORCID" ;
+    rdfs:comment "The ORCID iD URL that uniquely identifies an author." ;
+    rdfs:domain :Author ;
+    rdfs:range xsd:anyURI .
+
+:country a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "country" ;
+    rdfs:comment "The country in which an institution is located." ;
+    rdfs:domain :Institution ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso schema:addressCountry .
+
+:datasetUrl a owl:DatatypeProperty ;
+    rdfs:label "dataset URL" ;
+    rdfs:comment "A web address where a dataset can be obtained." ;
+    rdfs:domain :Dataset ;
+    rdfs:range xsd:anyURI ;
+    rdfs:seeAlso schema:url .
+
+:scoreValue a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "score value" ;
+    rdfs:comment "The numeric value of a result in the units of its metric, such as 92.4 for accuracy in percent." ;
+    rdfs:domain :Result ;
+    rdfs:range xsd:decimal .
+
+:isBaseline a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "is baseline" ;
+    rdfs:comment "True if a result belongs to a prior or comparison method rather than to the method the paper proposes." ;
+    rdfs:domain :Result ;
+    rdfs:range xsd:boolean .
+
+:higherIsBetter a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "higher is better" ;
+    rdfs:comment "True if larger values of an evaluation metric indicate better performance, false for error-type metrics such as RMSE." ;
+    rdfs:domain :EvaluationMetric ;
+    rdfs:range xsd:boolean .
+
+:grantNumber a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "grant number" ;
+    rdfs:comment "The award identifier of a grant as given in a paper's acknowledgements." ;
+    rdfs:domain :Grant ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso dcterms:identifier .

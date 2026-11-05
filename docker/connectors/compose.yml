@@ -1,0 +1,30 @@
+name: ontolab-connectors
+services:
+  fuseki:
+    build:
+      context: .
+      dockerfile: Fuseki.Dockerfile
+    ports: ["127.0.0.1:13030:3030"]
+    mem_limit: 768m
+  rdf4j:
+    image: eclipse/rdf4j-workbench:5.2.2-tomcat
+    ports: ["127.0.0.1:18080:8080"]
+    environment:
+      JAVA_OPTS: "-Xms128m -Xmx512m"
+    mem_limit: 768m
+  graphdb:
+    image: ontotext/graphdb:10.8.11
+    ports: ["127.0.0.1:17200:7200"]
+    environment:
+      GDB_HEAP_SIZE: 512m
+    mem_limit: 1024m
+  neo4j:
+    image: neo4j:5.26-community
+    ports: ["127.0.0.1:17474:7474"]
+    environment:
+      NEO4J_AUTH: "neo4j/ontolab-test-password"
+      NEO4J_server_memory_heap_initial__size: 256m
+      NEO4J_server_memory_heap_max__size: 512m
+      NEO4J_server_memory_pagecache_size: 128m
+      NEO4J_db_transaction_timeout: 15s
+    mem_limit: 1024m

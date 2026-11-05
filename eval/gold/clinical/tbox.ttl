@@ -1,0 +1,225 @@
+@prefix :     <https://w3id.org/ontolab/gold/clinical#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+<https://w3id.org/ontolab/gold/clinical> a owl:Ontology ;
+    rdfs:label "Clinical Notes Gold Ontology (T-Box)" ;
+    rdfs:comment "SEED gold schema for evaluating extraction from SYNTHETIC clinical notes: pseudonymous patients, encounters, diagnoses, medication orders with dosage, procedures, lab results, allergies and clinicians. No real patient data. Requires human review." .
+
+#################  CLASSES  #################
+
+:Patient a owl:Class ;
+    rdfs:label "Patient" ;
+    rdfs:comment "A person receiving care, identified only by a pseudonymous patient id (never by name)." .
+
+:Clinician a owl:Class ;
+    rdfs:label "Clinician" ;
+    rdfs:comment "A health professional involved in a patient's care." .
+
+:Physician a owl:Class ;
+    rdfs:subClassOf :Clinician ;
+    rdfs:label "Physician" ;
+    rdfs:comment "A medical doctor (e.g. general practitioner, cardiologist, endocrinologist) who can diagnose and prescribe." .
+
+:Nurse a owl:Class ;
+    rdfs:subClassOf :Clinician ;
+    rdfs:label "Nurse" ;
+    rdfs:comment "A registered or specialist nurse." .
+
+:Encounter a owl:Class ;
+    rdfs:label "Encounter" ;
+    rdfs:comment "An interaction between a patient and the health service on a given date (visit or admission)." .
+
+:OutpatientVisit a owl:Class ;
+    rdfs:subClassOf :Encounter ;
+    rdfs:label "Outpatient Visit" ;
+    rdfs:comment "An encounter in a clinic or outpatient department without an overnight hospital stay." .
+
+:InpatientAdmission a owl:Class ;
+    rdfs:subClassOf :Encounter ;
+    rdfs:label "Inpatient Admission" ;
+    rdfs:comment "An encounter in which the patient is admitted to a hospital ward." .
+
+:Condition a owl:Class ;
+    rdfs:label "Condition" ;
+    rdfs:comment "A diagnosis or health problem recorded for a patient (one individual per patient-condition)." .
+
+:Medication a owl:Class ;
+    rdfs:label "Medication" ;
+    rdfs:comment "A drug or drug class (e.g. metformin, penicillin), independent of any particular patient." .
+
+:MedicationOrder a owl:Class ;
+    rdfs:label "Medication Order" ;
+    rdfs:comment "A prescription of a medication for a patient with a specific dose and frequency." .
+
+:Procedure a owl:Class ;
+    rdfs:label "Procedure" ;
+    rdfs:comment "A diagnostic or therapeutic intervention performed on a patient (e.g. angiography)." .
+
+:LabResult a owl:Class ;
+    rdfs:label "Lab Result" ;
+    rdfs:comment "A laboratory measurement for a patient (e.g. HbA1c, troponin T), with value and unit." .
+
+:Allergy a owl:Class ;
+    rdfs:label "Allergy" ;
+    rdfs:comment "A documented allergy or hypersensitivity of a patient to a substance." .
+
+:CareFacility a owl:Class ;
+    rdfs:label "Care Facility" ;
+    rdfs:comment "A hospital, clinic or practice where encounters take place." .
+
+:Physician owl:disjointWith :Nurse .
+:OutpatientVisit owl:disjointWith :InpatientAdmission .
+:Patient owl:disjointWith :Clinician .
+:Medication owl:disjointWith :MedicationOrder .
+:Condition owl:disjointWith :Allergy .
+
+#################  OBJECT PROPERTIES  #################
+
+:hasEncounter a owl:ObjectProperty ;
+    rdfs:label "has encounter" ;
+    rdfs:domain :Patient ;
+    rdfs:range :Encounter ;
+    rdfs:comment "An encounter the patient took part in." .
+
+:attendedBy a owl:ObjectProperty ;
+    rdfs:label "attended by" ;
+    rdfs:domain :Encounter ;
+    rdfs:range :Clinician ;
+    rdfs:comment "A clinician who saw or cared for the patient during the encounter." .
+
+:atFacility a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "at facility" ;
+    rdfs:domain :Encounter ;
+    rdfs:range :CareFacility ;
+    rdfs:comment "The facility where the encounter took place." .
+
+:hasDiagnosis a owl:ObjectProperty ;
+    rdfs:label "has diagnosis" ;
+    rdfs:domain :Encounter ;
+    rdfs:range :Condition ;
+    rdfs:comment "A condition diagnosed or confirmed during the encounter." .
+
+:hasMedicationOrder a owl:ObjectProperty ;
+    rdfs:label "has medication order" ;
+    rdfs:domain :Encounter ;
+    rdfs:range :MedicationOrder ;
+    rdfs:comment "A medication order started, changed or continued during the encounter." .
+
+:ordersMedication a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "orders medication" ;
+    rdfs:domain :MedicationOrder ;
+    rdfs:range :Medication ;
+    rdfs:comment "The medication that the order prescribes." .
+
+:prescribedBy a owl:ObjectProperty ;
+    rdfs:label "prescribed by" ;
+    rdfs:domain :MedicationOrder ;
+    rdfs:range :Physician ;
+    rdfs:comment "The physician who issued the medication order." .
+
+:hasProcedure a owl:ObjectProperty ;
+    rdfs:label "has procedure" ;
+    rdfs:domain :Encounter ;
+    rdfs:range :Procedure ;
+    rdfs:comment "A procedure carried out during the encounter." .
+
+:performedBy a owl:ObjectProperty ;
+    rdfs:label "performed by" ;
+    rdfs:domain :Procedure ;
+    rdfs:range :Clinician ;
+    rdfs:comment "The clinician who performed the procedure." .
+
+:hasLabResult a owl:ObjectProperty ;
+    rdfs:label "has lab result" ;
+    rdfs:domain :Encounter ;
+    rdfs:range :LabResult ;
+    rdfs:comment "A laboratory result obtained during or for the encounter." .
+
+:hasAllergy a owl:ObjectProperty ;
+    rdfs:label "has allergy" ;
+    rdfs:domain :Patient ;
+    rdfs:range :Allergy ;
+    rdfs:comment "A documented allergy of the patient." .
+
+:allergicTo a owl:ObjectProperty ;
+    rdfs:label "allergic to" ;
+    rdfs:domain :Allergy ;
+    rdfs:range :Medication ;
+    rdfs:comment "The medication or drug class that triggers the allergy." .
+
+#################  DATATYPE PROPERTIES  #################
+
+:patientId a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "patient id" ;
+    rdfs:domain :Patient ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Pseudonymous identifier of the patient (e.g. PT-4821)." .
+
+:birthYear a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "birth year" ;
+    rdfs:domain :Patient ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Year of birth of the patient (only the year is recorded, for pseudonymity)." .
+
+:encounterDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "encounter date" ;
+    rdfs:domain :Encounter ;
+    rdfs:range xsd:date ;
+    rdfs:comment "The date the encounter started." .
+
+:clinicianRole a owl:DatatypeProperty ;
+    rdfs:label "clinician role" ;
+    rdfs:domain :Clinician ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The clinician's role or specialty (e.g. general practitioner, interventional cardiologist, charge nurse)." .
+
+:icd10Code a owl:DatatypeProperty ;
+    rdfs:label "ICD-10 code" ;
+    rdfs:domain :Condition ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The ICD-10 code recorded for the condition (e.g. E11.9)." .
+
+:doseAmount a owl:DatatypeProperty ;
+    rdfs:label "dose amount" ;
+    rdfs:domain :MedicationOrder ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "The amount of a single dose, as a plain number in doseUnit." .
+
+:doseUnit a owl:DatatypeProperty ;
+    rdfs:label "dose unit" ;
+    rdfs:domain :MedicationOrder ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The unit of the dose amount (e.g. mg, micrograms)." .
+
+:doseFrequency a owl:DatatypeProperty ;
+    rdfs:label "dose frequency" ;
+    rdfs:domain :MedicationOrder ;
+    rdfs:range xsd:string ;
+    rdfs:comment "How often the dose is taken (e.g. once daily, twice daily)." .
+
+:procedureDate a owl:DatatypeProperty ;
+    rdfs:label "procedure date" ;
+    rdfs:domain :Procedure ;
+    rdfs:range xsd:date ;
+    rdfs:comment "The date the procedure was performed." .
+
+:resultValue a owl:DatatypeProperty ;
+    rdfs:label "result value" ;
+    rdfs:domain :LabResult ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "The numeric value of the lab result, in resultUnit." .
+
+:resultUnit a owl:DatatypeProperty ;
+    rdfs:label "result unit" ;
+    rdfs:domain :LabResult ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The unit of the lab result value (e.g. mmol/L, %, ng/L)." .
+
+:reactionSeverity a owl:DatatypeProperty ;
+    rdfs:label "reaction severity" ;
+    rdfs:domain :Allergy ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Severity of the documented allergic reaction (mild, moderate, severe)." .

@@ -1,0 +1,55 @@
+# Amendment No. 1 to Supply Agreement SA-2026-014
+
+Reference: AMD-2026-014-01
+Effective date: 1 July 2026
+
+## Recitals
+
+Brightwater Robotics (the "Supplier") and Northgate Components (the "Customer") entered into Supply Agreement SA-2026-014 dated 1 February 2026 (the "Supply Agreement"). Following the Customer's decision to offer adaptive gripping in its handling cells, the parties wish to add a new product to the Supply Agreement and to adjust its payment terms.
+
+Capitalised terms not defined in this Amendment have the meaning given to them in the Supply Agreement.
+
+## Amendments
+
+With effect from 1 July 2026 the Supply Agreement is amended as follows:
+
+1. A new item 3, the BR-9 Adaptive Gripper Module, is added to the product table in Clause 3 at a unit price of EUR 2,300 and a forecast annual volume of 100 units. Its specification is added to Schedule A.
+2. The estimated total contract value over the initial term is increased from EUR 1,250,000 to EUR 1,480,000.
+3. Clause 7.1 is deleted and replaced by the following: "The Customer shall pay each undisputed invoice within 60 days of the invoice date." The late-payment interest rate of 8 percent per annum in Clause 7.2 remains unchanged.
+4. The delivery period in Clause 4.1 does not apply to the first order of BR-9 modules, which shall be delivered within 45 days.
+
+All other terms of the Supply Agreement remain unchanged and in full force and effect. This Amendment is governed by the same law as the Supply Agreement, namely the laws of England and Wales.
+
+## Signatures
+
+For Brightwater Robotics GmbH: Dr. Helena Vogt, Managing Director.
+
+For Northgate Components Ltd: Priya Raman, General Counsel.
+
+---
+
+# Internal Memo: Northgate Contract Portfolio, Q3 2026
+
+Prepared by the Northgate legal team for the quarterly review. This memo is internal and is not part of any agreement.
+
+## Summary of agreements
+
+The table below lists the agreements to which Northgate Components Ltd is currently a party.
+
+Ref               Type        Counterparty                Effective    Governing law       Notice
+SA-2026-014       Supply      Brightwater Robotics GmbH   2026-02-01   England and Wales   90 days
+NDA-2026-003      NDA         Kestrel Analytics B.V.      2026-03-15   Netherlands         30 days
+AMD-2026-014-01   Amendment   Brightwater Robotics GmbH   2026-07-01   England and Wales   n/a
+
+## Observations
+
+- Brightwater has requested that the next amendment move the governing law to Germany; legal recommends refusing, because all existing Northgate supply contracts are under English law.
+- Northgate is not a party to agreement SVC-2026-021, which Kestrel signed with Brightwater in May 2026. However, because Kestrel's platform will monitor BR-7 actuators that Northgate also buys, procurement should ask Brightwater whether failure predictions can be shared.
+- The NDA with Kestrel expires in March 2029. Marcus Ellery will decide by the end of 2026 whether Northgate proceeds to a paid pilot with Kestrel.
+- Priya Raman joined Northgate as General Counsel in June 2026 and now signs all amendments on behalf of the company.
+
+## Actions
+
+1. Procurement to raise BR-9 forecast with Brightwater by 30 September 2026.
+2. Legal to prepare a template for future amendments.
+3. Finance to update payment runs to reflect the new 60-day period for Brightwater invoices.

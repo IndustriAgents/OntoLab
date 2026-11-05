@@ -1,0 +1,294 @@
+@prefix :        <https://w3id.org/ontolab/templates/financial-filings#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema:  <https://schema.org/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+<https://w3id.org/ontolab/templates/financial-filings> a owl:Ontology ;
+    rdfs:label "OntoLab Financial Filings Template" ;
+    rdfs:comment "Compact starter schema for extracting companies, annual and quarterly filings, reporting periods, financial statements, line items, reported values with units, segments, auditors, risk factors and executives from corporate reports." .
+
+#################  CLASSES  #################
+
+:Company a owl:Class ;
+    rdfs:label "Company" ;
+    rdfs:comment "A reporting legal entity, usually listed or regulated, that publishes financial filings." ;
+    rdfs:seeAlso schema:Corporation , <https://spec.edmcouncil.org/fibo/ontology/BE/LegalEntities/LegalPersons/LegalEntity> .
+
+:Filing a owl:Class ;
+    owl:disjointWith :FinancialStatement , :Company ;
+    rdfs:label "Filing" ;
+    rdfs:comment "A periodic report submitted by a company to a regulator or published to investors, such as a 10-K, 10-Q or annual report." .
+
+:AnnualReport a owl:Class ;
+    rdfs:subClassOf :Filing ;
+    owl:disjointWith :QuarterlyReport ;
+    rdfs:label "Annual Report" ;
+    rdfs:comment "A filing covering a full fiscal year, such as a Form 10-K, 20-F or IFRS annual report, normally including audited statements." .
+
+:QuarterlyReport a owl:Class ;
+    rdfs:subClassOf :Filing ;
+    rdfs:label "Quarterly Report" ;
+    rdfs:comment "A filing covering a fiscal quarter or half-year, such as a Form 10-Q or interim report, usually unaudited." .
+
+:ReportingPeriod a owl:Class ;
+    rdfs:label "Reporting Period" ;
+    rdfs:comment "The span of time, with start and end dates, to which a filing or reported value refers." .
+
+:FiscalYear a owl:Class ;
+    rdfs:subClassOf :ReportingPeriod ;
+    owl:disjointWith :FiscalQuarter ;
+    rdfs:label "Fiscal Year" ;
+    rdfs:comment "A twelve-month reporting period used for a company's annual accounts, such as FY2025." .
+
+:FiscalQuarter a owl:Class ;
+    rdfs:subClassOf :ReportingPeriod ;
+    rdfs:label "Fiscal Quarter" ;
+    rdfs:comment "A three-month reporting period within a fiscal year, such as Q3 FY2025." .
+
+:FinancialStatement a owl:Class ;
+    rdfs:label "Financial Statement" ;
+    rdfs:comment "A formal table within a filing that reports a set of financial values, such as the income statement or balance sheet." .
+
+:IncomeStatement a owl:Class ;
+    rdfs:subClassOf :FinancialStatement ;
+    owl:disjointWith :BalanceSheet , :CashFlowStatement ;
+    rdfs:label "Income Statement" ;
+    rdfs:comment "A statement of revenue, expenses and profit or loss over a period, also called the profit and loss statement." .
+
+:BalanceSheet a owl:Class ;
+    rdfs:subClassOf :FinancialStatement ;
+    owl:disjointWith :CashFlowStatement ;
+    rdfs:label "Balance Sheet" ;
+    rdfs:comment "A statement of assets, liabilities and equity at a point in time, also called the statement of financial position." .
+
+:CashFlowStatement a owl:Class ;
+    rdfs:subClassOf :FinancialStatement ;
+    rdfs:label "Cash Flow Statement" ;
+    rdfs:comment "A statement of cash flows from operating, investing and financing activities over a period." .
+
+:LineItem a owl:Class ;
+    owl:disjointWith :MetricValue ;
+    rdfs:label "Line Item" ;
+    rdfs:comment "A named financial concept reported in statements, such as Revenue, Net income or Total assets, independent of any period or amount." .
+
+:MetricValue a owl:Class ;
+    rdfs:label "Metric Value" ;
+    rdfs:comment "A single reported numeric fact: the amount of one line item for one period, optionally one segment, with its currency or unit." ;
+    rdfs:seeAlso schema:QuantitativeValue .
+
+:BusinessSegment a owl:Class ;
+    rdfs:label "Business Segment" ;
+    rdfs:comment "A component of a company for which results are reported separately in segment disclosures." .
+
+:OperatingSegment a owl:Class ;
+    rdfs:subClassOf :BusinessSegment ;
+    owl:disjointWith :GeographicSegment ;
+    rdfs:label "Operating Segment" ;
+    rdfs:comment "A segment defined by product line or business activity, such as Cloud Services or Consumer Devices." .
+
+:GeographicSegment a owl:Class ;
+    rdfs:subClassOf :BusinessSegment ;
+    rdfs:label "Geographic Segment" ;
+    rdfs:comment "A segment defined by region or country, such as EMEA or United States." .
+
+:AuditFirm a owl:Class ;
+    rdfs:label "Audit Firm" ;
+    rdfs:comment "An independent accounting firm that audits a company's financial statements." ;
+    rdfs:seeAlso schema:Organization .
+
+:AuditOpinion a owl:Class ;
+    rdfs:label "Audit Opinion" ;
+    rdfs:comment "The independent auditor's report on whether a filing's financial statements are fairly presented." .
+
+:RiskFactor a owl:Class ;
+    rdfs:label "Risk Factor" ;
+    rdfs:comment "A disclosed risk that could materially affect the company's business, results or share price, such as supply-chain or regulatory risk." .
+
+:Executive a owl:Class ;
+    owl:disjointWith :Company ;
+    rdfs:label "Executive" ;
+    rdfs:comment "A senior officer or director of a company, such as the CEO or CFO, named in a filing." ;
+    rdfs:seeAlso schema:Person .
+
+#################  OBJECT PROPERTIES  #################
+
+:filedBy a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "filed by" ;
+    rdfs:comment "Links a filing to the company that submitted it." ;
+    rdfs:domain :Filing ;
+    rdfs:range :Company .
+
+:coversPeriod a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "covers period" ;
+    rdfs:comment "Links a filing to the main reporting period it covers." ;
+    rdfs:domain :Filing ;
+    rdfs:range :ReportingPeriod .
+
+:containsStatement a owl:ObjectProperty ;
+    rdfs:label "contains statement" ;
+    rdfs:comment "Links a filing to a financial statement included in it." ;
+    rdfs:domain :Filing ;
+    rdfs:range :FinancialStatement .
+
+:reportsValue a owl:ObjectProperty ;
+    rdfs:label "reports value" ;
+    rdfs:comment "Links a financial statement to a metric value presented in it." ;
+    rdfs:domain :FinancialStatement ;
+    rdfs:range :MetricValue .
+
+:ofLineItem a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "of line item" ;
+    rdfs:comment "Links a metric value to the line item concept it measures." ;
+    rdfs:domain :MetricValue ;
+    rdfs:range :LineItem .
+
+:forPeriod a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "for period" ;
+    rdfs:comment "Links a metric value to the reporting period it applies to, which may be a prior comparative period." ;
+    rdfs:domain :MetricValue ;
+    rdfs:range :ReportingPeriod .
+
+:forSegment a owl:ObjectProperty ;
+    rdfs:label "for segment" ;
+    rdfs:comment "Links a metric value to the business segment it is broken down by, if any." ;
+    rdfs:domain :MetricValue ;
+    rdfs:range :BusinessSegment .
+
+:subtotalOf a owl:ObjectProperty ;
+    rdfs:label "subtotal of" ;
+    rdfs:comment "Links a line item to the broader line item it rolls up into, such as Cost of revenue into Total operating expenses." ;
+    rdfs:domain :LineItem ;
+    rdfs:range :LineItem .
+
+:hasSegment a owl:ObjectProperty ;
+    rdfs:label "has segment" ;
+    rdfs:comment "Links a company to a business segment it reports." ;
+    rdfs:domain :Company ;
+    rdfs:range :BusinessSegment .
+
+:includesAuditOpinion a owl:ObjectProperty ;
+    rdfs:label "includes audit opinion" ;
+    rdfs:comment "Links a filing to the auditor's opinion included in it." ;
+    rdfs:domain :Filing ;
+    rdfs:range :AuditOpinion .
+
+:issuedBy a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "issued by" ;
+    rdfs:comment "Links an audit opinion to the audit firm that issued it." ;
+    rdfs:domain :AuditOpinion ;
+    rdfs:range :AuditFirm .
+
+:disclosesRisk a owl:ObjectProperty ;
+    rdfs:label "discloses risk" ;
+    rdfs:comment "Links a filing to a risk factor disclosed in it." ;
+    rdfs:domain :Filing ;
+    rdfs:range :RiskFactor .
+
+:hasExecutive a owl:ObjectProperty ;
+    rdfs:label "has executive" ;
+    rdfs:comment "Links a company to one of its executive officers or directors." ;
+    rdfs:domain :Company ;
+    rdfs:range :Executive .
+
+:certifiedBy a owl:ObjectProperty ;
+    rdfs:label "certified by" ;
+    rdfs:comment "Links a filing to an executive who signed or certified it, such as the CEO or CFO." ;
+    rdfs:domain :Filing ;
+    rdfs:range :Executive .
+
+#################  DATA PROPERTIES  #################
+
+:companyName a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "company name" ;
+    rdfs:comment "The registered legal name of a company as stated on a filing cover page." ;
+    rdfs:domain :Company ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso schema:legalName .
+
+:registrantId a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "registrant id" ;
+    rdfs:comment "A regulator or global identifier for a company, such as an SEC CIK or an LEI." ;
+    rdfs:domain :Company ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso schema:leiCode .
+
+:tickerSymbol a owl:DatatypeProperty ;
+    rdfs:label "ticker symbol" ;
+    rdfs:comment "The exchange trading symbol of a company's shares, such as MSFT." ;
+    rdfs:domain :Company ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso schema:tickerSymbol .
+
+:filingId a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "filing id" ;
+    rdfs:comment "The regulator-assigned identifier of a filing, such as an SEC accession number." ;
+    rdfs:domain :Filing ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso dcterms:identifier .
+
+:formType a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "form type" ;
+    rdfs:comment "The regulatory form code of a filing, such as 10-K, 10-Q, 20-F or ESEF annual report." ;
+    rdfs:domain :Filing ;
+    rdfs:range xsd:string .
+
+:filingDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "filing date" ;
+    rdfs:comment "The date on which a filing was submitted or published." ;
+    rdfs:domain :Filing ;
+    rdfs:range xsd:date ;
+    rdfs:seeAlso dcterms:issued .
+
+:periodStartDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "period start date" ;
+    rdfs:comment "The first day of a reporting period." ;
+    rdfs:domain :ReportingPeriod ;
+    rdfs:range xsd:date .
+
+:periodEndDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "period end date" ;
+    rdfs:comment "The last day of a reporting period, or the balance-sheet date for point-in-time values." ;
+    rdfs:domain :ReportingPeriod ;
+    rdfs:range xsd:date .
+
+:numericValue a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "numeric value" ;
+    rdfs:comment "The reported amount of a metric value, after applying any stated scale such as thousands or millions." ;
+    rdfs:domain :MetricValue ;
+    rdfs:range xsd:decimal ;
+    rdfs:seeAlso schema:value .
+
+:unitOfMeasure a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "unit of measure" ;
+    rdfs:comment "The currency code or unit of a metric value, such as USD, EUR, shares or USD per share." ;
+    rdfs:domain :MetricValue ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso schema:unitText .
+
+:taxonomyConcept a owl:DatatypeProperty ;
+    rdfs:label "taxonomy concept" ;
+    rdfs:comment "The XBRL taxonomy element that a line item corresponds to, such as us-gaap:Revenues or ifrs-full:ProfitLoss." ;
+    rdfs:domain :LineItem ;
+    rdfs:range xsd:string .
+
+:opinionType a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "opinion type" ;
+    rdfs:comment "The kind of audit opinion given: unqualified, qualified, adverse or disclaimer." ;
+    rdfs:domain :AuditOpinion ;
+    rdfs:range xsd:string .
+
+:riskCategory a owl:DatatypeProperty ;
+    rdfs:label "risk category" ;
+    rdfs:comment "The heading or category under which a risk factor is disclosed, such as market, operational, legal or cybersecurity." ;
+    rdfs:domain :RiskFactor ;
+    rdfs:range xsd:string .
+
+:executiveTitle a owl:DatatypeProperty ;
+    rdfs:label "executive title" ;
+    rdfs:comment "The office an executive holds, such as Chief Financial Officer or Chair of the Board." ;
+    rdfs:domain :Executive ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso schema:jobTitle .

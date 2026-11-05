@@ -1,0 +1,6 @@
+[
+  { "name": "lexical", "options": {}, "align": { "lexical": true, "semantic": false, "structural": false, "verify": false } },
+  { "name": "semantic", "options": {}, "align": { "lexical": false, "semantic": true, "structural": false, "verify": false } },
+  { "name": "lexical+semantic+structural", "options": {}, "align": { "lexical": true, "semantic": true, "structural": true, "verify": false } },
+  { "name": "hybrid+model-verification", "options": {}, "align": { "lexical": true, "semantic": true, "structural": true, "verify": true } }
+]

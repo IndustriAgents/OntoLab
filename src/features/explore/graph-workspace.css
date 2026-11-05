@@ -1,0 +1,208 @@
+.graph-workspace {
+  position: relative;
+  background: var(--hf-bg);
+}
+.graph-workspace .explore-head {
+  padding: 22px 28px 18px;
+  gap: 24px;
+  align-items: center;
+}
+.graph-workspace-name {
+  display: block;
+  color: var(--hf-muted);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  margin-bottom: 5px;
+}
+.graph-workspace .explore-head h1 {
+  font-size: 29px;
+  margin: 0;
+}
+.graph-workspace .explore-head p {
+  font-size: 12px;
+  margin: 9px 0 0;
+}
+.graph-ontology-link {
+  display: inline-block;
+  font-size: 10px;
+  color: var(--hf-muted);
+  margin-top: 7px;
+  text-decoration: none;
+}
+.graph-ontology-link:hover {
+  text-decoration: underline;
+  color: var(--hf-text);
+}
+.graph-workspace .explore-head-actions {
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.graph-workspace .explore-head-actions .segmented {
+  padding: 4px;
+  border: 1px solid var(--hf-border);
+  border-radius: 8px;
+}
+.graph-workspace .explore-head-actions .segmented button {
+  min-width: 55px;
+  padding: 7px 12px;
+  font-size: 11px;
+}
+.graph-workspace .revision-bar {
+  padding: 10px 28px;
+  min-height: 50px;
+  background: var(--hf-raised);
+  border-block: 1px solid var(--hf-border);
+}
+.graph-workspace .revision-bar > .hide-narrow {
+  display: none;
+}
+.graph-review-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 28px 4px;
+  font-size: 11px;
+}
+.graph-review-summary > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.graph-review-summary strong {
+  font-weight: 500;
+}
+.graph-review-summary > div > span {
+  color: var(--hf-muted);
+}
+.graph-summary-separator {
+  padding-inline: 5px;
+}
+.graph-review-count {
+  border-radius: 5px;
+  background: var(--hf-raised);
+  border: 1px solid var(--hf-border);
+  color: var(--hf-muted);
+  padding: 1px 5px;
+  font-size: 10px;
+}
+.graph-workspace .explore-toolbar {
+  padding: 12px 28px 16px;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.graph-workspace .explore-toolbar .check,
+.graph-workspace .explore-toolbar .compact-field {
+  font-size: 11px;
+}
+.graph-workspace .explore-toolbar .counts {
+  font-size: 10px;
+}
+.graph-workspace .explore-body {
+  margin: 0 18px 18px;
+  border: 1px solid var(--hf-border);
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 230px;
+  background: var(--hf-surface);
+}
+.graph-workspace .explore-main {
+  min-height: 230px;
+}
+.graph-workspace .explore-main > .state {
+  max-width: 560px;
+  margin: auto;
+  padding: 36px;
+  font-size: 13px;
+}
+.graph-workspace .explore-main > .state .row-actions {
+  justify-content: center;
+}
+.graph-review-panel {
+  position: absolute;
+  z-index: 20;
+  inset: 185px 18px 18px auto;
+  width: min(620px, calc(100% - 36px));
+  margin: 0;
+  box-shadow: var(--hf-shadow-3);
+  overflow: auto;
+  flex: none;
+  border: 1px solid var(--hf-border);
+  border-radius: 10px;
+  background: var(--hf-raised);
+}
+.graph-review-panel .card {
+  border: 0;
+  box-shadow: none;
+  margin: 0;
+  border-radius: 0;
+}
+.graph-review-panel .card-head {
+  padding-right: 130px;
+}
+.graph-review-close {
+  position: sticky;
+  top: 8px;
+  float: right;
+  margin: 8px 10px -40px 8px;
+  z-index: 2;
+  background: var(--hf-raised);
+  font-size: 10px;
+}
+.graph-review-panel .review-queue {
+  max-height: none;
+}
+.graph-review-panel .rq-list {
+  max-height: none;
+}
+@media (max-width: 760px) {
+  .graph-workspace .explore-head {
+    padding: 20px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 17px;
+  }
+  .graph-workspace .explore-head-actions {
+    justify-content: flex-start;
+    width: 100%;
+  }
+  .graph-workspace .revision-bar {
+    padding: 10px 18px;
+    flex-wrap: wrap;
+  }
+  .graph-review-summary,
+  .graph-workspace .explore-toolbar {
+    padding-inline: 18px;
+  }
+  .graph-workspace .explore-body {
+    margin: 0 12px 12px;
+  }
+  .graph-review-panel {
+    inset: 12px;
+    width: auto;
+  }
+  .graph-review-panel .card-head {
+    padding-right: 15px;
+    padding-top: 35px;
+  }
+}
+.graph-workspace .explore-main > .state {
+  border: 0;
+  background: transparent;
+}
+@media (max-height: 850px) {
+  .graph-workspace .explore-head {
+    padding-top: 16px;
+    padding-bottom: 14px;
+  }
+  .graph-workspace .explore-head h1 {
+    font-size: 26px;
+  }
+  .graph-workspace .explore-toolbar {
+    padding-top: 8px;
+    padding-bottom: 11px;
+  }
+}

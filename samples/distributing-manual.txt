@@ -1,0 +1,104 @@
+# Distributing station DS-10
+
+This fictional training station illustrates how a small automated cell
+presents a workpiece to another station. All part numbers, timings and signal
+assignments belong to the example. The training model describes the flow of
+materials and signals between components.
+
+## Layout
+
+The distributing station DS-10 consists of stack magazine MAG-10, transfer
+shuttle TS-10 and an output nest. The stack magazine holds six lightweight
+practice workpieces. Its guide rails keep the stack aligned above the feed
+position. A mechanical retainer supports the upper workpieces while the
+bottom workpiece slides out of the stack.
+
+The transfer shuttle carries one workpiece between the feed position and the
+output nest. A swivel module SW-10 pivots the carrier between its pickup and
+handoff positions. The carrier has a shallow pocket, so its load stays aligned
+with the nest while the carrier moves. The output nest supports one workpiece
+and remains occupied until the receiving station acknowledges pickup.
+
+## Actuators
+
+The stack magazine has one actuator, feed cylinder CY-10. The feed cylinder
+pushes the bottom workpiece into the carrier pocket and retracts before the
+shuttle moves. Its stroke is 60 mm. The example regulator setpoint for the
+feed cylinder is 350 kPa. The simulator models the feed valve as a single
+digital output with an off position that requests retraction.
+
+The transfer shuttle has a swivel actuator ACT-20. The actuator turns the
+carrier 90 degrees from its pickup position to its handoff position. It
+receives separate digital commands for the two directions. The controller
+issues only one direction command at a time. A command ends when the
+corresponding end-position sensor reports that the carrier has arrived.
+
+## Sensors and I/O
+
+Magazine sensor SEN-11 detects whether the stack magazine has a workpiece at
+the feed position. Carrier sensor SEN-12 detects whether a workpiece entered
+the carrier pocket. Feed home sensor SEN-13 reports when the feed cylinder is
+retracted. The swivel home sensor SEN-21 and swivel out sensor SEN-22 report
+the two end positions of the carrier. Nest sensor SEN-31 reports when the
+output nest contains a workpiece.
+
+| Signal | Type | Component | Meaning when active |
+| --- | --- | --- | --- |
+| DI_01 | Digital input | SEN-11 | Workpiece present in the magazine |
+| DI_02 | Digital input | SEN-12 | Carrier pocket occupied |
+| DI_03 | Digital input | SEN-13 | Feed cylinder retracted |
+| DI_04 | Digital input | SEN-21 | Carrier at pickup position |
+| DI_05 | Digital input | SEN-22 | Carrier at handoff position |
+| DI_06 | Digital input | SEN-31 | Output nest occupied |
+| DO_01 | Digital output | CY-10 | Extend feed cylinder |
+| DO_02 | Digital output | ACT-20 | Turn carrier toward handoff |
+| DO_03 | Digital output | ACT-20 | Return carrier to pickup |
+
+## Operating sequence
+
+1. **Check ready.** The controller checks that the carrier is at pickup,
+   the feed cylinder is retracted and the output nest is empty. It waits
+   for the magazine sensor to indicate a workpiece before starting Feed.
+2. **Feed.** The controller extends the feed cylinder. The cylinder moves
+   the bottom workpiece into the carrier pocket. The carrier sensor confirms
+   arrival before the controller removes the extension command. The example
+   timeout for the carrier sensor is 0.8 seconds.
+3. **Retract.** The controller waits for the feed home sensor. Retraction
+   follows Feed and must finish before the swivel actuator can turn the
+   carrier. The example timeout for retraction is 0.6 seconds.
+4. **Transfer.** The swivel actuator turns the carrier toward the output
+   nest. The swivel out sensor confirms the handoff position. When the nest
+   sensor detects the workpiece, the controller signals that the receiving
+   station may pick it up.
+5. **Return.** After the receiving station acknowledges pickup and the
+   output nest reports empty, the swivel actuator returns the carrier to
+   pickup. The swivel home sensor confirms that the next cycle can begin.
+
+## Fault handling
+
+If the carrier sensor stays clear after Feed, the controller cancels the
+extension command and records a feed timeout. The transfer step stays
+disabled until the feed cylinder reports that it is retracted. A feed timeout
+and an empty magazine are separate conditions. An empty magazine holds the
+station at Check ready and does not set the feed-timeout fault.
+
+The controller records a swivel position conflict when both swivel
+end-position sensors are active together. It removes both direction commands
+and waits for the simulated operator to clear the fault. If the receiving
+station has not acknowledged pickup, the controller keeps the carrier at the
+handoff position, even if the nest sensor reports empty.
+
+## Inspection exercises
+
+To inspect the example, trace the path from the stack magazine to the
+receiving station. List the actuator that advances a workpiece, the sensor
+that confirms it entered the carrier, and the sensor that authorizes the
+transfer step. Then compare the signals required at the start and end of the
+transfer step. The sensor list can be checked against the I/O table by
+following each signal back to its component.
+
+To simulate an empty magazine, set DI_01 to off while the carrier is at
+pickup. The controller waits at Check ready. To simulate a feed timeout,
+leave DI_01 on and hold DI_02 off through the feed timeout interval. The
+second exercise reaches Feed before entering its fault state. The event log
+records the operation name, sensor state and elapsed time for either case.

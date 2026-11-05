@@ -1,0 +1,17 @@
+[
+  { "quote": "The stack magazine holds up to 8 workpieces.", "doc": "d1", "claim": "The FS-200 stack magazine can hold up to 8 workpieces.", "entailed": true },
+  { "quote": "Signal I0.7 is safety-relevant.", "doc": "d1", "claim": "I0.7 is a safety-relevant signal.", "entailed": true },
+  { "quote": "It is supplied by Lumisense Oy and responds to all three kinds of workpiece, regardless of colour or material.", "doc": "d1", "claim": "The sensor responds only to metallic workpieces.", "entailed": false },
+  { "quote": "The ejector cylinder 1A1 is designed for an operating pressure of 6 bar.", "doc": "d1", "claim": "Ejector cylinder 1A1 is designed for 6 bar operating pressure.", "entailed": true },
+  { "quote": "The station has no controller of its own.", "doc": "d1", "claim": "The Feeder Station FS-200 has its own built-in PLC.", "entailed": false },
+  { "quote": "The nominal cycle time of the inspection station is 6.0 s per workpiece, which makes it the slowest station of the line.", "doc": "d2", "claim": "The inspection station has the longest cycle time on the line.", "entailed": true },
+  { "quote": "It does not detect the black plastic workpieces, because their matt surface does not reflect enough light.", "doc": "d2", "claim": "The sensor does not detect black plastic workpieces.", "entailed": true },
+  { "quote": "Its switching distance is set to 12 mm with the potentiometer on the sensor housing.", "doc": "d2", "claim": "The switching distance is configured through a software parameter in the PLC.", "entailed": false },
+  { "quote": "The motor is rated for 24 V DC.", "doc": "d3", "claim": "The motor is rated for 24 volts DC.", "entailed": true },
+  { "quote": "Black workpieces are not diverted; they travel to the end of the belt and drop onto slide 3.", "doc": "d3", "claim": "Black workpieces end up on slide 3.", "entailed": true },
+  { "quote": "Each slide holds up to 5 workpieces.", "doc": "d3", "claim": "The fill level of each slide is monitored by a sensor.", "entailed": false },
+  { "quote": "The conveyor runs at a belt speed of 0.12 m/s when the motor is supplied with its rated voltage.", "doc": "d3", "claim": "At rated voltage the conveyor belt moves at 0.12 m/s.", "entailed": true },
+  { "quote": "Because the inspection station has the longest cycle time, it limits the throughput of the whole line to about 10 workpieces per minute.", "doc": "d4", "claim": "The line's throughput is limited to about 10 workpieces per minute.", "entailed": true },
+  { "quote": "All pneumatic cylinders and valves on the line come from Pneumatica Nordic.", "doc": "d4", "claim": "Pneumatica Nordic supplies the pneumatic cylinders used on the line.", "entailed": true },
+  { "quote": "The gear motor of the sorting station is supplied by Voltrane Drives.", "doc": "d4", "claim": "Lumisense Oy supplies the sorting station's gear motor.", "entailed": false }
+]

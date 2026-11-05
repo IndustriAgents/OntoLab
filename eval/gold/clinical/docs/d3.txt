@@ -1,0 +1,51 @@
+# Endocrinology Outpatient Letter
+
+Synthetic record created for software evaluation. It does not describe a real person.
+
+Patient ID: PT-7310
+Year of birth: 1988
+Clinic: Endocrinology Outpatient Clinic, Elmbrook Community Hospital
+Date seen: 20 May 2026
+Seen by: Dr. Yuki Halvorsen, consultant endocrinologist, with Grace Adeyemi, endocrine specialist nurse
+
+## Reason for referral
+
+The patient was referred by her general practitioner with six months of fatigue, feeling cold, constipation, dry skin and a weight gain of 5 kg. Her GP had found a raised thyroid-stimulating hormone on two occasions and asked for advice on diagnosis and treatment.
+
+## History
+
+She works as a primary school teacher. There is no history of neck surgery, radiotherapy or recent pregnancy. Her mother has hypothyroidism. She takes no regular medicines and does not smoke.
+
+She has a severe allergy to sulfonamide antibiotics: in 2021 she developed facial swelling (angioedema) and hives within hours of taking sulfamethoxazole for a urinary infection and required emergency treatment. This allergy is recorded as severe.
+
+## Examination
+
+Pulse 58 regular, blood pressure 118/76 mmHg, weight 72 kg. The thyroid gland was diffusely, mildly enlarged and non-tender, with no discrete nodules. Reflexes showed slow relaxation. No signs of other endocrine disease.
+
+## Investigations
+
+Thyroid-stimulating hormone (TSH) measured in clinic today was 8.6 mIU/L. Thyroid peroxidase antibodies were reported as strongly positive by the GP laboratory last month.
+
+## Diagnosis
+
+Primary hypothyroidism (ICD-10 E03.9), most likely autoimmune (Hashimoto's thyroiditis).
+
+## Plan
+
+Dr. Halvorsen started levothyroxine 50 micrograms once daily, to be taken on an empty stomach 30 minutes before breakfast.
+
+Grace Adeyemi explained how to take the tablets, the need to separate them from iron or calcium supplements by four hours, and the symptoms of over-replacement. Written information was provided.
+
+The following steps were agreed:
+
+1. Repeat TSH in six to eight weeks via the GP and adjust the dose in steps of 25 micrograms.
+2. Target TSH within the reference range, ideally 0.5 to 2.5 mIU/L.
+3. Patient to inform us if she plans a pregnancy, because the dose usually needs to be increased early.
+4. Sulfonamide allergy to be flagged on all prescribing systems.
+
+We have not arranged a further hospital appointment; we are happy to see her again if TSH remains above the target range after two dose adjustments.
+
+Yours sincerely,
+
+Dr. Y. Halvorsen
+Consultant Endocrinologist

@@ -1,0 +1,46 @@
+{
+  "name": "Contracts",
+  "description": "Commercial agreements between synthetic companies (supply, services, non-disclosure and amendments) and an internal contract-portfolio memo.",
+  "purpose": "Turn contract documents into a queryable knowledge graph of parties, signatories, clauses, obligations, payment terms, governing law and termination rights so that legal and procurement teams can answer portfolio questions without re-reading every contract.",
+  "scope": "In scope: contracting organisations and their signatories, agreement type, reference number, dates, value and currency, auto-renewal, clauses that impose obligations or termination rights, obliged parties, payment periods and late interest, governing law, products or services covered, and amendments to earlier agreements. Out of scope: pricing schedules per unit, delivery logistics, dispute-resolution procedure details, and full clause text.",
+  "stories": [
+    "As a legal ops analyst I want to see every agreement a company is party to, with its governing law and notice period, so that I can spot inconsistent terms across the portfolio.",
+    "As a procurement manager I want to know which payment terms apply to each supplier agreement after amendments, so that finance schedules payment runs correctly.",
+    "As a contract manager I want to list the obligations each party carries and the clause that creates them, so that I can track compliance.",
+    "As a general counsel I want to know who signed each agreement and for which organisation, so that I can verify signing authority."
+  ],
+  "cqs": [
+    {
+      "text": "Which parties are bound by the supply agreement?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/contracts#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?party ?label WHERE { ?party :isPartyTo ?a . ?a rdfs:label ?l . FILTER(CONTAINS(LCASE(?l), \"supply\")) OPTIONAL { ?party rdfs:label ?label } } LIMIT 100"
+    },
+    {
+      "text": "Which agreements is each organisation a party to?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/contracts#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?org ?orgLabel ?agreement ?agreementLabel WHERE { ?org a :Organisation ; :isPartyTo ?agreement . OPTIONAL { ?org rdfs:label ?orgLabel } OPTIONAL { ?agreement rdfs:label ?agreementLabel } } ORDER BY ?orgLabel LIMIT 100"
+    },
+    {
+      "text": "Which law governs each agreement?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/contracts#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?agreement ?number ?lawLabel WHERE { ?agreement :governedBy ?law . OPTIONAL { ?agreement :agreementNumber ?number } OPTIONAL { ?law rdfs:label ?lawLabel } } LIMIT 100"
+    },
+    {
+      "text": "What written notice period is required to terminate each agreement for convenience?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/contracts#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?agreement ?agreementLabel ?days WHERE { ?agreement :hasClause ?clause . ?clause a :TerminationClause ; :noticePeriodDays ?days . OPTIONAL { ?agreement rdfs:label ?agreementLabel } } LIMIT 100"
+    },
+    {
+      "text": "What payment period and late-payment interest rate apply under each agreement?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/contracts#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?agreement ?agreementLabel ?days ?rate WHERE { ?agreement :hasPaymentTerm ?term . ?term :paymentDays ?days . OPTIONAL { ?term :lateInterestRate ?rate } OPTIONAL { ?agreement rdfs:label ?agreementLabel } } LIMIT 100"
+    },
+    {
+      "text": "Who signed each agreement, and which organisation do they work for?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/contracts#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?agreementLabel ?personLabel ?orgLabel WHERE { ?agreement :signedBy ?person . OPTIONAL { ?agreement rdfs:label ?agreementLabel } OPTIONAL { ?person rdfs:label ?personLabel } OPTIONAL { ?person :worksFor ?org . ?org rdfs:label ?orgLabel } } LIMIT 100"
+    },
+    {
+      "text": "Which obligations does each party carry, and which clause imposes them?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/contracts#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?partyLabel ?obligationLabel ?clauseLabel WHERE { ?clause :imposesObligation ?obligation . ?obligation :obligedParty ?party . OPTIONAL { ?party rdfs:label ?partyLabel } OPTIONAL { ?obligation rdfs:label ?obligationLabel } OPTIONAL { ?clause rdfs:label ?clauseLabel } } LIMIT 100"
+    },
+    {
+      "text": "Which agreements renew automatically, and when does their initial term expire?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/contracts#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?agreement ?agreementLabel ?expiry WHERE { ?agreement :autoRenews ?renews . FILTER(LCASE(STR(?renews)) = \"true\") OPTIONAL { ?agreement :expiryDate ?expiry } OPTIONAL { ?agreement rdfs:label ?agreementLabel } } LIMIT 100"
+    }
+  ]
+}

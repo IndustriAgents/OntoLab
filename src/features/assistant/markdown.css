@@ -1,0 +1,67 @@
+/* Markdown answers */
+.md {
+  font-size: var(--hf-text-md);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.md > * + * {
+  margin-top: 10px;
+}
+.md ul,
+.md ol {
+  padding-left: 22px;
+}
+.md li + li {
+  margin-top: 3px;
+}
+.md h1,
+.md h2,
+.md h3,
+.md h4 {
+  font-family: var(--hf-font-sans);
+  font-size: var(--hf-text-md);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.md code {
+  font-family: var(--hf-font-mono);
+  font-size: 0.9em;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--hf-sunken);
+}
+.md pre {
+  overflow-x: auto;
+  padding: 10px 12px;
+  border-radius: var(--hf-radius);
+  background: var(--hf-sunken);
+}
+.md pre code {
+  padding: 0;
+  background: none;
+}
+.md table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--hf-text-base);
+}
+.md th,
+.md td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--hf-border);
+  text-align: left;
+  vertical-align: top;
+}
+.md th {
+  color: var(--hf-muted);
+  font-weight: 500;
+}
+.md a {
+  color: var(--hf-accent-text);
+  text-decoration: underline;
+}
+.md blockquote {
+  padding-left: 12px;
+  border-left: 2px solid var(--hf-border-strong);
+  color: var(--hf-text-2);
+}

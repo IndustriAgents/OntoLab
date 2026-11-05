@@ -1,0 +1,24 @@
+{
+  "id": "contracts",
+  "name": "Contracts",
+  "description": "Agreements, parties, clauses, obligations, payment terms, renewal, termination and governing law.",
+  "purpose": "Turn contracts and amendments into a queryable graph of who owes what to whom, when, and under which law, so obligations and key dates can be tracked across a contract portfolio.",
+  "scope": "In scope: agreement metadata, parties and signatories, clause types, obligations, payment terms, contract term and renewal, termination conditions and governing law. Out of scope: negotiation history, redlines, and legal interpretation or risk scoring of clause wording.",
+  "stories": [
+    "As a contract manager I want to see every agreement's expiry date and auto-renewal flag so that I can act before notice deadlines pass.",
+    "As a finance analyst I want each payment term linked to its payer, payee, amount and currency so that I can reconcile contracted fees against invoices.",
+    "As in-house counsel I want obligations linked to the clause and party they come from so that I can check which commitments our company owes and to whom."
+  ],
+  "cqs": [
+    "Which parties are bound by each agreement?",
+    "Who signed each agreement, on behalf of which party, and on what date?",
+    "Which agreements expire before a given date and which of them renew automatically?",
+    "What obligations does a given party owe, to whom, and under which clause?",
+    "What payment amounts, currencies and due periods apply to each agreement, and who pays whom?",
+    "Under which conditions can each agreement be terminated, and how many days of notice are required?",
+    "Which jurisdiction's law governs each agreement?",
+    "Which amendments modify a given agreement?",
+    "Which agreements contain a confidentiality or limitation-of-liability clause?"
+  ],
+  "tboxFile": "tbox.ttl"
+}

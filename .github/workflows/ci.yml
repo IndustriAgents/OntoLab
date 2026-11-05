@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm --prefix website ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run test
+      # Building here catches anything that only breaks in a production build
+      # (e.g. a base-path or chunking mistake) before it reaches a deploy.
+      - run: npm run build
+      # No API keys are configured in CI, so this exercises the pure ontology
+      # core end to end: parse → serialize → re-parse → validate → graph.
+      - run: npx tsx scripts/ontology-check.ts
+
+  evidence-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # Uses the real built SPA and HTTP services with an isolated local store
+      # and offline generation. No provider credentials or user data are needed.
+      - name: Run evidence browser journeys
+        run: npm run test:evidence:e2e
+      - name: Run Excel import browser journeys
+        run: npm run test:excel:e2e
+      - name: Upload browser report and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-browser-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            output/evidence-e2e/
+            output/playwright/
+          if-no-files-found: warn
+          retention-days: 7

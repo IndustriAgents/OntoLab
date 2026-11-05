@@ -1,0 +1,16 @@
+[
+  { "question": "How many workpieces can the stack magazine of the Feeder Station FS-200 hold?", "type": "single", "answer": ["8", "eight"] },
+  { "question": "What is the I/O address of the 'lift cylinder up' output at the inspection station?", "type": "single", "answer": ["Q1.0"] },
+  { "question": "What is the part number of the DC gear motor M1?", "type": "single", "answer": ["VD-GM24-30"] },
+  { "question": "To what switching distance is optical sensor B3 set?", "type": "single", "answer": ["12 mm", "12"] },
+
+  { "question": "Which company manufactures the sensor that reports whether the feeder station's magazine is empty?", "type": "multi", "answer": ["Lumisense"] },
+  { "question": "Which sensor at the station directly downstream of FS-200 cannot detect black plastic workpieces?", "type": "multi", "answer": ["B3"] },
+  { "question": "Which diverter cylinder at the sorting station pushes the workpieces that inductive sensor B2 detects?", "type": "multi", "answer": ["3A1"] },
+  { "question": "What voltage should be measured at the conveyor motor of the station that receives workpieces from IS-310 when its output is set?", "type": "multi", "answer": ["24 V", "24"] },
+
+  { "question": "How many stations make up the training line?", "type": "aggregate", "answer": ["3", "three"] },
+  { "question": "Which station has the longest cycle time?", "type": "aggregate", "answer": ["IS-310", "inspection station"] },
+  { "question": "How many digital output signals are listed across all the station manuals?", "type": "aggregate", "answer": ["5", "five"] },
+  { "question": "How many different components on the line are made by Pneumatica Nordic?", "type": "aggregate", "answer": ["6", "six"] }
+]

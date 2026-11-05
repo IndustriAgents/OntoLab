@@ -1,0 +1,62 @@
+# Sorting Station SR-400 Operating Manual
+
+Corvex Automation AG, order no. CX-610400, edition 04/2026
+
+## 1 Overview
+
+The Sorting Station SR-400 is the last station of the training line. It receives inspected workpieces from the Inspection Station IS-310 and distributes them to three slides according to the classification made there:
+
+- slide 1: metallic (silver aluminium) workpieces,
+- slide 2: red plastic workpieces,
+- slide 3: black plastic workpieces.
+
+The nominal cycle time of the sorting station is 5.2 s per workpiece. The station is controlled by line controller LC1, the same Corvex CX-PLC 24 that controls the feeder and inspection stations.
+
+## 2 Components
+
+### 2.1 Conveyor drive
+
+The workpieces are transported on a flat belt conveyor 600 mm long. The belt is driven by the DC gear motor M1, made by Voltrane Drives GmbH with part number VD-GM24-30. The motor is rated for 24 V DC.
+
+The conveyor runs at a belt speed of 0.12 m/s when the motor is supplied with its rated voltage. Do not exceed this speed, otherwise the diverters cannot push workpieces reliably.
+
+### 2.2 Diverters
+
+Two short-stroke pneumatic cylinders with integrated valves push workpieces off the belt:
+
+- Diverter cylinder 3A1 (Pneumatica Nordic, part number PN-ADN-12-10) directs metallic workpieces onto slide 1.
+- Diverter cylinder 3A2 (Pneumatica Nordic, part number PN-ADN-12-10) directs red workpieces onto slide 2.
+
+Black workpieces are not diverted; they travel to the end of the belt and drop onto slide 3.
+
+### 2.3 Entry sensor
+
+Optical sensor B5, a retro-reflective sensor from Lumisense Oy (part number LS-RR-50), is mounted at the start of the conveyor. It detects every workpiece that enters the station, whatever its colour or material.
+
+## 3 I/O list
+
+Address   Tag   Type             Description
+I2.0      B5    Digital input    Workpiece at conveyor entry
+Q2.0      M1    Digital output   Conveyor motor on
+Q2.1      3A1   Digital output   Extend diverter 1 (metal)
+Q2.2      3A2   Digital output   Extend diverter 2 (red)
+
+All signals are wired to line controller LC1.
+
+## 4 Sequence of operation
+
+Step 1 - Start conveyor: when sensor B5 detects a workpiece at the entry (I2.0 = 1), the controller sets Q2.0 and motor M1 starts the conveyor.
+
+Step 2 - Divert workpiece: depending on the classification received from the inspection station, the controller sets either Q2.1, so that diverter cylinder 3A1 extends and pushes a metallic workpiece onto slide 1, or Q2.2, so that diverter cylinder 3A2 extends and pushes a red workpiece onto slide 2. Diverter outputs are reset after 0.5 s.
+
+For a black workpiece no diverter is activated. The conveyor stops 3 s after the last workpiece has passed the end of the belt.
+
+## 5 Slide capacity
+
+Each slide holds up to 5 workpieces. The slides are not monitored by sensors; the operator must empty them regularly. If a slide overflows, workpieces can fall back onto the belt and jam the diverters.
+
+## 6 Maintenance
+
+- Check belt tension monthly; the belt must not slip on the drive roller.
+- Inspect the diverter cylinders for air leaks every three months.
+- The gear motor M1 is maintenance-free. Replace it as a complete unit if it becomes noisy.

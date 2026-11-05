@@ -1,0 +1,215 @@
+.ontology-start-heading h2 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  letter-spacing: -0.025em;
+}
+.ontology-start-heading p {
+  max-width: 650px;
+  color: var(--ink-soft);
+  line-height: 1.65;
+}
+.ontology-start-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.ontology-start-grid.has-history {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.ontology-start-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 24px 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-card);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.ontology-start-card:hover {
+  border-color: var(--ink-soft);
+  background: var(--bg-card-2);
+}
+.ontology-start-card.is-selected {
+  border-color: var(--hf-accent-strong);
+  background: var(--hf-accent-soft);
+}
+.ontology-start-card:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.ontology-start-card > svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  color: var(--ink-soft);
+}
+.ontology-start-card > svg:last-child {
+  width: 15px;
+  height: 15px;
+  margin-left: auto;
+  margin-top: 3px;
+}
+.ontology-start-card > span {
+  display: grid;
+  gap: 9px;
+  min-width: 0;
+}
+.ontology-start-card strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+.ontology-start-card small {
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+.ontology-start-panel {
+  display: grid;
+  gap: 18px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.ontology-start-panel > .btn {
+  justify-self: start;
+}
+.ontology-start-panel > h3 {
+  font-size: 16px;
+  margin: 0;
+}
+.ontology-template-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.ontology-template-grid .mode-card {
+  padding: 18px;
+}
+.ontology-template-grid .mode-card > small {
+  color: var(--ink-soft);
+  font-size: 11px;
+}
+.ontology-file-list {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  list-style: none;
+}
+.ontology-file-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-wrap: anywhere;
+}
+.ontology-file-list svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+.ontology-previous-list {
+  display: grid;
+  gap: 10px;
+}
+.ontology-previous-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.ontology-previous-item.is-selected {
+  border-color: var(--hf-accent-strong);
+  background: var(--hf-accent-soft);
+}
+.ontology-previous-item > span:first-of-type {
+  display: grid;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.ontology-previous-item strong {
+  font-size: 13px;
+}
+.ontology-previous-item small {
+  color: var(--ink-soft);
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.ontology-draft-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+.ontology-draft-heading h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+.ontology-draft-heading p {
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+.ontology-build-actions {
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--hf-accent-soft);
+}
+.ontology-build-actions h3 {
+  margin: 0 0 8px;
+}
+.ontology-build-actions p {
+  margin: 0 0 14px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.65;
+}
+.ontology-build-actions .row-actions {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ontology-build-actions .field-hint {
+  margin: 12px 0 0;
+}
+@media (max-width: 760px) {
+  .ontology-start-grid,
+  .ontology-start-grid.has-history,
+  .ontology-template-grid {
+    grid-template-columns: 1fr;
+  }
+  .ontology-start-card {
+    padding: 20px;
+  }
+  .ontology-previous-item {
+    flex-wrap: wrap;
+  }
+  .ontology-previous-item .badge {
+    margin-left: 28px;
+  }
+}
+
+.ontology-continue {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-card-2);
+}
+.ontology-continue h3 {
+  margin: 8px 0;
+}
+.ontology-continue p {
+  color: var(--ink-soft);
+}
+.ontology-continue .field-hint {
+  margin-top: 8px;
+}

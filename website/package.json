@@ -1,0 +1,38 @@
+{
+  "name": "@industriagents/ontolab-docs",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "docusaurus start --port 3100",
+    "build": "node scripts/build.mjs",
+    "serve": "docusaurus serve --port 3100",
+    "preview": "wrangler dev --port 8788",
+    "check": "node --test scripts/*.test.mjs",
+    "prestart": "node scripts/prepare-assets.mjs",
+    "prebuild": "node scripts/prepare-assets.mjs"
+  },
+  "dependencies": {
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "@mdx-js/react": "3.1.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "pagefind": "1.5.2",
+    "wrangler": "4.156.0"
+  },
+  "overrides": {
+    "tinypool": "2.2.0",
+    "serialize-javascript": "7.1.4",
+    "sockjs": {
+      "uuid": "11.1.1"
+    },
+    "serve-handler": {
+      "minimatch": "file:../../vendor/ontolab-minimatch-compat-1.0.0.tgz"
+    }
+  }
+}

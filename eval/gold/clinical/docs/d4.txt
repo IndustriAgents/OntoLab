@@ -1,0 +1,58 @@
+# Cardiology Follow-up Clinic Letter
+
+Synthetic record created for software evaluation. It does not describe a real person.
+
+Patient: PT-4821
+Clinic: Cardiology Outpatient Clinic, Elmbrook Community Hospital
+Date: 15 June 2026
+Consultant: Dr. A. Lindqvist
+Copy to: Dr. T. Brezina, Harlow Street Clinic
+
+## Summary
+
+Thank you for continuing to care for this gentleman, whom I saw today for his first review after his NSTEMI in April, treated with a drug-eluting stent to the proximal LAD.
+
+## Progress
+
+He has completed four sessions of cardiac rehabilitation and walks 4 km a day without chest pain. He reports a sensation of breathlessness at rest, often when sitting watching television, which began soon after discharge. This is a recognised side effect of ticagrelor. He has no orthopnoea, no ankle swelling and no palpitations.
+
+## Examination and results
+
+Blood pressure 148/92 mmHg, above target for a patient with diabetes and coronary disease. Heart rate 64. Chest clear. Radial access site healed.
+
+Fasting LDL cholesterol today: 1.6 mmol/L, a good response to high-dose atorvastatin.
+
+## Diagnoses
+
+- Coronary artery disease (ICD-10 I25.1), status post PCI to the LAD in April 2026.
+- Type 2 diabetes mellitus, managed in primary care.
+- Essential hypertension, currently above target.
+
+## Changes made today
+
+1. Ticagrelor stopped because of dyspnoea. I have started clopidogrel 75 mg once daily, to continue until April 2027, together with aspirin.
+2. Ramipril increased from 5 mg to 10 mg once daily. Please check kidney function and potassium in two weeks.
+
+Felix Ocampo, the cardiac care nurse who looked after him on the ward, now coordinates his rehabilitation programme and reviewed his exercise diary today.
+
+## Current medication list
+
+Medicine        Dose      Frequency      Started by
+Aspirin         75 mg     once daily     Dr. Lindqvist
+Clopidogrel     75 mg     once daily     Dr. Lindqvist
+Atorvastatin    80 mg     once daily     Dr. Lindqvist
+Ramipril        10 mg     once daily     Dr. Lindqvist
+Metformin       500 mg    twice daily    Dr. Brezina
+
+Allergies: penicillin (rash). No new allergies.
+
+## Plan
+
+- Cardiology review in six months with repeat lipids.
+- Continue cardiac rehabilitation for a further four weeks.
+- GP to continue diabetes management; metformin may be uptitrated if HbA1c remains above target.
+
+Kind regards,
+
+Dr. Amara Lindqvist
+Consultant Interventional Cardiologist

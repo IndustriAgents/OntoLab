@@ -1,0 +1,82 @@
+.experiment-options {
+  margin: 20px 0;
+  padding: 16px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+.experiment-options > summary {
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.experiment-options[open] > summary {
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.experiment-options > .field-hint {
+  margin: 14px 0;
+  max-width: 95ch;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.experiment-options > .field-hint:last-child {
+  margin-bottom: 0;
+}
+.experiment-options .form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.experiment-options .field {
+  min-width: 0;
+  margin: 0;
+  gap: 8px;
+}
+.experiment-options .field > span:first-child {
+  display: flex;
+  align-items: flex-end;
+  min-height: 2.6em;
+  line-height: 1.3;
+}
+.experiment-options input:not([type="checkbox"]),
+.experiment-options select {
+  width: 100%;
+  min-width: 0;
+  height: 38px;
+}
+.experiment-options .check-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.experiment-options .check {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  font-size: 13px;
+  line-height: 1.6;
+  cursor: pointer;
+}
+.experiment-options .check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 2px 0 0;
+}
+.experiment-options .check:has(input:checked) {
+  background: var(--accent-soft);
+  border-color: var(--line-strong);
+}
+@media (max-width: 600px) {
+  .experiment-options .form-grid,
+  .experiment-options .check-list {
+    grid-template-columns: 1fr;
+  }
+}

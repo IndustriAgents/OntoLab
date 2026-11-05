@@ -1,0 +1,24 @@
+{
+  "id": "financial-filings",
+  "name": "Financial filings",
+  "description": "Companies, annual and quarterly filings, statements, line items, reported values, segments, auditors and risk factors.",
+  "purpose": "Turn annual and quarterly reports into a graph of reported financial facts, each tied to its company, line item, period, segment and unit, alongside auditors, executives and disclosed risks.",
+  "scope": "In scope: filing metadata, reporting periods, the primary financial statements, line items and reported values, segment breakdowns, audit opinions, executives and risk factors. Out of scope: market prices, analyst estimates, ratio calculation and full XBRL taxonomy modelling.",
+  "stories": [
+    "As an equity analyst I want revenue and net income per company, period and segment with units so that I can compare performance across filings without retyping tables.",
+    "As a compliance reviewer I want each filing linked to its auditor, opinion type and certifying executives so that I can spot qualified opinions and changes of auditor.",
+    "As a risk analyst I want disclosed risk factors grouped by category per filing so that I can track how a company's risk disclosures change over time."
+  ],
+  "cqs": [
+    "Which filings has a company submitted, with form type and filing date?",
+    "What reporting period does each filing cover, with start and end dates?",
+    "What value, in which currency or unit, did a company report for a given line item in a given period?",
+    "How is a line item broken down by operating or geographic segment for a period?",
+    "Which line items roll up into a given total line item?",
+    "Which financial statements does a filing contain, and which values does each report?",
+    "Which audit firm audited a filing and what type of opinion did it issue?",
+    "Which risk factors, by category, are disclosed in a given filing?",
+    "Who are the executives of a company and which of them certified each filing?"
+  ],
+  "tboxFile": "tbox.ttl"
+}

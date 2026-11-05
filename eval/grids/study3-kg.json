@@ -1,0 +1,7 @@
+[
+  { "name": "full-tbox-no-gate", "options": { "schemaRetrieval": "off", "verifyEvidence": false, "evidenceGate": "off" } },
+  { "name": "edc-retrieval", "options": { "schemaRetrieval": "force", "verifyEvidence": false, "evidenceGate": "off" } },
+  { "name": "retrieval+evidence", "options": { "schemaRetrieval": "force", "verifyEvidence": true, "evidenceGate": "flag" } },
+  { "name": "retrieval+evidence+auto-accept", "options": { "schemaRetrieval": "force", "verifyEvidence": true, "evidenceGate": "auto-accept" } },
+  { "name": "tree-prompt", "options": { "schemaRetrieval": "force", "verifyEvidence": true, "evidenceGate": "auto-accept", "promptStyle": "tree" } }
+]

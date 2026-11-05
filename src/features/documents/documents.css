@@ -1,0 +1,31 @@
+.document-configurations {
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: normal;
+}
+.document-configurations summary {
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+.document-configurations ul {
+  list-style: none;
+  padding: 0;
+}
+.document-configurations li {
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  overflow-wrap: anywhere;
+}
+.document-configurations span,
+.document-configurations small {
+  display: block;
+}
+.document-configurations small {
+  color: var(--ink-soft);
+}
+.document-configurations .row-actions {
+  flex-wrap: wrap;
+  margin-top: 8px;
+  gap: 12px;
+}

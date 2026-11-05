@@ -1,0 +1,236 @@
+.term-editor {
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+  gap: 0;
+  align-items: stretch;
+  border: 1px solid var(--hf-border);
+  border-radius: 12px;
+  background: var(--hf-raised);
+  overflow: clip;
+}
+.te-header {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--hf-border);
+}
+.te-header h2 {
+  font-family: var(--hf-font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+.te-header p,
+.te-form-head p {
+  color: var(--hf-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.te-header .tabbar {
+  flex: none;
+  gap: 4px;
+  margin: 0;
+  padding: 3px;
+  border: 1px solid var(--hf-border);
+  border-radius: 9px;
+  background: var(--hf-sunken);
+}
+.te-header .tab {
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-size: 12px;
+}
+.te-header .tab.on {
+  background: var(--hf-raised);
+  box-shadow: var(--hf-shadow-1);
+  color: var(--hf-text);
+}
+.te-header .tab .count {
+  margin-left: 6px;
+}
+.te-list {
+  min-width: 0;
+  padding: 16px 12px 12px;
+  border-right: 1px solid var(--hf-border);
+  background: var(--hf-sidebar);
+}
+.te-tools {
+  gap: 6px;
+  margin: 0 0 12px;
+}
+.te-tools .btn {
+  flex: none;
+}
+.te-search {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.te-search > svg {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  width: 14px;
+  height: 14px;
+  transform: translateY(-50%);
+  color: var(--hf-muted);
+  pointer-events: none;
+}
+.te-search input {
+  width: 100%;
+  min-height: 34px;
+  padding: 7px 8px 7px 30px;
+  font-size: 12px;
+}
+.te-list-count {
+  padding: 0 8px 10px;
+  color: var(--hf-muted);
+  font-size: 11px;
+}
+.te-terms {
+  max-height: min(65vh, 660px);
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
+}
+.te-terms li + li {
+  margin-top: 3px;
+}
+.te-term {
+  display: grid;
+  align-content: center;
+  min-height: 54px;
+  gap: 3px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  line-height: 1.4;
+}
+.te-term:hover {
+  background: var(--hf-hover);
+}
+.te-term.on {
+  border-color: var(--hf-border-strong);
+  background: var(--hf-accent-soft);
+}
+.te-term-label {
+  color: var(--hf-text);
+  font-size: 13px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.te-term-id {
+  color: var(--hf-muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+.te-form {
+  min-width: 0;
+  padding: 24px 28px;
+}
+.te-form-head {
+  margin-bottom: 24px;
+}
+.te-kind-label {
+  color: var(--hf-muted);
+  font-size: 11px;
+}
+.te-form-head h3 {
+  margin: 6px 0;
+  font-family: var(--hf-font-display);
+  font-size: 26px;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+.te-uri {
+  display: block;
+  margin-top: 10px;
+  color: var(--hf-muted);
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+.te-identity-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.te-form .field {
+  margin: 0 0 20px;
+}
+.te-form .field > input,
+.te-form .field > textarea,
+.te-form .field > select {
+  width: 100%;
+}
+.te-form .row-actions {
+  gap: 8px;
+  padding-top: 18px;
+  border-top: 1px solid var(--hf-border);
+  margin-top: 8px;
+}
+.te-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 320px;
+  text-align: center;
+}
+.te-empty > svg {
+  width: 40px;
+  height: 40px;
+  color: var(--hf-muted);
+}
+.te-empty p,
+.te-no-results p {
+  max-width: 320px;
+  color: var(--hf-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.te-no-results {
+  display: grid;
+  gap: 8px;
+  padding: 24px 12px;
+  font-size: 13px;
+}
+.te-no-results .btn {
+  justify-self: start;
+}
+@media (max-width: 1000px) {
+  .term-editor {
+    grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
+  }
+  .te-form {
+    padding: 20px;
+  }
+  .te-identity-fields {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}
+@media (max-width: 760px) {
+  .term-editor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .te-header {
+    padding: 16px;
+  }
+  .te-header .tabbar {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  .te-list {
+    border-right: 0;
+    border-bottom: 1px solid var(--hf-border);
+  }
+  .te-terms {
+    max-height: 220px;
+  }
+}

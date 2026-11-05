@@ -1,0 +1,337 @@
+.eg-root {
+  min-width: 0;
+}
+.eg-toolbar {
+  display: flex;
+  align-items: end;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 16px;
+  background: var(--accent-soft);
+  border: 1px solid var(--line);
+  border-radius: 10px 10px 0 0;
+}
+.eg-toolbar .field {
+  margin: 0;
+  min-width: 140px;
+  flex: 1;
+  font-size: 12px;
+}
+.eg-toolbar select {
+  width: 100%;
+  min-height: 36px;
+  padding: 7px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  color: var(--ink);
+  background: var(--bg);
+}
+.eg-toolbar .eg-term-select {
+  flex: 2;
+  min-width: 210px;
+}
+.eg-input-toggle {
+  font-size: 11px;
+  padding-bottom: 9px;
+  white-space: nowrap;
+}
+.eg-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  padding: 13px 16px;
+  border-inline: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 10px;
+}
+.eg-legend > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.eg-root {
+  --eg-topic: #527fc1;
+  --eg-chunk: #82909f;
+  --eg-passage: #b88b38;
+  --eg-class: #2a9b7d;
+  --eg-property: #9172c9;
+}
+[data-theme="dark"] .eg-root {
+  --eg-topic: #8aaee1;
+  --eg-chunk: #a1adba;
+  --eg-passage: #d9b35e;
+  --eg-class: #70c8aa;
+  --eg-property: #b6a0e3;
+}
+.eg-topic {
+  --eg-color: var(--eg-topic);
+}
+.eg-chunk {
+  --eg-color: var(--eg-chunk);
+}
+.eg-passage {
+  --eg-color: var(--eg-passage);
+}
+.eg-class {
+  --eg-color: var(--eg-class);
+}
+.eg-property {
+  --eg-color: var(--eg-property);
+}
+.eg-swatch {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  background: var(--eg-color);
+  border-radius: 3px;
+}
+.eg-line {
+  width: 20px;
+  border-top: 1px solid var(--ink-soft);
+}
+.eg-line.is-dashed {
+  border-top: 2px dashed var(--eg-property);
+}
+.eg-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 270px;
+  border: 1px solid var(--line);
+  border-radius: 0 0 10px 10px;
+  overflow: hidden;
+}
+.eg-chart {
+  min-width: 0;
+  background: var(--bg);
+}
+.eg-canvas-tools {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  font-size: 11px;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--line);
+}
+.eg-canvas-tools > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.eg-viewport {
+  height: 550px;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  background-image: radial-gradient(var(--line) 0.7px, transparent 0.7px);
+  background-size: 18px 18px;
+  touch-action: none;
+}
+.eg-viewport > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  user-select: none;
+}
+.eg-viewport > svg:active {
+  cursor: grabbing;
+}
+.eg-column-label {
+  fill: var(--ink-soft);
+  font: 13px var(--sans);
+  font-weight: 500;
+}
+.eg-column-background {
+  fill: var(--bg);
+}
+.eg-edge {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.2;
+}
+.eg-edge.is-related {
+  stroke: var(--eg-class);
+  stroke-width: 2;
+}
+.eg-edge-input {
+  stroke-dasharray: 7 5;
+}
+.eg-edge-input.is-related {
+  stroke: var(--eg-property);
+}
+.eg-edge.is-muted {
+  opacity: 0.1;
+}
+.eg-node {
+  cursor: pointer;
+  outline: none;
+}
+.eg-node rect {
+  fill: color-mix(in srgb, var(--eg-color) 10%, var(--bg));
+  stroke: var(--eg-color);
+  stroke-width: 1.3;
+}
+.eg-node.is-selected rect {
+  stroke-width: 3;
+  fill: color-mix(in srgb, var(--eg-color) 23%, var(--bg));
+}
+.eg-node.is-muted {
+  opacity: 0.18;
+}
+.eg-node:hover rect,
+.eg-node:focus-visible rect {
+  stroke-width: 3;
+  stroke: var(--ink);
+}
+.eg-node.is-unavailable rect {
+  stroke-dasharray: 4 3;
+}
+.eg-node-kind {
+  font: 8px var(--mono);
+  letter-spacing: 0.8px;
+  fill: var(--eg-color);
+}
+.eg-node-label {
+  font: 13px var(--sans);
+  fill: var(--ink);
+}
+.eg-help {
+  padding: 12px 16px;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.7;
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+.eg-inspector {
+  padding: 20px;
+  border-left: 1px solid var(--line);
+  background: var(--accent-soft);
+  max-height: 660px;
+  overflow: auto;
+  font-size: 12px;
+  line-height: 1.8;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.eg-inspector h3 {
+  margin: 8px 0 12px;
+  font-size: 19px;
+  line-height: 1.4;
+  letter-spacing: -0.2px;
+}
+.eg-inspector > p {
+  margin: 12px 0;
+}
+.eg-inspector .eg-path-counts {
+  color: var(--ink-soft);
+  font-size: 11px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 12px;
+}
+.eg-inspector blockquote {
+  border-left: 2px solid var(--eg-passage);
+  padding-left: 12px;
+  margin: 16px 0;
+  font-size: 13px;
+}
+.eg-caution {
+  color: var(--warn);
+}
+.eg-expand-inputs,
+.eg-topic-link {
+  display: block;
+  margin: 14px 0;
+  font-size: 11px;
+  text-align: left;
+}
+.eg-related-quotes {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.eg-related-quotes h4 {
+  margin: 0 0 12px;
+  font-size: 12px;
+}
+.eg-related-quotes button {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--line);
+  padding: 12px;
+  border-radius: 7px;
+  background: var(--bg);
+  color: var(--ink);
+  font: 12px/1.7 var(--sans);
+  cursor: pointer;
+  margin: 8px 0;
+}
+.eg-related-quotes button:hover {
+  border-color: var(--line-strong);
+}
+.eg-related-quotes small {
+  color: var(--ink-soft);
+  font-size: 10px;
+}
+.eg-empty {
+  position: absolute;
+  inset: 40% 10% auto;
+  color: var(--ink-soft);
+  text-align: center;
+  font-size: 13px;
+}
+@media (max-width: 1100px) {
+  .eg-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .eg-inspector {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    max-height: 400px;
+  }
+}
+@media (max-width: 760px) {
+  .eg-toolbar {
+    padding: 12px;
+  }
+  .eg-toolbar .field {
+    flex-basis: 100%;
+  }
+  .eg-input-toggle {
+    padding: 0;
+    white-space: normal;
+  }
+  .eg-legend {
+    gap: 9px 12px;
+  }
+  .eg-viewport {
+    height: 400px;
+  }
+  .eg-inspector {
+    padding: 16px;
+  }
+  .eg-canvas-tools {
+    padding: 10px;
+  }
+}
+.eg-mobile-jump {
+  display: none;
+}
+.eg-inspector,
+.eg-viewport > svg {
+  scroll-margin-top: 64px;
+}
+@media (max-width: 760px) {
+  .eg-mobile-jump {
+    display: inline-block;
+    font-size: 11px;
+  }
+  .eg-inspector > .eg-mobile-jump {
+    display: block;
+    margin-bottom: 14px;
+  }
+}

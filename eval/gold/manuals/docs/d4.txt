@@ -1,0 +1,56 @@
+# Training Line TL-3: Maintenance and Troubleshooting Guide
+
+Corvex Automation, service document SD-TL3-07, 2026
+
+## 1 Line overview
+
+Training line TL-3 consists of three stations supplied by Corvex Automation and controlled by a single PLC, line controller LC1. Workpieces flow from the feeder through inspection to sorting.
+
+Station              Code     Order no.   Cycle time   Downstream station
+Feeder station       FS200    CX-610200   4.5 s        IS-310
+Inspection station   IS-310   CX-610310   6.0 s        SR-400
+Sorting station      SR-400   CX-610400   5.2 s        none
+
+Because the inspection station has the longest cycle time, it limits the throughput of the whole line to about 10 workpieces per minute.
+
+## 2 Compressed air supply
+
+The line requires clean, dry compressed air. The pressure regulator at the service unit must be set so that the ejector cylinder 1A1 of the feeder station receives its rated operating pressure of 6 bar. Lower pressure causes incomplete ejection; higher pressure can damage the workpieces.
+
+All pneumatic cylinders and valves on the line come from Pneumatica Nordic. Use only original seal kits from that supplier.
+
+## 3 Preventive maintenance schedule
+
+| Interval   | Task                                                         | Station  |
+|------------|--------------------------------------------------------------|----------|
+| Weekly     | Clean lens of optical sensor B3                              | IS-310   |
+| Weekly     | Empty slides 1 to 3                                          | SR-400   |
+| Monthly    | Check belt tension of conveyor                               | SR-400   |
+| Monthly    | Test emergency stop button S0                                | FS200    |
+| Quarterly  | Check all cylinders for air leaks                            | all      |
+
+## 4 Troubleshooting
+
+### 4.1 Feeder station does not eject
+
+Check that the magazine is filled. If the magazine is filled but signal I0.4 still reports "magazine empty", the through-beam sensor B4 is misaligned.
+
+Realign B4 so that the receiver LED lights steadily when the magazine is empty. The sensor must then switch off as soon as a single workpiece is inserted.
+
+If the ejector cylinder does not move although output Q0.1 is set, check the coil of solenoid valve 1Y1 and the air supply.
+
+### 4.2 Red workpieces end on slide 3
+
+The most common cause is a dirty lens on optical sensor B3 at the inspection station, so that red workpieces are no longer detected and are classified as black. Clean the lens. If the fault persists, check that the switching distance of B3 is still set to 12 mm.
+
+### 4.3 Metal workpieces end on slide 2
+
+Sensor B2 is not switching. Check that the gap between B2 and the workpiece in the measuring position does not exceed the 4 mm switching distance.
+
+### 4.4 Conveyor does not start
+
+Check signal I2.0 from entry sensor B5. If it switches but the motor does not run, measure the voltage at motor M1: it must be 24 V DC when output Q2.0 is set.
+
+## 5 Spare parts
+
+Lumisense Oy supplies all optical and inductive sensors on the line (B2, B3, B4, B5). The gear motor of the sorting station is supplied by Voltrane Drives. Order other spare parts from Corvex Automation AG quoting the station order number.

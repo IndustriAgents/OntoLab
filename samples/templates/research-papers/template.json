@@ -1,0 +1,24 @@
+{
+  "id": "research-papers",
+  "name": "Research papers",
+  "description": "Papers, authors, affiliations, venues, datasets, methods, tasks, metrics, results, citations and funding.",
+  "purpose": "Turn a collection of scholarly articles into a graph of who did what, on which data, with which results, so literature reviews and benchmark comparisons can be answered by query instead of re-reading.",
+  "scope": "In scope: bibliographic metadata, authors and affiliations, venues, datasets, methods, tasks, evaluation metrics, reported results, citations between papers, and grants. Out of scope: full-text argument mining, peer-review data and citation-count analytics.",
+  "stories": [
+    "As a researcher I want every reported result linked to its method, dataset, task and metric so that I can build a leaderboard across papers.",
+    "As a literature reviewer I want papers linked to the methods they propose and the datasets they use so that I can map the state of the art for a task.",
+    "As a research-office manager I want papers linked to grants, funders and author affiliations so that I can report outputs per funding award and institution."
+  ],
+  "cqs": [
+    "Which authors wrote a given paper, and with which institutions are they affiliated?",
+    "In which venue and year was each paper published, and what is its DOI?",
+    "Which papers address a given task, and which methods do they propose?",
+    "Which datasets does each paper use?",
+    "What is the best reported score for a given task, dataset and metric, and which method achieved it?",
+    "Which results in a paper are baselines and which belong to the proposed method?",
+    "Which papers cite a given paper?",
+    "Which grants, and which funding agencies, supported a given paper?",
+    "Which papers come from authors at institutions in a given country?"
+  ],
+  "tboxFile": "tbox.ttl"
+}

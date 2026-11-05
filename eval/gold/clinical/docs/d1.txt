@@ -1,0 +1,53 @@
+# General Practice Consultation Note
+
+Synthetic record created for software evaluation. It does not describe a real person.
+
+Patient ID: PT-4821
+Year of birth: 1961
+Date of visit: 4 March 2026
+Location: Harlow Street Clinic, general practice
+Clinician: Dr. Tomasz Brezina, general practitioner
+
+## Presenting complaint
+
+The patient attended a routine review of blood pressure and reported increasing tiredness, excessive thirst and passing urine more often over the last three months. He also described an occasional tight feeling across the chest when walking uphill, settling within a few minutes of rest. No pain at rest, no palpitations, no syncope.
+
+## History
+
+Known essential hypertension, diagnosed in 2019 and treated with ramipril. Ex-smoker, stopped in 2015 after 25 pack-years. Father had a myocardial infarction at 58. Works as a warehouse supervisor and walks about 3 km per day. Alcohol around 10 units per week.
+
+Allergies: penicillin. The patient reports a widespread itchy rash after amoxicillin in 2010. The reaction is recorded as moderate; no breathing difficulty or swelling occurred.
+
+## Examination
+
+Blood pressure 146/90 mmHg (repeat 142/88 mmHg). Pulse 78 regular. BMI 31.2. Heart sounds normal, chest clear, no peripheral oedema. Foot pulses palpable; monofilament sensation intact.
+
+## Investigations
+
+Bloods taken at the visit were reported the following day:
+
+- HbA1c 7.9 % (63 mmol/mol), above the diagnostic threshold for diabetes.
+- LDL cholesterol 4.1 mmol/L.
+- Renal function and electrolytes within normal limits.
+
+A resting 12-lead ECG in clinic showed sinus rhythm without acute changes.
+
+## Assessment
+
+1. Type 2 diabetes mellitus (ICD-10 E11.9), newly diagnosed on the basis of HbA1c and symptoms.
+2. Essential hypertension (ICD-10 I10), not at target.
+3. Exertional chest tightness, possible stable angina, requiring specialist assessment.
+
+## Plan
+
+- Start metformin 500 mg twice daily with meals; increase after four weeks if tolerated.
+- Continue ramipril 5 mg once daily; recheck blood pressure in four weeks.
+- Lifestyle advice given on diet, weight loss and activity; referred to the structured diabetes education programme.
+- Routine referral to the cardiology outpatient clinic at Elmbrook Community Hospital for assessment of exertional chest symptoms.
+- Safety-netting: the patient was told to call emergency services if chest pain occurs at rest or lasts more than 15 minutes.
+
+Penicillin allergy re-confirmed with the patient and added to the referral letter.
+
+Review in four weeks with repeat blood pressure and kidney function.
+
+Dr. T. Brezina

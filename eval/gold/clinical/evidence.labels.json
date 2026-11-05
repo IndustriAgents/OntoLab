@@ -1,0 +1,17 @@
+[
+  { "quote": "Start metformin 500 mg twice daily with meals; increase after four weeks if tolerated.", "doc": "d1", "claim": "Metformin was started at 500 mg twice daily.", "entailed": true },
+  { "quote": "The reaction is recorded as moderate; no breathing difficulty or swelling occurred.", "doc": "d1", "claim": "The patient's allergic reaction caused breathing difficulty.", "entailed": false },
+  { "quote": "Type 2 diabetes mellitus (ICD-10 E11.9), newly diagnosed on the basis of HbA1c and symptoms.", "doc": "d1", "claim": "The patient was newly diagnosed with type 2 diabetes mellitus.", "entailed": true },
+  { "quote": "The diagnosis was non-ST-elevation myocardial infarction (NSTEMI), ICD-10 I21.4.", "doc": "d2", "claim": "The patient was diagnosed with an NSTEMI coded I21.4.", "entailed": true },
+  { "quote": "She also placed a drug-eluting stent in the proximal LAD the following day, on 12 April 2026, during percutaneous coronary intervention (PCI).", "doc": "d2", "claim": "A drug-eluting stent was placed in the proximal LAD on 12 April 2026.", "entailed": true },
+  { "quote": "Ticagrelor 90 mg twice daily for 12 months.", "doc": "d2", "claim": "Ticagrelor was prescribed for lifelong use.", "entailed": false },
+  { "quote": "No antibiotics were given during the stay.", "doc": "d2", "claim": "The patient received amoxicillin during the admission.", "entailed": false },
+  { "quote": "Thyroid-stimulating hormone (TSH) measured in clinic today was 8.6 mIU/L.", "doc": "d3", "claim": "The patient's TSH was 8.6 mIU/L.", "entailed": true },
+  { "quote": "She has a severe allergy to sulfonamide antibiotics: in 2021 she developed facial swelling (angioedema) and hives within hours of taking sulfamethoxazole for a urinary infection and required emergency treatment.", "doc": "d3", "claim": "The patient has a severe allergy to sulfonamide antibiotics.", "entailed": true },
+  { "quote": "Dr. Halvorsen started levothyroxine 50 micrograms once daily, to be taken on an empty stomach 30 minutes before breakfast.", "doc": "d3", "claim": "Levothyroxine should be taken together with breakfast.", "entailed": false },
+  { "quote": "Primary hypothyroidism (ICD-10 E03.9), most likely autoimmune (Hashimoto's thyroiditis).", "doc": "d3", "claim": "Hashimoto's thyroiditis was definitively confirmed by biopsy.", "entailed": false },
+  { "quote": "Fasting LDL cholesterol today: 1.6 mmol/L, a good response to high-dose atorvastatin.", "doc": "d4", "claim": "The patient's fasting LDL cholesterol was 1.6 mmol/L.", "entailed": true },
+  { "quote": "Ticagrelor stopped because of dyspnoea.", "doc": "d4", "claim": "Ticagrelor was discontinued because of breathlessness.", "entailed": true },
+  { "quote": "Ramipril increased from 5 mg to 10 mg once daily.", "doc": "d4", "claim": "The ramipril dose was doubled.", "entailed": true },
+  { "quote": "He has completed four sessions of cardiac rehabilitation and walks 4 km a day without chest pain.", "doc": "d4", "claim": "The patient walks 4 km a day without chest pain.", "entailed": true }
+]

@@ -1,0 +1,63 @@
+# Feeder Station FS-200 Operating Manual
+
+Corvex Automation AG, order no. CX-610200, edition 03/2026
+
+## 1 Intended use
+
+The Feeder Station FS-200 is intended for training and laboratory use in automation technology. It must only be operated by persons who have read this manual and the general safety instructions supplied with the line. Do not reach into the magazine or the ejector area while compressed air is connected.
+
+## 2 Overview
+
+The Feeder Station FS-200 separates workpieces from a stack magazine and passes them one at a time to the downstream Inspection Station IS-310. The stack magazine holds up to 8 workpieces. The nominal cycle time of the station is 4.5 s per workpiece.
+
+The station has no controller of its own. It is controlled by the line controller LC1, a Corvex CX-PLC 24 with part number CX-PLC24-DC, which is mounted in the control cabinet of the line and also runs the inspection and sorting stations.
+
+The station processes three kinds of cylindrical workpieces with a diameter of 40 mm:
+
+- black plastic workpieces,
+- red plastic workpieces, and
+- silver aluminium workpieces.
+
+## 3 Components
+
+The stack magazine module consists of the following components:
+
+- Ejector cylinder 1A1: a double-acting pneumatic cylinder from Pneumatica Nordic AB, part number PN-DSN-16-50. It pushes the lowest workpiece out of the magazine into the transfer position. Its stroke is 50 mm.
+- Solenoid valve 1Y1: a 5/2-way single-solenoid valve from Pneumatica Nordic AB, part number PN-VUVG-52, which switches compressed air to the ejector cylinder.
+- Proximity sensors 1B1 and 1B2: magnetic proximity sensors mounted on the ejector cylinder that report its retracted (1B1) and extended (1B2) end positions.
+- Optical sensor B4: a through-beam sensor, part number LS-TB-200, that checks whether there are workpieces in the magazine.
+- Emergency stop button S0: a red mushroom pushbutton on the front of the station that interrupts the emergency stop chain.
+
+Sensor B4 is mounted at the bottom of the magazine tube, so that its light beam is interrupted whenever at least one workpiece is in the magazine.
+
+It is supplied by Lumisense Oy and responds to all three kinds of workpiece, regardless of colour or material.
+
+## 4 Technical data
+
+The ejector cylinder 1A1 is designed for an operating pressure of 6 bar. Supply voltage for all sensors is 24 V DC. All signals of the station are wired to line controller LC1 via the I/O terminal XMA1.
+
+## 5 I/O list
+
+| Address | Tag | Type           | Description                                   |
+|---------|-----|----------------|-----------------------------------------------|
+| I0.1    | 1B1 | Digital input  | Ejector cylinder retracted                    |
+| I0.2    | 1B2 | Digital input  | Ejector cylinder extended                     |
+| I0.4    | B4  | Digital input  | Magazine empty (light beam not interrupted)   |
+| I0.7    | S0  | Digital input  | Emergency stop chain closed (safety signal)   |
+| Q0.1    | 1Y1 | Digital output | Extend ejector cylinder                       |
+
+Signal I0.7 is safety-relevant. It must never be bridged or simulated in the PLC program.
+
+## 6 Sequence of operation
+
+Starting conditions: the emergency stop chain is closed (I0.7 = 1), the ejector cylinder is retracted (I0.1 = 1), and the magazine is not empty (I0.4 = 0).
+
+Step 1 - Eject workpiece: when the Inspection Station IS-310 requests a workpiece, the controller sets output Q0.1. Valve 1Y1 switches and the ejector cylinder 1A1 extends, pushing the lowest workpiece into the transfer position.
+
+Step 2 - Retract ejector: as soon as sensor 1B2 reports the extended end position (I0.2 = 1), output Q0.1 is reset and the ejector cylinder 1A1 retracts. The sequence then waits for the next request.
+
+If I0.4 becomes 1 during operation, the magazine is empty. The station finishes the current cycle and reports the fault "magazine empty" at the operator panel.
+
+## 7 Commissioning notes
+
+Adjust the one-way flow control valves on the ejector cylinder so that extension takes about 0.6 s. Check the end-position sensors 1B1 and 1B2 by moving the cylinder manually with the valve's manual override while compressed air is connected.

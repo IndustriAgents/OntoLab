@@ -1,0 +1,24 @@
+{
+  "id": "clinical-notes",
+  "name": "Clinical notes",
+  "description": "Pseudonymised patients, encounters, conditions, medications, procedures, observations and allergies from clinical documentation.",
+  "purpose": "Extract a structured, FHIR-like clinical picture from free-text notes such as discharge summaries and clinic letters, so that problems, treatments and results can be reviewed and queried per patient and encounter.",
+  "scope": "In scope: patients by pseudonymous id only, encounters, conditions, medication statements with dosage, procedures, observations and lab results, allergies, and practitioner roles. Out of scope: direct patient identifiers, billing and scheduling, and clinical decision support.",
+  "stories": [
+    "As a clinician I want each patient's active conditions, current medications and allergies extracted from past notes so that I can reconcile them quickly at the next visit.",
+    "As a clinical researcher I want lab results with values, units and dates linked to pseudonymous patients so that I can assemble a cohort without handling identifiable data.",
+    "As a quality reviewer I want procedures linked to the condition they treated and the practitioner role that performed them so that I can audit care pathways."
+  ],
+  "cqs": [
+    "Which active conditions does a given patient have, and when did each begin?",
+    "Which medications is a patient taking, at what dose, unit and frequency?",
+    "For which condition was each medication or procedure given?",
+    "Which allergies or intolerances are recorded for a patient, and how critical are they?",
+    "What lab results and vital signs were recorded during a given encounter, with values and units?",
+    "Which procedures were performed on a patient, when, and by which practitioner role?",
+    "Which practitioner roles participated in an encounter, with which specialty and at which organization?",
+    "What type of encounter was it (inpatient, outpatient or emergency) and when did it start?",
+    "Which clinical document reports on each encounter and who authored it?"
+  ],
+  "tboxFile": "tbox.ttl"
+}

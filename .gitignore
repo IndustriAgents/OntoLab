@@ -1,0 +1,29 @@
+node_modules
+dist
+.env
+.env.local
+.env.*.local
+.neon
+.deploy/
+*.log
+.DS_Store
+.vite
+.data
+eval/results
+sidecar/docling/__pycache__
+
+# Documentation build and local browser verification
+website/build/
+website/.docusaurus/
+website/.wrangler/
+output/
+.playwright-cli/
+.desktop/
+release/
+
+# Generated from the application tutorial samples at docs build time
+website/static/mechatronic-tbox.ttl
+website/static/distributing-manual.txt
+
+# Generated from the shared OntoLab paper-theme tokens
+website/src/css/product-tokens.css

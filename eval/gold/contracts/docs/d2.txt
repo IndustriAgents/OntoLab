@@ -1,0 +1,54 @@
+# Mutual Non-Disclosure Agreement NDA-2026-003
+
+## Background
+
+Northgate Components Limited ("Northgate"), a company registered in England, is evaluating predictive maintenance analytics for the automated handling cells it builds. Kestrel Analytics B.V. ("Kestrel"), a company registered in the Netherlands with offices in Utrecht, develops such analytics software. To allow open technical discussions about a possible pilot, the parties enter into this mutual non-disclosure agreement, reference NDA-2026-003 (the "Agreement").
+
+This Agreement is effective from 15 March 2026. It has an initial term of three years and expires on 14 March 2029. It does not renew automatically; any extension must be agreed in writing by both parties.
+
+Kestrel's technical lead for the evaluation is Ravi Okafor, who will coordinate all data exchanges with Northgate's engineering team.
+
+Mr Okafor is Head of Data Science at Kestrel Analytics and reports directly to Kestrel's Chief Executive Officer.
+
+## 2. Definitions
+
+"Confidential Information" means all technical, commercial and financial information disclosed by one party (the "Discloser") to the other party (the "Recipient"), whether in writing, orally or by giving access to systems or machine data, including sensor logs, design drawings, pricing and supplier lists.
+
+Confidential Information does not include information that:
+
+- is or becomes publicly available other than through a breach of this Agreement;
+- was lawfully known to the Recipient before disclosure;
+- is independently developed by the Recipient without use of the Discloser's information; or
+- is lawfully received from a third party without a duty of confidentiality.
+
+## 3. Confidentiality
+
+3.1 Each party shall keep the Confidential Information of the other party strictly confidential and shall not disclose it to any third party without the prior written consent of the Discloser.
+
+3.2 Each party shall use the Confidential Information solely for the purpose of evaluating the proposed pilot and for no other purpose.
+
+3.3 The confidentiality obligations in this Clause 3 survive for five years after the expiry or termination of this Agreement.
+
+3.4 Each party shall restrict access to the Confidential Information to those of its employees and advisers who need to know it and who are bound by written confidentiality duties at least as strict as those in this Agreement.
+
+## 5. Return of Information
+
+On written request of the Discloser, the Recipient shall return or destroy all Confidential Information, including copies, within 14 days and confirm the destruction in writing. Routine electronic back-ups need not be deleted but remain subject to Clause 3.
+
+## 8. Termination
+
+Either party may terminate this Agreement at any time by giving 30 days' written notice to the other party. Termination does not affect the confidentiality obligations in Clause 3, which continue for the period stated in Clause 3.3.
+
+## 10. Governing Law
+
+This Agreement is governed by the laws of the Netherlands. Any dispute shall be submitted to the competent court in Amsterdam.
+
+## 11. Miscellaneous
+
+No licence to any intellectual property is granted under this Agreement. Nothing in this Agreement obliges either party to enter into any further agreement. This Agreement may only be amended in writing signed by both parties.
+
+## Signatures
+
+For Northgate Components Limited: Marcus Ellery, Chief Procurement Officer, signed on 15 March 2026.
+
+For Kestrel Analytics B.V.: Sanne de Wit, Chief Executive Officer, signed on 15 March 2026.

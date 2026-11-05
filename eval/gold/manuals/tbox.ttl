@@ -1,0 +1,249 @@
+@prefix :     <https://w3id.org/ontolab/gold/manuals#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+<https://w3id.org/ontolab/gold/manuals> a owl:Ontology ;
+    rdfs:label "Equipment Manuals Gold Ontology (T-Box)" ;
+    rdfs:comment "SEED gold schema for evaluating extraction from technical/mechatronic equipment manuals: stations, components (sensors, actuators, controllers), I/O signals, sequence operations, parameters, workpieces and manufacturers. Synthetic; requires human review." .
+
+#################  CLASSES  #################
+
+:Equipment a owl:Class ;
+    rdfs:label "Equipment" ;
+    rdfs:comment "Any manufactured physical item described in a manual (a whole station or one of its components)." .
+
+:Station a owl:Class ;
+    rdfs:subClassOf :Equipment ;
+    rdfs:label "Station" ;
+    rdfs:comment "A self-contained production or handling station of an automation line (e.g. feeder, inspection, sorting)." .
+
+:Component a owl:Class ;
+    rdfs:subClassOf :Equipment ;
+    rdfs:label "Component" ;
+    rdfs:comment "A physical part of a station or line (mechanical, pneumatic or electrical), identified by a device tag such as 1A1 or B4." .
+
+:Sensor a owl:Class ;
+    rdfs:subClassOf :Component ;
+    rdfs:label "Sensor" ;
+    rdfs:comment "A component that detects a physical condition and delivers a signal to the controller." .
+
+:ProximitySensor a owl:Class ;
+    rdfs:subClassOf :Sensor ;
+    rdfs:label "Proximity Sensor" ;
+    rdfs:comment "A non-contact sensor detecting nearby objects or piston positions by magnetic or inductive means." .
+
+:OpticalSensor a owl:Class ;
+    rdfs:subClassOf :Sensor ;
+    rdfs:label "Optical Sensor" ;
+    rdfs:comment "A sensor detecting objects by light (through-beam, diffuse or retro-reflective)." .
+
+:Actuator a owl:Class ;
+    rdfs:subClassOf :Component ;
+    rdfs:label "Actuator" ;
+    rdfs:comment "A component that produces motion or switches energy (cylinders, motors, valves)." .
+
+:PneumaticCylinder a owl:Class ;
+    rdfs:subClassOf :Actuator ;
+    rdfs:label "Pneumatic Cylinder" ;
+    rdfs:comment "A compressed-air actuator producing linear motion (e.g. ejector, lift or diverter cylinder)." .
+
+:ElectricMotor a owl:Class ;
+    rdfs:subClassOf :Actuator ;
+    rdfs:label "Electric Motor" ;
+    rdfs:comment "An electrically driven rotary actuator such as a DC gear motor driving a conveyor." .
+
+:SolenoidValve a owl:Class ;
+    rdfs:subClassOf :Actuator ;
+    rdfs:label "Solenoid Valve" ;
+    rdfs:comment "An electrically operated valve that switches compressed air to a pneumatic cylinder." .
+
+:Controller a owl:Class ;
+    rdfs:subClassOf :Component ;
+    rdfs:label "Controller" ;
+    rdfs:comment "A programmable logic controller (PLC) that reads input signals and sets output signals." .
+
+:Signal a owl:Class ;
+    rdfs:label "Signal" ;
+    rdfs:comment "A digital I/O signal exchanged between a component and the controller, identified by an I/O address." .
+
+:DigitalInput a owl:Class ;
+    rdfs:subClassOf :Signal ;
+    rdfs:label "Digital Input" ;
+    rdfs:comment "A binary signal read by the controller (address prefix I)." .
+
+:DigitalOutput a owl:Class ;
+    rdfs:subClassOf :Signal ;
+    rdfs:label "Digital Output" ;
+    rdfs:comment "A binary signal set by the controller (address prefix Q)." .
+
+:Operation a owl:Class ;
+    rdfs:label "Operation" ;
+    rdfs:comment "A step in a station's sequence of operation (e.g. eject workpiece, lift, divert)." .
+
+:Parameter a owl:Class ;
+    rdfs:label "Parameter" ;
+    rdfs:comment "A named technical setting or rating of a component with a numeric value and unit (e.g. operating pressure 6 bar)." .
+
+:Workpiece a owl:Class ;
+    rdfs:label "Workpiece" ;
+    rdfs:comment "A kind of part processed by the line (e.g. red plastic workpiece)." .
+
+:Manufacturer a owl:Class ;
+    rdfs:label "Manufacturer" ;
+    rdfs:comment "A company that makes stations or components." .
+
+:Station owl:disjointWith :Component .
+:Sensor owl:disjointWith :Actuator .
+:Sensor owl:disjointWith :Controller .
+:Actuator owl:disjointWith :Controller .
+:ProximitySensor owl:disjointWith :OpticalSensor .
+:PneumaticCylinder owl:disjointWith :ElectricMotor .
+:PneumaticCylinder owl:disjointWith :SolenoidValve .
+:ElectricMotor owl:disjointWith :SolenoidValve .
+:DigitalInput owl:disjointWith :DigitalOutput .
+:Equipment owl:disjointWith :Signal .
+:Equipment owl:disjointWith :Manufacturer .
+
+#################  OBJECT PROPERTIES  #################
+
+:partOf a owl:ObjectProperty ;
+    rdfs:label "part of" ;
+    rdfs:domain :Component ;
+    rdfs:range :Station ;
+    rdfs:comment "Links a component to the station it is mounted in." .
+
+:controlledBy a owl:ObjectProperty ;
+    rdfs:label "controlled by" ;
+    rdfs:domain :Station ;
+    rdfs:range :Controller ;
+    rdfs:comment "The controller (PLC) that runs the station's sequence." .
+
+:feedsInto a owl:ObjectProperty ;
+    rdfs:label "feeds into" ;
+    rdfs:domain :Station ;
+    rdfs:range :Station ;
+    rdfs:comment "The station passes workpieces to this downstream station." .
+
+:hasSignal a owl:ObjectProperty ;
+    rdfs:label "has signal" ;
+    rdfs:domain :Component ;
+    rdfs:range :Signal ;
+    rdfs:comment "A signal emitted by (sensor) or sent to (actuator) this component." .
+
+:connectedTo a owl:ObjectProperty ;
+    rdfs:label "connected to" ;
+    rdfs:domain :Signal ;
+    rdfs:range :Controller ;
+    rdfs:comment "The controller to which the signal is wired." .
+
+:monitors a owl:ObjectProperty ;
+    rdfs:label "monitors" ;
+    rdfs:domain :Sensor ;
+    rdfs:range :Component ;
+    rdfs:comment "The component whose state (e.g. end position) the sensor reports." .
+
+:detects a owl:ObjectProperty ;
+    rdfs:label "detects" ;
+    rdfs:domain :Sensor ;
+    rdfs:range :Workpiece ;
+    rdfs:comment "A kind of workpiece that the sensor responds to (switches on)." .
+
+:performedBy a owl:ObjectProperty ;
+    rdfs:label "performed by" ;
+    rdfs:domain :Operation ;
+    rdfs:range :Component ;
+    rdfs:comment "The component that carries out the operation." .
+
+:triggeredBy a owl:ObjectProperty ;
+    rdfs:label "triggered by" ;
+    rdfs:domain :Operation ;
+    rdfs:range :Signal ;
+    rdfs:comment "The signal whose change starts the operation." .
+
+:followedBy a owl:ObjectProperty ;
+    rdfs:label "followed by" ;
+    rdfs:domain :Operation ;
+    rdfs:range :Operation ;
+    rdfs:comment "The next operation in the sequence." .
+
+:hasParameter a owl:ObjectProperty ;
+    rdfs:label "has parameter" ;
+    rdfs:domain :Component ;
+    rdfs:range :Parameter ;
+    rdfs:comment "A technical setting or rating of the component." .
+
+:manufacturedBy a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "manufactured by" ;
+    rdfs:domain :Equipment ;
+    rdfs:range :Manufacturer ;
+    rdfs:comment "The company that makes the station or component." .
+
+#################  DATATYPE PROPERTIES  #################
+
+:partNumber a owl:DatatypeProperty ;
+    rdfs:label "part number" ;
+    rdfs:domain :Equipment ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The manufacturer's part or order number (e.g. PN-DSN-16-50)." .
+
+:deviceTag a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "device tag" ;
+    rdfs:domain :Component ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The component's designation in circuit diagrams (e.g. 1A1, 1Y1, B4, M1)." .
+
+:ioAddress a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "I/O address" ;
+    rdfs:domain :Signal ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The controller address of the signal (e.g. I0.1, Q0.1)." .
+
+:isSafetyRelevant a owl:DatatypeProperty ;
+    rdfs:label "is safety relevant" ;
+    rdfs:domain :Signal ;
+    rdfs:range xsd:boolean ;
+    rdfs:comment "Whether the signal belongs to a safety function such as the emergency stop chain." .
+
+:sequenceStep a owl:DatatypeProperty ;
+    rdfs:label "sequence step" ;
+    rdfs:domain :Operation ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "The step number of the operation in the station's sequence." .
+
+:parameterValue a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "parameter value" ;
+    rdfs:domain :Parameter ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "The numeric value of the parameter, in parameterUnit." .
+
+:parameterUnit a owl:DatatypeProperty ;
+    rdfs:label "parameter unit" ;
+    rdfs:domain :Parameter ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The unit of the parameter value (e.g. bar, mm, m/s, V)." .
+
+:cycleTimeSeconds a owl:DatatypeProperty ;
+    rdfs:label "cycle time (s)" ;
+    rdfs:domain :Station ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "Nominal time in seconds for the station to process one workpiece." .
+
+:magazineCapacity a owl:DatatypeProperty ;
+    rdfs:label "magazine capacity" ;
+    rdfs:domain :Station ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "Maximum number of workpieces the station's magazine can hold." .
+
+:workpieceMaterial a owl:DatatypeProperty ;
+    rdfs:label "workpiece material" ;
+    rdfs:domain :Workpiece ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The material of the workpiece (e.g. plastic, aluminium)." .
+
+:workpieceColour a owl:DatatypeProperty ;
+    rdfs:label "workpiece colour" ;
+    rdfs:domain :Workpiece ;
+    rdfs:range xsd:string ;
+    rdfs:comment "The colour of the workpiece (e.g. red, black, silver)." .

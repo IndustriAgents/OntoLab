@@ -1,0 +1,69 @@
+/* OntoLab — design tokens (ported from GraphMind).
+   Monochrome editorial: black on white, warm off-white panels,
+   Archivo + JetBrains Mono, hairline rules, light/dark via [data-theme]. */
+
+:root {
+  /* surfaces */
+  --bg: #ffffff;
+  --bg-deep: #f7f7f5;
+  --bg-card: #f7f7f5;
+  --bg-card-2: #ffffff;
+
+  /* ink (text + monochrome UI) */
+  --ink: #000000;
+  --ink-soft: rgba(0, 0, 0, 0.58);
+  --ink-faint: rgba(0, 0, 0, 0.55);
+  --ink-trace: rgba(0, 0, 0, 0.07);
+
+  /* monochrome brand/UI accent */
+  --accent: #000000;
+  --accent-soft: rgba(0, 0, 0, 0.05);
+
+  /* functional status colours */
+  --ok: #1a7f64;
+  --warn: #b5832a;
+  --alert: #c4393e;
+
+  /* hairlines */
+  --line: rgba(0, 0, 0, 0.1);
+  --line-strong: rgba(0, 0, 0, 0.18);
+
+  --dot-ink: rgba(0, 0, 0, 0.55);
+
+  /* type */
+  --display: "Archivo", "Helvetica Neue", system-ui, sans-serif;
+  --sans: "Archivo", "Helvetica Neue", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --ease-soft: cubic-bezier(0.25, 0.6, 0.25, 1);
+  --ease-cine: cubic-bezier(0.65, 0, 0.15, 1);
+
+  /* shell metrics */
+  --sidebar-w: 248px;
+  --topbar-h: 60px;
+  --radius: 14px;
+  --radius-sm: 10px;
+}
+
+[data-theme="dark"] {
+  --bg: #0d0d0d;
+  --bg-deep: #161616;
+  --bg-card: #161616;
+  --bg-card-2: #1c1c1c;
+
+  --ink: #f5f5f3;
+  --ink-soft: rgba(245, 245, 243, 0.6);
+  --ink-faint: rgba(245, 245, 243, 0.6);
+  --ink-trace: rgba(245, 245, 243, 0.08);
+
+  --accent: #f5f5f3;
+  --accent-soft: rgba(245, 245, 243, 0.06);
+
+  --ok: #38b48a;
+  --warn: #d6a352;
+  --alert: #e0635f;
+
+  --line: rgba(245, 245, 243, 0.12);
+  --line-strong: rgba(245, 245, 243, 0.22);
+  --dot-ink: rgba(245, 245, 243, 0.55);
+}

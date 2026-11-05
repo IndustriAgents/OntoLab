@@ -1,0 +1,249 @@
+.alignment-scope {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px 22px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  font-size: 13px;
+}
+.alignment-scope > span:not([aria-hidden]) {
+  flex: 1;
+  min-width: 140px;
+}
+.alignment-scope strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--ink-soft);
+  font-size: 11px;
+}
+.alignment-scope small {
+  width: 100%;
+  color: var(--ink-soft);
+}
+.alignment-setup {
+  display: grid;
+  gap: 20px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.alignment-setup:disabled {
+  opacity: 0.7;
+}
+.alignment-plan,
+.alignment-coverage {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+}
+.alignment-plan > .btn {
+  justify-self: start;
+}
+.alignment-filters {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(180px, 2fr);
+  gap: 16px;
+}
+.alignment-filters .field {
+  margin: 0;
+  min-width: 0;
+}
+.alignment-bulk {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px;
+  background: var(--accent-soft);
+  border-radius: 8px;
+  font-size: 12px;
+}
+.alignment-review-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.8fr);
+  gap: 20px;
+  align-items: start;
+}
+.alignment-queue {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bg);
+}
+.alignment-queue-heading {
+  padding: 14px;
+  font-size: 11px;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--line);
+}
+.alignment-queue ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 700px;
+  overflow-y: auto;
+}
+.alignment-queue li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.alignment-queue li:last-child {
+  border-bottom: 0;
+}
+.alignment-queue li.is-selected {
+  background: var(--accent-soft);
+  box-shadow: inset 3px 0 var(--ink);
+}
+.alignment-queue li > input {
+  flex: 0 0 auto;
+  margin-top: 3px;
+}
+.alignment-queue li > button {
+  display: grid;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.alignment-queue li span,
+.alignment-queue li small {
+  color: var(--ink-soft);
+  font-size: 11px;
+}
+.alignment-inspector {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+.alignment-term-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.alignment-term {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  background: var(--bg);
+}
+.alignment-term h3 {
+  margin: 10px 0;
+}
+.alignment-term p {
+  font-size: 12px;
+  margin: 12px 0;
+}
+.alignment-term small {
+  color: var(--ink-soft);
+  font-size: 11px;
+}
+.alignment-term .workflow-iri {
+  font-size: 10px;
+}
+.alignment-term dl {
+  display: grid;
+  gap: 12px;
+  font-size: 11px;
+  margin-top: 16px;
+}
+.alignment-term dt {
+  color: var(--ink-soft);
+  margin-bottom: 5px;
+}
+.alignment-term dd {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 10px;
+}
+.alignment-term dd span {
+  padding: 3px 6px;
+  background: var(--bg-deep);
+  border-radius: 4px;
+}
+.alignment-relation {
+  display: grid;
+  gap: 14px;
+}
+.alignment-relation p,
+.alignment-relation .row-actions {
+  font-size: 12px;
+}
+.alignment-inspector .row-actions {
+  flex-wrap: wrap;
+}
+.alignment-inspector .ttl-preview {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 11px;
+}
+.alignment-term-pair .field,
+.alignment-term-pair select {
+  min-width: 0;
+  width: 100%;
+}
+.alignment-coverage-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 340px;
+  overflow: auto;
+}
+.alignment-coverage-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+}
+.alignment-coverage-list small {
+  display: block;
+  color: var(--ink-soft);
+  font-size: 10px;
+  margin-top: 5px;
+}
+.alignment-history {
+  padding-left: 20px;
+  font-size: 12px;
+  line-height: 1.8;
+}
+@media (max-width: 1000px) {
+  .alignment-review-grid {
+    grid-template-columns: minmax(190px, 0.8fr) minmax(0, 1.5fr);
+  }
+  .alignment-term-pair {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 700px) {
+  .alignment-review-grid,
+  .alignment-filters {
+    grid-template-columns: 1fr;
+  }
+  .alignment-queue ul {
+    max-height: 300px;
+  }
+  .alignment-plan,
+  .alignment-coverage {
+    padding: 14px;
+  }
+  .alignment-scope {
+    align-items: flex-start;
+  }
+}

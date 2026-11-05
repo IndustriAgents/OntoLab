@@ -1,0 +1,7 @@
+[
+  { "name": "direct", "options": { "cqGuided": false, "inductionAxioms": false, "repair": false } },
+  { "name": "cq-guided", "options": { "cqGuided": true, "inductionAxioms": false, "repair": false } },
+  { "name": "cq-guided+axioms", "options": { "cqGuided": true, "inductionAxioms": true, "repair": false } },
+  { "name": "cq-guided+axioms+repair", "options": { "cqGuided": true, "inductionAxioms": true, "repair": true } },
+  { "name": "full+strict-grounding", "options": { "cqGuided": true, "inductionAxioms": true, "repair": true, "strictGrounding": true } }
+]

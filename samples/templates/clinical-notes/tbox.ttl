@@ -1,0 +1,291 @@
+@prefix :     <https://w3id.org/ontolab/templates/clinical-notes#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix fhir: <http://hl7.org/fhir/> .
+
+<https://w3id.org/ontolab/templates/clinical-notes> a owl:Ontology ;
+    rdfs:label "OntoLab Clinical Notes Template" ;
+    rdfs:comment "Compact starter schema, aligned in spirit with HL7 FHIR, for extracting pseudonymised patients, encounters, conditions, medications with dosage, procedures, observations, allergies and practitioner roles from clinical documentation." .
+
+#################  CLASSES  #################
+
+:ClinicalDocument a owl:Class ;
+    rdfs:label "Clinical Document" ;
+    rdfs:comment "A written clinical note or report, such as a discharge summary, progress note or referral letter, that documents an encounter." ;
+    rdfs:seeAlso fhir:Composition .
+
+:Patient a owl:Class ;
+    owl:disjointWith :Practitioner ;
+    rdfs:label "Patient" ;
+    rdfs:comment "A person receiving care, identified only by a pseudonymous identifier and never by name or direct identifiers." ;
+    rdfs:seeAlso fhir:Patient .
+
+:Practitioner a owl:Class ;
+    rdfs:label "Practitioner" ;
+    rdfs:comment "A health professional, such as a physician, nurse or pharmacist, who is involved in providing care." ;
+    rdfs:seeAlso fhir:Practitioner .
+
+:PractitionerRole a owl:Class ;
+    rdfs:label "Practitioner Role" ;
+    rdfs:comment "The specific role or specialty a practitioner performs at an organization, such as attending cardiologist at a given hospital." ;
+    rdfs:seeAlso fhir:PractitionerRole .
+
+:HealthcareOrganization a owl:Class ;
+    rdfs:label "Healthcare Organization" ;
+    rdfs:comment "A hospital, clinic, practice or department that provides health services." ;
+    rdfs:seeAlso fhir:Organization .
+
+:Encounter a owl:Class ;
+    rdfs:label "Encounter" ;
+    rdfs:comment "An interaction between a patient and care providers, such as a visit, admission or emergency attendance, during which care is delivered." ;
+    rdfs:seeAlso fhir:Encounter .
+
+:InpatientEncounter a owl:Class ;
+    rdfs:subClassOf :Encounter ;
+    owl:disjointWith :OutpatientEncounter , :EmergencyEncounter ;
+    rdfs:label "Inpatient Encounter" ;
+    rdfs:comment "An encounter in which the patient is admitted to a hospital bed, usually overnight or longer." .
+
+:OutpatientEncounter a owl:Class ;
+    rdfs:subClassOf :Encounter ;
+    owl:disjointWith :EmergencyEncounter ;
+    rdfs:label "Outpatient Encounter" ;
+    rdfs:comment "An ambulatory visit, such as a clinic or office consultation, without hospital admission." .
+
+:EmergencyEncounter a owl:Class ;
+    rdfs:subClassOf :Encounter ;
+    rdfs:label "Emergency Encounter" ;
+    rdfs:comment "An unplanned encounter in an emergency department for acute illness or injury." .
+
+:ClinicalStatement a owl:Class ;
+    rdfs:label "Clinical Statement" ;
+    rdfs:comment "Any recorded clinical fact about a patient, such as a diagnosis, allergy, medication, procedure or measurement." .
+
+:Condition a owl:Class ;
+    rdfs:subClassOf :ClinicalStatement ;
+    owl:disjointWith :AllergyIntolerance , :Intervention , :Observation ;
+    rdfs:label "Condition" ;
+    rdfs:comment "A diagnosis, problem or health concern that a patient has or had, typically coded in ICD-10 or SNOMED CT." ;
+    rdfs:seeAlso fhir:Condition .
+
+:AllergyIntolerance a owl:Class ;
+    rdfs:subClassOf :ClinicalStatement ;
+    owl:disjointWith :Intervention , :Observation ;
+    rdfs:label "Allergy or Intolerance" ;
+    rdfs:comment "A recorded propensity of the patient to an adverse reaction to a substance such as a drug, food or latex." ;
+    rdfs:seeAlso fhir:AllergyIntolerance .
+
+:Intervention a owl:Class ;
+    rdfs:subClassOf :ClinicalStatement ;
+    owl:disjointWith :Observation ;
+    rdfs:label "Intervention" ;
+    rdfs:comment "A therapeutic or diagnostic action taken for a patient, namely medication use or a procedure." .
+
+:MedicationStatement a owl:Class ;
+    rdfs:subClassOf :Intervention ;
+    owl:disjointWith :Procedure ;
+    rdfs:label "Medication Statement" ;
+    rdfs:comment "A record that the patient is taking, has taken or is prescribed a medication, including how it is dosed." ;
+    rdfs:seeAlso fhir:MedicationStatement .
+
+:Procedure a owl:Class ;
+    rdfs:subClassOf :Intervention ;
+    rdfs:label "Procedure" ;
+    rdfs:comment "An action performed on or for the patient, such as surgery, an endoscopy or a counselling session." ;
+    rdfs:seeAlso fhir:Procedure .
+
+:Observation a owl:Class ;
+    rdfs:subClassOf :ClinicalStatement ;
+    rdfs:label "Observation" ;
+    rdfs:comment "A measurement or finding about the patient with a value, such as a vital sign or laboratory result." ;
+    rdfs:seeAlso fhir:Observation .
+
+:LabResult a owl:Class ;
+    rdfs:subClassOf :Observation ;
+    owl:disjointWith :VitalSign ;
+    rdfs:label "Laboratory Result" ;
+    rdfs:comment "An observation produced by analysing a specimen in a laboratory, such as haemoglobin or creatinine, typically coded in LOINC." .
+
+:VitalSign a owl:Class ;
+    rdfs:subClassOf :Observation ;
+    rdfs:label "Vital Sign" ;
+    rdfs:comment "A bedside physiological measurement such as blood pressure, heart rate, temperature, respiratory rate or oxygen saturation." .
+
+:Medication a owl:Class ;
+    rdfs:label "Medication" ;
+    rdfs:comment "A drug product or active ingredient, such as metformin 500 mg tablets, typically coded in RxNorm or ATC." ;
+    rdfs:seeAlso fhir:Medication .
+
+:Dosage a owl:Class ;
+    rdfs:label "Dosage" ;
+    rdfs:comment "How a medication is to be taken: dose amount and unit, frequency and route of administration." ;
+    rdfs:seeAlso fhir:Dosage .
+
+#################  OBJECT PROPERTIES  #################
+
+:aboutPatient a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "about patient" ;
+    rdfs:comment "Links a clinical statement to the patient it describes." ;
+    rdfs:domain :ClinicalStatement ;
+    rdfs:range :Patient ;
+    rdfs:seeAlso fhir:subject .
+
+:recordedDuring a owl:ObjectProperty ;
+    rdfs:label "recorded during" ;
+    rdfs:comment "Links a clinical statement to the encounter in which it was recorded." ;
+    rdfs:domain :ClinicalStatement ;
+    rdfs:range :Encounter .
+
+:encounterFor a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "encounter for" ;
+    rdfs:comment "Links an encounter to the patient who received care in it." ;
+    rdfs:domain :Encounter ;
+    rdfs:range :Patient .
+
+:hasParticipant a owl:ObjectProperty ;
+    rdfs:label "has participant" ;
+    rdfs:comment "Links an encounter to a practitioner role that took part in it." ;
+    rdfs:domain :Encounter ;
+    rdfs:range :PractitionerRole .
+
+:rolePlayedBy a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "role played by" ;
+    rdfs:comment "Links a practitioner role to the practitioner who holds it." ;
+    rdfs:domain :PractitionerRole ;
+    rdfs:range :Practitioner .
+
+:roleAtOrganization a owl:ObjectProperty ;
+    rdfs:label "role at organization" ;
+    rdfs:comment "Links a practitioner role to the healthcare organization where it is performed." ;
+    rdfs:domain :PractitionerRole ;
+    rdfs:range :HealthcareOrganization .
+
+:concernsMedication a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "concerns medication" ;
+    rdfs:comment "Links a medication statement to the medication taken or prescribed." ;
+    rdfs:domain :MedicationStatement ;
+    rdfs:range :Medication .
+
+:hasDosage a owl:ObjectProperty ;
+    rdfs:label "has dosage" ;
+    rdfs:comment "Links a medication statement to the dosage instruction for it." ;
+    rdfs:domain :MedicationStatement ;
+    rdfs:range :Dosage .
+
+:hasReason a owl:ObjectProperty ;
+    rdfs:label "has reason" ;
+    rdfs:comment "Links a medication or procedure to the condition it was given or performed for." ;
+    rdfs:domain :Intervention ;
+    rdfs:range :Condition .
+
+:performedBy a owl:ObjectProperty ;
+    rdfs:label "performed by" ;
+    rdfs:comment "Links a procedure to the practitioner role that carried it out." ;
+    rdfs:domain :Procedure ;
+    rdfs:range :PractitionerRole .
+
+:recordedBy a owl:ObjectProperty ;
+    rdfs:label "recorded by" ;
+    rdfs:comment "Links a clinical statement to the practitioner role that asserted or documented it." ;
+    rdfs:domain :ClinicalStatement ;
+    rdfs:range :PractitionerRole .
+
+:documentsEncounter a owl:ObjectProperty ;
+    rdfs:label "documents encounter" ;
+    rdfs:comment "Links a clinical document to the encounter it reports on." ;
+    rdfs:domain :ClinicalDocument ;
+    rdfs:range :Encounter .
+
+:authoredBy a owl:ObjectProperty ;
+    rdfs:label "authored by" ;
+    rdfs:comment "Links a clinical document to the practitioner role that wrote or signed it." ;
+    rdfs:domain :ClinicalDocument ;
+    rdfs:range :PractitionerRole .
+
+#################  DATA PROPERTIES  #################
+
+:patientPseudonym a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "patient pseudonym" ;
+    rdfs:comment "A pseudonymous identifier for a patient that cannot be linked to their identity without a separately held key." ;
+    rdfs:domain :Patient ;
+    rdfs:range xsd:string .
+
+:birthYear a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "birth year" ;
+    rdfs:comment "The patient's year of birth, kept at year granularity to limit re-identification risk." ;
+    rdfs:domain :Patient ;
+    rdfs:range xsd:integer .
+
+:encounterStart a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "encounter start" ;
+    rdfs:comment "The date and time at which an encounter, visit or admission began." ;
+    rdfs:domain :Encounter ;
+    rdfs:range xsd:dateTime .
+
+:effectiveDateTime a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "effective date-time" ;
+    rdfs:comment "The clinically relevant time of a statement, such as when an observation was taken or a procedure performed." ;
+    rdfs:domain :ClinicalStatement ;
+    rdfs:range xsd:dateTime .
+
+:clinicalCode a owl:DatatypeProperty ;
+    rdfs:label "clinical code" ;
+    rdfs:comment "A terminology code for a clinical statement, prefixed by its system, such as SNOMED:44054006, ICD10:E11.9 or LOINC:4548-4." ;
+    rdfs:domain :ClinicalStatement ;
+    rdfs:range xsd:string .
+
+:clinicalStatus a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "clinical status" ;
+    rdfs:comment "Whether a condition is active, recurring, in remission or resolved." ;
+    rdfs:domain :Condition ;
+    rdfs:range xsd:string .
+
+:onsetDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "onset date" ;
+    rdfs:comment "The date on which a condition began or was first diagnosed." ;
+    rdfs:domain :Condition ;
+    rdfs:range xsd:date .
+
+:criticality a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "criticality" ;
+    rdfs:comment "Potential severity of a future reaction to an allergy or intolerance: low, high or unable-to-assess." ;
+    rdfs:domain :AllergyIntolerance ;
+    rdfs:range xsd:string .
+
+:doseQuantity a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "dose quantity" ;
+    rdfs:comment "Numeric amount of medication given per administration under a dosage." ;
+    rdfs:domain :Dosage ;
+    rdfs:range xsd:decimal .
+
+:doseUnit a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "dose unit" ;
+    rdfs:comment "Unit of a dose quantity, such as mg, mL or tablet, preferably in UCUM." ;
+    rdfs:domain :Dosage ;
+    rdfs:range xsd:string .
+
+:dosageFrequency a owl:DatatypeProperty ;
+    rdfs:label "dosage frequency" ;
+    rdfs:comment "How often a dose is given, as written, such as twice daily or every 8 hours as needed." ;
+    rdfs:domain :Dosage ;
+    rdfs:range xsd:string .
+
+:observationValue a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "observation value" ;
+    rdfs:comment "Numeric result of an observation, such as 7.2 for HbA1c." ;
+    rdfs:domain :Observation ;
+    rdfs:range xsd:decimal .
+
+:observationUnit a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "observation unit" ;
+    rdfs:comment "Unit of an observation value, such as %, mmol/L or mm[Hg], preferably in UCUM." ;
+    rdfs:domain :Observation ;
+    rdfs:range xsd:string .
+
+:specialty a owl:DatatypeProperty ;
+    rdfs:label "specialty" ;
+    rdfs:comment "The clinical specialty of a practitioner role, such as cardiology or general practice." ;
+    rdfs:domain :PractitionerRole ;
+    rdfs:range xsd:string .

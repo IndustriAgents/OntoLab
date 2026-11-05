@@ -1,0 +1,185 @@
+<mxfile host="app.diagrams.net" agent="OntoLab architecture diagram" version="24.0.0">
+  <diagram id="ontolab-arch" name="OntoLab Architecture">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===================== TITLE ===================== -->
+        <mxCell id="title" value="OntoLab Architecture &#8212; Document &#8594; Ontology" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#1f2933;" vertex="1" parent="1">
+          <mxGeometry x="60" y="20" width="640" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== LEGEND ===================== -->
+        <mxCell id="legend" value="Legend" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#ffffff;strokeColor=#9e9e9e;fontStyle=1;fontSize=11;align=left;spacingLeft=8;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="20" width="414" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-input" value="Input / Artifact" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1192" y="46" width="96" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-proc" value="Process / LLM" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1294" y="46" width="96" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-verif" value="Verification" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1396" y="46" width="92" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-infra" value="Infrastructure" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1494" y="46" width="92" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== FRONTEND CONTAINER ===================== -->
+        <mxCell id="spa" value="OntoLab Frontend &#8212; React 18 + Vite 6 SPA (App.tsx + Sidebar.tsx)" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#ffffff;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;align=left;spacingLeft=10;spacingTop=6;dashed=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="80" width="1534" height="470" as="geometry" />
+        </mxCell>
+
+        <!-- ===== LANE 1: T-Box Generation ===== -->
+        <mxCell id="lane1" value="LANE 1 &#8212; T-Box Generation (ModularOntologyStep, 3 steps)" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#eef3fb;strokeColor=#6c8ebf;fontStyle=2;fontSize=12;align=left;spacingLeft=10;spacingTop=4;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="116" width="1106" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="t1" value="1. Base T-Box&#10;load / inspect&#10;.ttl modules" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="100" y="150" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="t2" value="2. Author change&#10;Upload / AI&#10;generate / Edit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="320" y="150" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="t3" value="3. Validate &amp; Commit&#10;vs base&#10;(structural + regression diff)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="540" y="150" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="t4" value="Merged T-Box&#10;(.ttl)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="790" y="152" width="130" height="66" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e-t1t2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="t1" target="t2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-t2t3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="t2" target="t3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-t3t4" value="commit" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;" edge="1" parent="1" source="t3" target="t4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== LANE 2: A-Box Generation ===== -->
+        <mxCell id="lane2" value="LANE 2 &#8212; A-Box Generation (TBoxStep &#8594; DocsStep &#8594; ExtractStep &#8594; ReviewStep, 4 steps)" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#eef3fb;strokeColor=#6c8ebf;fontStyle=2;fontSize=12;align=left;spacingLeft=10;spacingTop=4;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="306" width="1494" height="224" as="geometry" />
+        </mxCell>
+        <mxCell id="a-docs" value="Design docs&#10;PDF / DOCX / TXT&#10;(+ PDF vision)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="100" y="384" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a-tbox" value="T-Box input&#10;(.ttl modules)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="100" y="340" width="140" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="a-extract" value="Extract / Refine&#10;automatic or&#10;interactive Q&amp;A (QaStep)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="320" y="370" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a-review" value="Review&#10;Graph (Cytoscape) &#183;&#10;Edit (AI / manual) &#183; Chat" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="560" y="370" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a-verify" value="Verification&#10;Hand-coded validator &#183;&#10;SHACL &#183; SPARQL CQ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="810" y="370" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a-out" value="A-Box&#10;(.ttl export)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="372" width="130" height="66" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e-docsex" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="a-docs" target="a-extract">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-tboxex" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="a-tbox" target="a-extract">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-exrev" value="individuals" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;" edge="1" parent="1" source="a-extract" target="a-review">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-revver" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="a-review" target="a-verify">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-verout" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="a-verify" target="a-out">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Cross-pipeline arrow: Merged T-Box feeds A-Box ===== -->
+        <mxCell id="e-feed" value="Merged T-Box feeds A-Box extraction" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;strokeColor=#82b366;fontColor=#5a7d3a;fontSize=11;fontStyle=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t4" target="a-tbox">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="855" y="262" />
+              <mxPoint x="60" y="262" />
+              <mxPoint x="60" y="358" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ===== LLM branch arrows from steps to dispatch ===== -->
+        <mxCell id="e-t2llm" value="AI generate / suggest&#10;(/generate-tbox, /suggest-tbox)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;startArrow=none;dashed=1;strokeColor=#6c8ebf;fontColor=#3b5a8c;fontSize=10;" edge="1" parent="1" source="t2" target="llm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-exllm" value="extract / refine / edit&#10;(/extract, /refine, /edit)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;startArrow=none;dashed=1;strokeColor=#6c8ebf;fontColor=#3b5a8c;fontSize=10;" edge="1" parent="1" source="a-extract" target="llm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-vereng" value="SHACL / SPARQL&#10;(/cq via Oxigraph)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;startArrow=none;dashed=1;strokeColor=#b85450;fontColor=#8a3b38;fontSize=10;" edge="1" parent="1" source="a-verify" target="engine">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== BACKEND LAYER ===================== -->
+        <mxCell id="backend" value="Backend &#8212; Node node:http server via tsx (server/index.ts) &#183; serves built dist/&#10;Routes: /api/health &#183; /providers &#183; /extract &#183; /refine &#183; /edit &#183; /generate-tbox &#183; /suggest-tbox &#183; /cq &#183; /chat" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=middle;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=12;align=center;" vertex="1" parent="1">
+          <mxGeometry x="60" y="600" width="1534" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="e-spaback" value="HTTP /api/*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;startArrow=classic;fontSize=11;fontStyle=1;" edge="1" parent="1" source="spa" target="backend">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== LLM DISPATCH ===================== -->
+        <mxCell id="llm" value="LLM Dispatch (server/extract.ts, providers.ts)&#10;dispatch() / runProvider() &#8212; provider-agnostic structured output" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;align=center;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="60" y="710" width="740" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="p-claude" value="Claude&#10;(Anthropic SDK,&#10;forced tool_use)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="80" y="766" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="p-openai" value="OpenAI&#10;(function calling)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="222" y="766" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="p-deepseek" value="DeepSeek&#10;(OpenAI-compatible)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="354" y="766" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="p-gemini" value="Gemini&#10;(function&#10;declarations)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="496" y="766" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="p-ollama" value="Ollama&#10;(local, JSON-schema&#10;format)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="628" y="766" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="llm-ops" value="Ops: extractABox &#183; refineABox &#183; editABox &#183; generateTBox &#183; suggestTBox &#183; competencyQuestion" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#3b5a8c;" vertex="1" parent="1">
+          <mxGeometry x="80" y="844" width="678" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== ONTOLOGY / VERIFICATION ENGINE ===================== -->
+        <mxCell id="engine" value="Ontology / Verification Engine (src/lib/ontology/)" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=12;align=center;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="840" y="710" width="754" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="eng-n3" value="N3.js&#10;Turtle parse / serialize&#10;tboxParser, aboxSerializer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="860" y="766" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="eng-shacl" value="rdf-validate-shacl&#10;shaclShapes +&#10;shaclValidator" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fde7e6;strokeColor=#b85450;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1042" y="766" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="eng-oxi" value="Oxigraph (WASM)&#10;SPARQL engine&#10;competency questions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fde7e6;strokeColor=#b85450;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1214" y="766" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="eng-cyto" value="Cytoscape&#10;graph viz&#10;aboxToGraph" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1386" y="766" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="eng-val" value="Validators: aboxValidator (hand-coded type/domain/range) &#183; validate.ts (T-Box structural + regression diff)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="860" y="844" width="714" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Backend down to dispatch + engine ===== -->
+        <mxCell id="e-backllm" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="backend" target="llm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-backeng" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="backend" target="engine">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,60 @@
+# Inspection Station IS-310 Operating Manual
+
+Corvex Automation AG, order no. CX-610310, edition 03/2026
+
+## 1 Overview
+
+The Inspection Station IS-310 identifies the material and colour of each workpiece and passes it on to the Sorting Station SR-400. It receives its workpieces from the Corvex FS200 feeder upstream. Like the other stations of the line, it is controlled by line controller LC1.
+
+The nominal cycle time of the inspection station is 6.0 s per workpiece, which makes it the slowest station of the line.
+
+## 2 Components
+
+- Lift cylinder 2A1: a double-acting pneumatic cylinder (Pneumatica Nordic, part number PN-DSN-20-100) that raises the workpiece from the transfer position to the measuring position.
+- Solenoid valve 2Y1: a 5/2-way single-solenoid valve from Pneumatica Nordic, part number PN-VUVG-52, that controls the lift cylinder.
+- Inductive sensor B2: an inductive proximity sensor (Lumisense Oy, part number LS-IND-M12) that switches only when a metallic workpiece is in the measuring position. It therefore detects the silver aluminium workpieces only.
+- Optical sensor B3: a diffuse optical sensor (Lumisense Oy, part number LS-DIF-30) that detects workpieces with a reflective surface.
+
+The inductive sensor B2 has a switching distance of 4 mm and must be mounted so that the workpiece passes within that distance.
+
+The optical sensor B3 responds to the red plastic and silver aluminium workpieces. It does not detect the black plastic workpieces, because their matt surface does not reflect enough light.
+
+Its switching distance is set to 12 mm with the potentiometer on the sensor housing.
+
+## 3 I/O list
+
+| Address | Tag | Type           | Description                          |
+|---------|-----|----------------|--------------------------------------|
+| I1.0    | B2  | Digital input  | Metallic workpiece detected          |
+| I1.1    | B3  | Digital input  | Reflective workpiece detected        |
+| Q1.0    | 2Y1 | Digital output | Lift cylinder up                     |
+
+All three signals are wired to line controller LC1.
+
+## 4 Material identification
+
+The controller combines the two sensor signals to classify each workpiece:
+
+| Workpiece               | B2 (I1.0) | B3 (I1.1) | Classification |
+|-------------------------|-----------|-----------|----------------|
+| Silver aluminium        | 1         | 1         | metal          |
+| Red plastic             | 0         | 1         | red            |
+| Black plastic           | 0         | 0         | black          |
+
+The classification result is passed to the sorting station program as an internal flag and decides which slide the workpiece is sent to.
+
+## 5 Sequence of operation
+
+Step 1 - Lift workpiece: when a workpiece arrives in the transfer position, the controller sets output Q1.0. Valve 2Y1 switches and the lift cylinder 2A1 raises the workpiece to the measuring position.
+
+Step 2 - Identify material: after a settling time of 0.3 s the controller reads sensors B2 and B3 and stores the classification. Output Q1.0 is then reset, and the lift cylinder lowers the workpiece onto the outgoing chute to the sorting station.
+
+## 6 Safety instructions
+
+- Switch off compressed air before adjusting sensor positions.
+- Never place hands under the lift cylinder while the station is in automatic mode.
+- The emergency stop chain of the line is monitored by the feeder station; pressing any emergency stop button stops all three stations.
+
+## 7 Maintenance
+
+Clean the lens of the optical sensor B3 weekly with a dry cloth. Dust on the lens causes black workpieces to be classified correctly but red workpieces to be misclassified as black. Check the mounting of the inductive sensor B2 monthly.

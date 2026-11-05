@@ -1,0 +1,511 @@
+/* Settings has a focused layout; the workspace navigation stays in the workspace. */
+.settings-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--hf-bg);
+}
+.settings-topbar {
+  display: flex;
+  flex: none;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 64px;
+  padding: 0 32px;
+}
+.settings-close {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  color: var(--hf-muted);
+  font-size: 12px;
+}
+.settings-close:hover {
+  background: var(--hf-hover);
+  color: var(--hf-text);
+}
+.settings-close svg {
+  width: 16px;
+  height: 16px;
+}
+.settings-main {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 28px 28px 56px;
+}
+.settings-frame {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.settings-title {
+  margin-bottom: 25px;
+  color: var(--hf-muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+.settings-tabs {
+  display: flex;
+  gap: 26px;
+  border-bottom: 1px solid var(--hf-border);
+}
+.settings-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 2px 14px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  color: var(--hf-muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.settings-tab svg {
+  width: 15px;
+  height: 15px;
+}
+.settings-tab:hover {
+  color: var(--hf-text);
+}
+.settings-tab.is-active {
+  border-bottom-color: var(--hf-accent-strong);
+  color: var(--hf-text);
+  font-weight: 600;
+}
+.settings-tab.is-active svg {
+  color: var(--hf-accent-text);
+}
+.settings-page.page {
+  padding: 34px 0 0;
+  overflow: visible;
+}
+.settings-content {
+  max-width: none;
+}
+.settings-content .page-head {
+  margin-bottom: 26px;
+}
+.settings-content .page-head h1 {
+  font-size: 32px;
+}
+.settings-content .settings-card {
+  padding: 26px;
+  margin-bottom: 18px;
+}
+.settings-section-head {
+  margin-bottom: 24px;
+}
+.settings-section-head h2,
+.settings-profile h2 {
+  margin: 0 0 6px;
+  font-family: var(--hf-font-sans);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.settings-section-head p,
+.settings-profile p,
+.settings-row p {
+  margin: 0;
+  color: var(--hf-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.settings-profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 2px 0 26px;
+}
+.settings-profile-text {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.settings-profile .settings-avatar {
+  width: 52px;
+  height: 52px;
+  font-size: 17px;
+}
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 22px;
+  padding: 22px 0;
+  border-top: 1px solid var(--hf-border);
+}
+.settings-row:last-child {
+  padding-bottom: 0;
+}
+.settings-row h3 {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 5px;
+}
+.settings-row .btn {
+  flex: none;
+}
+.settings-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.settings-note {
+  padding: 14px 16px;
+  border: 1px solid var(--hf-border);
+  border-radius: 8px;
+  background: var(--hf-sunken);
+  color: var(--hf-muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.theme-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.theme-option {
+  padding: 6px;
+  border: 1px solid var(--hf-border-strong);
+  border-radius: 10px;
+  background: var(--hf-raised);
+  color: var(--hf-text);
+  text-align: left;
+  cursor: pointer;
+}
+.theme-option:hover {
+  border-color: var(--hf-muted);
+}
+.theme-option.is-selected {
+  border-color: var(--hf-accent-strong);
+  box-shadow: 0 0 0 1px var(--hf-accent-strong);
+}
+.theme-preview {
+  display: flex;
+  height: 138px;
+  overflow: hidden;
+  border: 1px solid;
+  border-radius: 5px;
+}
+.theme-preview-light {
+  background: #f8f7f3;
+  border-color: #e4e2da;
+  --preview-sidebar: #f1f0ea;
+  --preview-line: #d4d2c7;
+  --preview-card: #fdfcf9;
+}
+.theme-preview-dark {
+  background: #161713;
+  border-color: #2e3029;
+  --preview-sidebar: #1a1b17;
+  --preview-line: #3d4036;
+  --preview-card: #1e1f1a;
+}
+.theme-preview-sidebar {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+  width: 26%;
+  padding: 20px 10px;
+  border-right: 1px solid var(--preview-line);
+  background: var(--preview-sidebar);
+}
+.theme-preview i {
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--preview-line);
+}
+.theme-preview-sidebar i:first-child {
+  margin-bottom: 8px;
+  width: 60%;
+}
+.theme-preview-content {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+  flex: 1;
+  padding: 24px 18px;
+}
+.theme-preview-content i:first-child {
+  width: 50%;
+  height: 6px;
+}
+.theme-preview-content i:nth-child(2) {
+  width: 75%;
+}
+.theme-preview-content > span {
+  height: 40px;
+  margin-top: 8px;
+  border: 1px solid var(--preview-line);
+  border-radius: 4px;
+  background: var(--preview-card);
+}
+.theme-option-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 8px 7px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.theme-option-label svg {
+  width: 16px;
+  height: 16px;
+}
+.theme-selected-icon {
+  margin-left: auto;
+  color: var(--hf-accent-text);
+}
+.settings-provider-list {
+  margin-bottom: 16px;
+}
+.settings-provider-groups {
+  display: grid;
+  gap: 24px;
+}
+.settings-provider-group + .settings-provider-group {
+  padding-top: 22px;
+  border-top: 1px solid var(--hf-border);
+  margin-top: 0;
+}
+.settings-provider-group-head {
+  margin-bottom: 12px;
+}
+.settings-provider-group-head h3 {
+  margin: 0 0 4px;
+  font-family: var(--hf-font-sans);
+  font-size: 13px;
+  font-weight: 600;
+}
+.settings-provider-group-head p {
+  color: var(--hf-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.settings-provider-list li {
+  justify-content: space-between;
+  padding: 10px 0;
+}
+.settings-provider-name {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.settings-provider-name strong {
+  font-size: 13px;
+  font-weight: 500;
+}
+.settings-provider-name small {
+  font-size: 11px;
+  color: var(--hf-muted);
+}
+.settings-storage-summary {
+  display: grid;
+  gap: 13px;
+  padding: 0 0 24px;
+}
+.settings-storage-summary p {
+  margin: 0;
+}
+.settings-storage-total {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--hf-muted);
+  font-size: 13px;
+}
+.settings-storage-total strong {
+  color: var(--hf-text);
+  font-size: 20px;
+  font-weight: 600;
+}
+.settings-limits {
+  margin: 0;
+}
+.settings-limits > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 0;
+  border-top: 1px solid var(--hf-border);
+  font-size: 13px;
+}
+.settings-limits dt {
+  color: var(--hf-muted);
+}
+.settings-limits dd {
+  margin: 0;
+  font-weight: 500;
+}
+/* Shared profile button and account popover. */
+.account-control {
+  position: relative;
+}
+.account-trigger {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  min-height: 48px;
+}
+.account-trigger:hover,
+.account-trigger.is-open {
+  background: var(--hf-hover);
+}
+.account-trigger .ws-chevron {
+  margin-left: auto;
+}
+.account-popover {
+  position: absolute;
+  z-index: 60;
+  bottom: calc(100% + 4px);
+  left: 0;
+  width: 270px;
+  max-width: calc(100vw - 28px);
+  padding: 5px;
+  border: 1px solid var(--hf-border-strong);
+  border-radius: 12px;
+  background: var(--hf-raised);
+  box-shadow: var(--hf-shadow-3);
+  color: var(--hf-text);
+}
+.account-topbar {
+  flex: none;
+}
+.account-topbar .account-trigger {
+  width: 40px;
+  min-height: 40px;
+  justify-content: center;
+  padding: 4px;
+}
+.account-topbar .account-text,
+.account-topbar .ws-chevron {
+  display: none;
+}
+.account-topbar .account-popover {
+  top: calc(100% + 4px);
+  right: 0;
+  bottom: auto;
+  left: auto;
+}
+.account-menu-identity {
+  display: grid;
+  gap: 4px;
+  margin: 0 5px 5px;
+  padding: 12px 8px 14px;
+  border-bottom: 1px solid var(--hf-border);
+  overflow-wrap: anywhere;
+}
+.account-menu-identity strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+.account-menu-identity span {
+  font-size: 12px;
+  color: var(--hf-muted);
+}
+.account-menu-actions {
+  display: grid;
+  gap: 2px;
+}
+.account-menu-actions a,
+.account-menu-actions button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--hf-text-2);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+.account-menu-actions a:hover,
+.account-menu-actions button:hover {
+  background: var(--hf-hover);
+  color: var(--hf-text);
+}
+.account-menu-actions svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--hf-muted);
+}
+@media (max-width: 600px) {
+  .settings-topbar {
+    min-height: 58px;
+    padding: 0 18px;
+  }
+  .settings-main {
+    padding: 18px 20px 36px;
+  }
+  .settings-title {
+    margin-bottom: 20px;
+  }
+  .settings-tabs {
+    gap: 0;
+    justify-content: space-between;
+  }
+  .settings-tab {
+    gap: 5px;
+    padding: 0 2px 12px;
+    font-size: 12px;
+  }
+  .settings-tab svg {
+    display: none;
+  }
+  .settings-page.page {
+    padding-top: 28px;
+  }
+  .settings-content .settings-card {
+    padding: 20px;
+  }
+  .settings-profile {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .settings-profile > .badge {
+    margin-left: 64px;
+  }
+  .settings-profile-text {
+    flex-basis: calc(100% - 64px);
+  }
+  .settings-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .theme-options {
+    gap: 12px;
+  }
+  .theme-preview {
+    height: 110px;
+  }
+  .theme-preview-content {
+    padding: 20px 10px;
+  }
+  .theme-preview-sidebar {
+    padding: 20px 6px;
+  }
+}
+
+.settings-content .projects-embedded {
+  height: auto;
+  padding: 0;
+  overflow: visible;
+}
+.settings-content .projects-embedded > .page-wide {
+  padding: 0;
+  max-width: none;
+}

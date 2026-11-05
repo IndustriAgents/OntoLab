@@ -1,0 +1,299 @@
+@prefix :        <https://w3id.org/ontolab/templates/hr#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema:  <https://schema.org/> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+<https://w3id.org/ontolab/templates/hr> a owl:Ontology ;
+    rdfs:label "OntoLab HR Template" ;
+    rdfs:comment "Compact starter schema for extracting workers, positions, organizational units, employment contracts, compensation, leave, performance reviews, skills and work locations from people-operations documents." .
+
+#################  CLASSES  #################
+
+:Worker a owl:Class ;
+    rdfs:label "Worker" ;
+    rdfs:comment "A person who performs work for the organization, whether as an employee or an external contractor." ;
+    rdfs:seeAlso schema:Person , foaf:Person .
+
+:Employee a owl:Class ;
+    rdfs:subClassOf :Worker ;
+    owl:disjointWith :Contractor ;
+    rdfs:label "Employee" ;
+    rdfs:comment "A worker on the organization's payroll under an employment contract." .
+
+:Contractor a owl:Class ;
+    rdfs:subClassOf :Worker ;
+    rdfs:label "Contractor" ;
+    rdfs:comment "A worker engaged through a service or agency contract rather than employed directly." .
+
+:OrganizationalUnit a owl:Class ;
+    rdfs:label "Organizational Unit" ;
+    rdfs:comment "A named part of the organization's structure to which positions belong, such as a division, department or team." ;
+    rdfs:seeAlso schema:Organization .
+
+:Department a owl:Class ;
+    rdfs:subClassOf :OrganizationalUnit ;
+    owl:disjointWith :Team ;
+    rdfs:label "Department" ;
+    rdfs:comment "A formal, budget-holding organizational unit for a business function, such as Finance or Engineering." .
+
+:Team a owl:Class ;
+    rdfs:subClassOf :OrganizationalUnit ;
+    rdfs:label "Team" ;
+    rdfs:comment "A smaller working group within a department, led by a team lead or manager." .
+
+:Position a owl:Class ;
+    owl:disjointWith :Worker ;
+    rdfs:label "Position" ;
+    rdfs:comment "A defined job slot in the organization with a title, grade and responsibilities, which a worker may hold or which may be vacant." ;
+    rdfs:seeAlso schema:Occupation .
+
+:EmploymentContract a owl:Class ;
+    rdfs:label "Employment Contract" ;
+    rdfs:comment "The agreement that governs a worker's engagement, stating start date, hours, position and pay." .
+
+:PermanentContract a owl:Class ;
+    rdfs:subClassOf :EmploymentContract ;
+    owl:disjointWith :FixedTermContract ;
+    rdfs:label "Permanent Contract" ;
+    rdfs:comment "An employment contract with no predetermined end date." .
+
+:FixedTermContract a owl:Class ;
+    rdfs:subClassOf :EmploymentContract ;
+    rdfs:label "Fixed-Term Contract" ;
+    rdfs:comment "An employment contract that ends on a stated date or on completion of a defined task." .
+
+:CompensationComponent a owl:Class ;
+    rdfs:label "Compensation Component" ;
+    rdfs:comment "One element of a worker's pay package with an amount, currency and pay frequency." ;
+    rdfs:seeAlso schema:MonetaryAmount .
+
+:BaseSalary a owl:Class ;
+    rdfs:subClassOf :CompensationComponent ;
+    owl:disjointWith :Bonus , :Allowance ;
+    rdfs:label "Base Salary" ;
+    rdfs:comment "The fixed, guaranteed pay for a position, expressed as an annual, monthly or hourly rate." ;
+    rdfs:seeAlso schema:baseSalary .
+
+:Bonus a owl:Class ;
+    rdfs:subClassOf :CompensationComponent ;
+    owl:disjointWith :Allowance ;
+    rdfs:label "Bonus" ;
+    rdfs:comment "Variable pay awarded for performance, retention or signing, in addition to base salary." .
+
+:Allowance a owl:Class ;
+    rdfs:subClassOf :CompensationComponent ;
+    rdfs:label "Allowance" ;
+    rdfs:comment "A recurring payment for a specific purpose, such as car, housing, meal or remote-work allowance." .
+
+:LeavePeriod a owl:Class ;
+    rdfs:label "Leave Period" ;
+    rdfs:comment "A period during which a worker is absent from work, with start and end dates and an approval status." .
+
+:AnnualLeave a owl:Class ;
+    rdfs:subClassOf :LeavePeriod ;
+    owl:disjointWith :SickLeave , :ParentalLeave ;
+    rdfs:label "Annual Leave" ;
+    rdfs:comment "Paid vacation or holiday leave drawn from the worker's yearly entitlement." .
+
+:SickLeave a owl:Class ;
+    rdfs:subClassOf :LeavePeriod ;
+    owl:disjointWith :ParentalLeave ;
+    rdfs:label "Sick Leave" ;
+    rdfs:comment "Leave taken because the worker is ill or injured." .
+
+:ParentalLeave a owl:Class ;
+    rdfs:subClassOf :LeavePeriod ;
+    rdfs:label "Parental Leave" ;
+    rdfs:comment "Leave taken for the birth, adoption or care of a child, including maternity and paternity leave." .
+
+:PerformanceReview a owl:Class ;
+    rdfs:label "Performance Review" ;
+    rdfs:comment "A periodic, documented assessment of a worker's performance, with a date, reviewer and overall rating." .
+
+:Skill a owl:Class ;
+    rdfs:label "Skill" ;
+    rdfs:comment "A competency, qualification or certification, such as Python, project management or forklift licence, that a worker has or a position requires." ;
+    rdfs:seeAlso schema:DefinedTerm .
+
+:WorkLocation a owl:Class ;
+    rdfs:label "Work Location" ;
+    rdfs:comment "An office, site or remote arrangement where a worker is based, identified by city and country." ;
+    rdfs:seeAlso schema:Place .
+
+#################  OBJECT PROPERTIES  #################
+
+:holdsPosition a owl:ObjectProperty ;
+    rdfs:label "holds position" ;
+    rdfs:comment "Links a worker to a position they currently occupy." ;
+    rdfs:domain :Worker ;
+    rdfs:range :Position .
+
+:belongsToUnit a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "belongs to unit" ;
+    rdfs:comment "Links a position to the organizational unit it sits in." ;
+    rdfs:domain :Position ;
+    rdfs:range :OrganizationalUnit .
+
+:subUnitOf a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "sub-unit of" ;
+    rdfs:comment "Links an organizational unit to the parent unit it is part of." ;
+    rdfs:domain :OrganizationalUnit ;
+    rdfs:range :OrganizationalUnit ;
+    rdfs:seeAlso schema:parentOrganization .
+
+:reportsTo a owl:ObjectProperty ;
+    rdfs:label "reports to" ;
+    rdfs:comment "Links a worker to their line manager." ;
+    rdfs:domain :Worker ;
+    rdfs:range :Worker .
+
+:hasContract a owl:ObjectProperty ;
+    rdfs:label "has contract" ;
+    rdfs:comment "Links a worker to an employment contract they hold or held." ;
+    rdfs:domain :Worker ;
+    rdfs:range :EmploymentContract .
+
+:contractForPosition a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "contract for position" ;
+    rdfs:comment "Links an employment contract to the position it engages the worker for." ;
+    rdfs:domain :EmploymentContract ;
+    rdfs:range :Position .
+
+:providesCompensation a owl:ObjectProperty ;
+    rdfs:label "provides compensation" ;
+    rdfs:comment "Links an employment contract to a compensation component it grants." ;
+    rdfs:domain :EmploymentContract ;
+    rdfs:range :CompensationComponent .
+
+:takesLeave a owl:ObjectProperty ;
+    rdfs:label "takes leave" ;
+    rdfs:comment "Links a worker to a leave period they requested or took." ;
+    rdfs:domain :Worker ;
+    rdfs:range :LeavePeriod .
+
+:reviewOf a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "review of" ;
+    rdfs:comment "Links a performance review to the worker being assessed." ;
+    rdfs:domain :PerformanceReview ;
+    rdfs:range :Worker .
+
+:reviewedBy a owl:ObjectProperty ;
+    rdfs:label "reviewed by" ;
+    rdfs:comment "Links a performance review to the worker, usually a manager, who conducted it." ;
+    rdfs:domain :PerformanceReview ;
+    rdfs:range :Worker .
+
+:hasSkill a owl:ObjectProperty ;
+    rdfs:label "has skill" ;
+    rdfs:comment "Links a worker to a skill or certification they possess." ;
+    rdfs:domain :Worker ;
+    rdfs:range :Skill .
+
+:requiresSkill a owl:ObjectProperty ;
+    rdfs:label "requires skill" ;
+    rdfs:comment "Links a position to a skill that is required or preferred for it." ;
+    rdfs:domain :Position ;
+    rdfs:range :Skill ;
+    rdfs:seeAlso schema:skills .
+
+:basedAt a owl:ObjectProperty ;
+    rdfs:label "based at" ;
+    rdfs:comment "Links a worker to the work location where they are based." ;
+    rdfs:domain :Worker ;
+    rdfs:range :WorkLocation ;
+    rdfs:seeAlso schema:workLocation .
+
+#################  DATA PROPERTIES  #################
+
+:employeeId a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "employee id" ;
+    rdfs:comment "The organization's unique personnel number for a worker." ;
+    rdfs:domain :Worker ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso dcterms:identifier .
+
+:fullName a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "full name" ;
+    rdfs:comment "The full name of a worker as used in HR records." ;
+    rdfs:domain :Worker ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso foaf:name .
+
+:hireDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "hire date" ;
+    rdfs:comment "The date on which a worker first joined the organization." ;
+    rdfs:domain :Worker ;
+    rdfs:range xsd:date .
+
+:positionTitle a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "position title" ;
+    rdfs:comment "The job title of a position, such as Senior Data Engineer." ;
+    rdfs:domain :Position ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso schema:jobTitle .
+
+:contractStartDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "contract start date" ;
+    rdfs:comment "The date from which an employment contract applies." ;
+    rdfs:domain :EmploymentContract ;
+    rdfs:range xsd:date .
+
+:contractEndDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "contract end date" ;
+    rdfs:comment "The date on which an employment contract ends, for fixed-term or terminated contracts." ;
+    rdfs:domain :EmploymentContract ;
+    rdfs:range xsd:date .
+
+:weeklyHours a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "weekly hours" ;
+    rdfs:comment "Contracted working hours per week, distinguishing full-time from part-time arrangements." ;
+    rdfs:domain :EmploymentContract ;
+    rdfs:range xsd:decimal .
+
+:compensationAmount a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "compensation amount" ;
+    rdfs:comment "The gross monetary amount of a compensation component per pay frequency." ;
+    rdfs:domain :CompensationComponent ;
+    rdfs:range xsd:decimal ;
+    rdfs:seeAlso schema:value .
+
+:currency a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "currency" ;
+    rdfs:comment "The ISO 4217 currency code of a compensation amount, such as EUR or GBP." ;
+    rdfs:domain :CompensationComponent ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso schema:currency .
+
+:payFrequency a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "pay frequency" ;
+    rdfs:comment "How often a compensation amount is paid or expressed: hourly, monthly, annually or one-off." ;
+    rdfs:domain :CompensationComponent ;
+    rdfs:range xsd:string .
+
+:leaveStartDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "leave start date" ;
+    rdfs:comment "The first day of a leave period." ;
+    rdfs:domain :LeavePeriod ;
+    rdfs:range xsd:date .
+
+:leaveEndDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "leave end date" ;
+    rdfs:comment "The last day of a leave period." ;
+    rdfs:domain :LeavePeriod ;
+    rdfs:range xsd:date .
+
+:reviewDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "review date" ;
+    rdfs:comment "The date on which a performance review was held or finalised." ;
+    rdfs:domain :PerformanceReview ;
+    rdfs:range xsd:date .
+
+:overallRating a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "overall rating" ;
+    rdfs:comment "The overall performance rating given in a review, such as Exceeds expectations or 4 of 5." ;
+    rdfs:domain :PerformanceReview ;
+    rdfs:range xsd:string .

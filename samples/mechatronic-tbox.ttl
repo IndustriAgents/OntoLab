@@ -1,0 +1,100 @@
+@prefix :     <http://ontolab.example/mechatronic#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+<http://ontolab.example/mechatronic> a owl:Ontology ;
+    rdfs:label "Mechatronic Plant Ontology (T-Box)" ;
+    rdfs:comment "Starter schema for extracting a physical/mechatronic A-Box from plant design documents: components, signals, operations/motions and their properties." .
+
+#################  CLASSES  #################
+
+:Station a owl:Class ;
+    rdfs:label "Station" ;
+    rdfs:comment "A production/handling station composed of components." .
+
+:Component a owl:Class ;
+    rdfs:label "Component" ;
+    rdfs:comment "A physical part of the plant (mechanical, pneumatic or electrical)." .
+
+:Actuator a owl:Class ;
+    rdfs:subClassOf :Component ;
+    rdfs:label "Actuator" ;
+    rdfs:comment "A component that produces motion or force (cylinder, drive, vacuum generator, valve)." .
+
+:Sensor a owl:Class ;
+    rdfs:subClassOf :Component ;
+    rdfs:label "Sensor" ;
+    rdfs:comment "A component that detects a physical condition (proximity, optical, vacuum-pressure, micro switch)." .
+
+:Signal a owl:Class ;
+    rdfs:label "Signal" ;
+    rdfs:comment "A digital or analog I/O signal exchanged between sensors/actuators and the controller." .
+
+:Operation a owl:Class ;
+    rdfs:label "Operation" ;
+    rdfs:comment "A step in the station's sequence of operation." .
+
+:Motion a owl:Class ;
+    rdfs:subClassOf :Operation ;
+    rdfs:label "Motion" ;
+    rdfs:comment "An operation that moves a component (eject, retract, swivel/rotate, grip, release)." .
+
+#################  OBJECT PROPERTIES  #################
+
+:partOf a owl:ObjectProperty ;
+    rdfs:label "part of" ;
+    rdfs:domain :Component ;
+    rdfs:range :Station ;
+    rdfs:comment "Links a component to the station it belongs to." .
+
+:hasSignal a owl:ObjectProperty ;
+    rdfs:label "has signal" ;
+    rdfs:domain :Component ;
+    rdfs:range :Signal ;
+    rdfs:comment "A component emits or receives this signal." .
+
+:actsOn a owl:ObjectProperty ;
+    rdfs:label "acts on" ;
+    rdfs:domain :Operation ;
+    rdfs:range :Component ;
+    rdfs:comment "The component an operation/motion drives or manipulates." .
+
+:precedes a owl:ObjectProperty ;
+    rdfs:label "precedes" ;
+    rdfs:domain :Operation ;
+    rdfs:range :Operation ;
+    rdfs:comment "Sequencing: this operation occurs before the next." .
+
+#################  DATA PROPERTIES  #################
+
+:hasDuration a owl:DatatypeProperty ;
+    rdfs:label "has duration (s)" ;
+    rdfs:domain :Operation ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "Duration of the operation in seconds." .
+
+:position a owl:DatatypeProperty ;
+    rdfs:label "position" ;
+    rdfs:domain :Component ;
+    rdfs:range xsd:string ;
+    rdfs:comment "A named or numeric position (e.g. retracted, extended, 0–180°)." .
+
+:operatingPressure a owl:DatatypeProperty ;
+    rdfs:label "operating pressure (kPa)" ;
+    rdfs:domain :Component ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "Operating pressure in kPa." .
+
+:partNumber a owl:DatatypeProperty ;
+    rdfs:label "part number" ;
+    rdfs:domain :Component ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Manufacturer/order part number." .
+
+:ioType a owl:DatatypeProperty ;
+    rdfs:label "I/O type" ;
+    rdfs:domain :Signal ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Signal direction/kind, e.g. digital input, digital output." .

@@ -1,0 +1,8 @@
+# Preview packaging without Apple Developer credentials. Production signing
+# continues to use electron-builder.yml and the configured Developer ID.
+extends: ./electron-builder.yml
+mac:
+  identity: "-"
+  notarize: false
+  entitlements: desktop/entitlements.mac.plist
+  entitlementsInherit: desktop/entitlements.mac.plist

@@ -1,0 +1,55 @@
+# Discharge Summary: Cardiology Ward
+
+Synthetic record created for software evaluation. It does not describe a real person.
+
+Patient: PT 4821 (year of birth 1961)
+Hospital: Elmbrook Community Hospital, Cardiac Care Unit
+Admitted: 11 April 2026
+Discharged: 14 April 2026
+Responsible consultant: Dr. Amara Lindqvist, interventional cardiologist
+
+## Reason for admission
+
+The patient was brought in by ambulance on 11 April 2026 with 40 minutes of central chest pain at rest radiating to the left arm, while awaiting his routine cardiology appointment. He has type 2 diabetes, diagnosed by his GP in March, and hypertension.
+
+## Findings
+
+The admission ECG showed ST depression in leads V4 to V6 without ST elevation. Laboratory results on admission:
+
+| Test        | Result | Unit    | Reference range |
+|-------------|--------|---------|-----------------|
+| Troponin T  | 182    | ng/L    | < 14            |
+| Creatinine  | 98     | umol/L  | 60 - 110        |
+
+The diagnosis was non-ST-elevation myocardial infarction (NSTEMI), ICD-10 I21.4.
+
+## Procedures
+
+Dr. Lindqvist performed coronary angiography via the right radial artery on 11 April 2026, which showed a 90 % stenosis of the proximal left anterior descending artery (LAD) and minor disease elsewhere.
+
+She also placed a drug-eluting stent in the proximal LAD the following day, on 12 April 2026, during percutaneous coronary intervention (PCI). The result was good, with no residual stenosis and normal flow.
+
+There were no complications. The radial access site was checked daily by the nursing team.
+
+## Nursing care
+
+Nursing care on the unit was led by Felix Ocampo, charge nurse of the Cardiac Care Unit, who also delivered the first cardiac rehabilitation education session and confirmed the documented penicillin allergy with the patient before any antibiotics were considered. No antibiotics were given during the stay.
+
+## Medication on discharge
+
+New medicines started by Dr. Lindqvist:
+
+- Aspirin 75 mg once daily, lifelong.
+- Ticagrelor 90 mg twice daily for 12 months.
+- Atorvastatin 80 mg once daily at night.
+
+Home medicines metformin and ramipril were continued unchanged.
+
+## Follow-up
+
+- Cardiology outpatient review with Dr. Lindqvist in about eight weeks, with fasting lipids.
+- Referral to the hospital's cardiac rehabilitation programme.
+- GP to continue diabetes care and to recheck kidney function in two weeks.
+- The patient was advised not to drive for one week and to return immediately if chest pain recurs.
+
+Signed: A. Lindqvist, Consultant Cardiologist, Elmbrook Community Hospital

@@ -1,0 +1,303 @@
+@prefix :        <https://w3id.org/ontolab/templates/contracts#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema:  <https://schema.org/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+<https://w3id.org/ontolab/templates/contracts> a owl:Ontology ;
+    rdfs:label "OntoLab Contracts Template" ;
+    rdfs:comment "Compact starter schema for extracting agreements, parties, clauses, obligations, payment terms, term and renewal, termination conditions, governing law and signatories from contract documents." .
+
+#################  CLASSES  #################
+
+:Agreement a owl:Class ;
+    rdfs:label "Agreement" ;
+    rdfs:comment "A legally binding contract document between two or more parties, identified by its title, effective date and the clauses it contains." ;
+    rdfs:seeAlso <https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/Contract> .
+
+:ServiceAgreement a owl:Class ;
+    rdfs:subClassOf :Agreement ;
+    rdfs:label "Service Agreement" ;
+    rdfs:comment "An agreement under which one party performs services for another in exchange for payment, such as a master services agreement or statement of work." .
+
+:NonDisclosureAgreement a owl:Class ;
+    rdfs:subClassOf :Agreement ;
+    rdfs:label "Non-Disclosure Agreement" ;
+    rdfs:comment "An agreement whose main purpose is to restrict the use and disclosure of confidential information exchanged between the parties." .
+
+:LicenseAgreement a owl:Class ;
+    rdfs:subClassOf :Agreement ;
+    rdfs:label "License Agreement" ;
+    rdfs:comment "An agreement granting a party the right to use intellectual property such as software, patents or trademarks under stated conditions." .
+
+:PurchaseAgreement a owl:Class ;
+    rdfs:subClassOf :Agreement ;
+    rdfs:label "Purchase Agreement" ;
+    rdfs:comment "An agreement for the sale and delivery of goods or assets from a seller to a buyer." .
+
+:Amendment a owl:Class ;
+    rdfs:subClassOf :Agreement ;
+    rdfs:label "Amendment" ;
+    rdfs:comment "A supplementary agreement that modifies, adds to or deletes provisions of an earlier agreement." .
+
+:Party a owl:Class ;
+    rdfs:label "Party" ;
+    rdfs:comment "A legal person or organization that is bound by, or benefits from, an agreement." ;
+    rdfs:seeAlso <https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/ContractParty> .
+
+:OrganizationParty a owl:Class ;
+    rdfs:subClassOf :Party ;
+    owl:disjointWith :PersonParty ;
+    rdfs:label "Organization Party" ;
+    rdfs:comment "A party that is a company, government body or other organization rather than an individual." ;
+    rdfs:seeAlso schema:Organization .
+
+:PersonParty a owl:Class ;
+    rdfs:subClassOf :Party ;
+    rdfs:label "Person Party" ;
+    rdfs:comment "A party that is a natural person contracting in their own name." ;
+    rdfs:seeAlso schema:Person .
+
+:Signatory a owl:Class ;
+    owl:disjointWith :OrganizationParty ;
+    rdfs:label "Signatory" ;
+    rdfs:comment "A natural person who signs an agreement, usually on behalf of a party, as recorded in the signature block." ;
+    rdfs:seeAlso schema:Person .
+
+:Clause a owl:Class ;
+    owl:disjointWith :Agreement , :Party , :Obligation ;
+    rdfs:label "Clause" ;
+    rdfs:comment "A numbered section or provision of an agreement that states a specific term, right or condition." .
+
+:PaymentClause a owl:Class ;
+    rdfs:subClassOf :Clause ;
+    rdfs:label "Payment Clause" ;
+    rdfs:comment "A clause that sets out fees, prices, invoicing or payment schedules owed under the agreement." .
+
+:TerminationClause a owl:Class ;
+    rdfs:subClassOf :Clause ;
+    rdfs:label "Termination Clause" ;
+    rdfs:comment "A clause that states how and under which conditions the agreement may be ended before or at expiry." .
+
+:RenewalClause a owl:Class ;
+    rdfs:subClassOf :Clause ;
+    rdfs:label "Renewal Clause" ;
+    rdfs:comment "A clause that defines the duration of the agreement and whether and how it is extended or renewed." .
+
+:GoverningLawClause a owl:Class ;
+    rdfs:subClassOf :Clause ;
+    rdfs:label "Governing Law Clause" ;
+    rdfs:comment "A clause naming the law that governs the agreement and the courts or forum for disputes." .
+
+:ConfidentialityClause a owl:Class ;
+    rdfs:subClassOf :Clause ;
+    rdfs:label "Confidentiality Clause" ;
+    rdfs:comment "A clause that restricts the disclosure and use of confidential information by the parties." .
+
+:LiabilityClause a owl:Class ;
+    rdfs:subClassOf :Clause ;
+    rdfs:label "Liability Clause" ;
+    rdfs:comment "A clause that limits, excludes or allocates liability, indemnities or damages between the parties." .
+
+:Obligation a owl:Class ;
+    owl:disjointWith :Party ;
+    rdfs:label "Obligation" ;
+    rdfs:comment "A duty that one party owes to another under a clause, such as delivering goods, paying a fee or keeping information confidential." .
+
+:PaymentTerm a owl:Class ;
+    rdfs:label "Payment Term" ;
+    rdfs:comment "A specific monetary payment arrangement, giving an amount, currency and due period, with a paying and a receiving party." ;
+    rdfs:seeAlso schema:PriceSpecification .
+
+:ContractTerm a owl:Class ;
+    rdfs:label "Contract Term" ;
+    rdfs:comment "The period during which an agreement is in force, including its expiry date and any automatic renewal." .
+
+:TerminationCondition a owl:Class ;
+    rdfs:label "Termination Condition" ;
+    rdfs:comment "An event or circumstance that permits a party to end the agreement, such as material breach, insolvency or termination for convenience." .
+
+:Jurisdiction a owl:Class ;
+    rdfs:label "Jurisdiction" ;
+    rdfs:comment "A legal system or territory, such as a country or state, whose law governs the agreement." ;
+    rdfs:seeAlso <https://spec.edmcouncil.org/fibo/ontology/FND/Law/Jurisdiction/Jurisdiction> .
+
+#################  OBJECT PROPERTIES  #################
+
+:hasParty a owl:ObjectProperty ;
+    rdfs:label "has party" ;
+    rdfs:comment "Links an agreement to a party that is bound by it." ;
+    rdfs:domain :Agreement ;
+    rdfs:range :Party .
+
+:hasClause a owl:ObjectProperty ;
+    rdfs:label "has clause" ;
+    rdfs:comment "Links an agreement to a clause it contains." ;
+    rdfs:domain :Agreement ;
+    rdfs:range :Clause .
+
+:signedBy a owl:ObjectProperty ;
+    rdfs:label "signed by" ;
+    rdfs:comment "Links an agreement to a person who executed it by signing." ;
+    rdfs:domain :Agreement ;
+    rdfs:range :Signatory .
+
+:signsOnBehalfOf a owl:ObjectProperty ;
+    rdfs:label "signs on behalf of" ;
+    rdfs:comment "Links a signatory to the party they represent when signing." ;
+    rdfs:domain :Signatory ;
+    rdfs:range :Party .
+
+:imposesObligation a owl:ObjectProperty ;
+    rdfs:label "imposes obligation" ;
+    rdfs:comment "Links a clause to an obligation that the clause creates." ;
+    rdfs:domain :Clause ;
+    rdfs:range :Obligation .
+
+:obligor a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "obligor" ;
+    rdfs:comment "Links an obligation to the party that must perform it." ;
+    rdfs:domain :Obligation ;
+    rdfs:range :Party .
+
+:obligee a owl:ObjectProperty ;
+    rdfs:label "obligee" ;
+    rdfs:comment "Links an obligation to the party entitled to its performance." ;
+    rdfs:domain :Obligation ;
+    rdfs:range :Party .
+
+:specifiesPaymentTerm a owl:ObjectProperty ;
+    rdfs:label "specifies payment term" ;
+    rdfs:comment "Links a payment clause to a payment term it defines." ;
+    rdfs:domain :PaymentClause ;
+    rdfs:range :PaymentTerm .
+
+:payer a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "payer" ;
+    rdfs:comment "Links a payment term to the party that must make the payment." ;
+    rdfs:domain :PaymentTerm ;
+    rdfs:range :Party .
+
+:payee a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "payee" ;
+    rdfs:comment "Links a payment term to the party that receives the payment." ;
+    rdfs:domain :PaymentTerm ;
+    rdfs:range :Party .
+
+:hasTerm a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "has term" ;
+    rdfs:comment "Links an agreement to the contract term that defines how long it is in force." ;
+    rdfs:domain :Agreement ;
+    rdfs:range :ContractTerm .
+
+:specifiesTerminationCondition a owl:ObjectProperty ;
+    rdfs:label "specifies termination condition" ;
+    rdfs:comment "Links a termination clause to a condition under which the agreement may be ended." ;
+    rdfs:domain :TerminationClause ;
+    rdfs:range :TerminationCondition .
+
+:governedBy a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "governed by" ;
+    rdfs:comment "Links an agreement to the jurisdiction whose law governs it." ;
+    rdfs:domain :Agreement ;
+    rdfs:range :Jurisdiction .
+
+:amends a owl:ObjectProperty ;
+    rdfs:label "amends" ;
+    rdfs:comment "Links an amendment to the earlier agreement whose provisions it modifies." ;
+    rdfs:domain :Amendment ;
+    rdfs:range :Agreement .
+
+#################  DATA PROPERTIES  #################
+
+:agreementId a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "agreement id" ;
+    rdfs:comment "Reference number or identifier assigned to an agreement." ;
+    rdfs:domain :Agreement ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso dcterms:identifier .
+
+:agreementTitle a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "agreement title" ;
+    rdfs:comment "The title of an agreement as stated on its cover or first page." ;
+    rdfs:domain :Agreement ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso dcterms:title .
+
+:effectiveDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "effective date" ;
+    rdfs:comment "The date from which an agreement takes legal effect." ;
+    rdfs:domain :Agreement ;
+    rdfs:range xsd:date .
+
+:executionDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "execution date" ;
+    rdfs:comment "The date on which an agreement was signed by the last signatory." ;
+    rdfs:domain :Agreement ;
+    rdfs:range xsd:date .
+
+:legalName a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "legal name" ;
+    rdfs:comment "The full registered legal name of a party as written in the agreement." ;
+    rdfs:domain :Party ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso schema:legalName .
+
+:signatoryTitle a owl:DatatypeProperty ;
+    rdfs:label "signatory title" ;
+    rdfs:comment "The job title or capacity in which a signatory signs, such as Chief Executive Officer." ;
+    rdfs:domain :Signatory ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso schema:jobTitle .
+
+:clauseNumber a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "clause number" ;
+    rdfs:comment "The section or clause number that locates a clause within its agreement, such as 12.3." ;
+    rdfs:domain :Clause ;
+    rdfs:range xsd:string .
+
+:obligationDeadline a owl:DatatypeProperty ;
+    rdfs:label "obligation deadline" ;
+    rdfs:comment "The date by which an obligation must be performed." ;
+    rdfs:domain :Obligation ;
+    rdfs:range xsd:date .
+
+:paymentAmount a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "payment amount" ;
+    rdfs:comment "The monetary amount payable under a payment term." ;
+    rdfs:domain :PaymentTerm ;
+    rdfs:range xsd:decimal ;
+    rdfs:seeAlso schema:price .
+
+:currency a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "currency" ;
+    rdfs:comment "The ISO 4217 currency code of a payment amount, such as EUR or USD." ;
+    rdfs:domain :PaymentTerm ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso schema:priceCurrency .
+
+:paymentDueDays a owl:DatatypeProperty ;
+    rdfs:label "payment due days" ;
+    rdfs:comment "Number of days after invoice or trigger event within which a payment must be made, such as 30 for net 30." ;
+    rdfs:domain :PaymentTerm ;
+    rdfs:range xsd:integer .
+
+:expirationDate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "expiration date" ;
+    rdfs:comment "The date on which a contract term ends unless it is renewed." ;
+    rdfs:domain :ContractTerm ;
+    rdfs:range xsd:date .
+
+:autoRenews a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "auto-renews" ;
+    rdfs:comment "True if a contract term renews automatically at expiry unless a party gives notice." ;
+    rdfs:domain :ContractTerm ;
+    rdfs:range xsd:boolean .
+
+:noticePeriodDays a owl:DatatypeProperty ;
+    rdfs:label "notice period (days)" ;
+    rdfs:comment "Number of days of prior written notice required before a termination condition can be exercised." ;
+    rdfs:domain :TerminationCondition ;
+    rdfs:range xsd:integer .

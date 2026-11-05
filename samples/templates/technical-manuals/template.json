@@ -1,0 +1,24 @@
+{
+  "id": "technical-manuals",
+  "name": "Technical manuals",
+  "description": "Stations, components, actuators, sensors, I/O signals and operation sequences from plant and machine documentation.",
+  "purpose": "Extract a mechatronic plant model from technical manuals and design documents, covering what each station is made of, how its components are wired by signal, and in which order its operations run.",
+  "scope": "In scope: stations, components (actuators and sensors), I/O signals, operations and motions with their sequence and duration, and component attributes such as part number, position and operating pressure. Out of scope: control-program logic, electrical schematics at wire level, and maintenance schedules.",
+  "stories": [
+    "As an automation engineer I want each component linked to its station and its I/O signals so that I can check the I/O list against the documentation.",
+    "As a commissioning engineer I want the sequence of operations, the components they act on and their durations so that I can verify cycle timing.",
+    "As a maintenance planner I want part numbers and operating pressures for every component so that I can order spares and set up the pneumatics correctly."
+  ],
+  "cqs": [
+    "Which components belong to each station?",
+    "Which components of a station are actuators and which are sensors?",
+    "Which signals does each component emit or receive, and what is each signal's I/O type?",
+    "Which component does each operation or motion act on?",
+    "Which operation precedes which in a station's sequence of operation?",
+    "How long does each operation take, in seconds?",
+    "What is the operating pressure, in kPa, of each pneumatic component?",
+    "What is the manufacturer part number of each component?",
+    "Which named or numeric positions can each component take?"
+  ],
+  "tboxFile": "../../mechatronic-tbox.ttl"
+}

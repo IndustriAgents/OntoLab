@@ -1,0 +1,16 @@
+[
+  { "question": "What TSH value was measured for patient PT-7310 at the endocrinology clinic?", "type": "single", "answer": ["8.6"] },
+  { "question": "What ICD-10 code was recorded for the NSTEMI of patient PT-4821?", "type": "single", "answer": ["I21.4"] },
+  { "question": "What dose of levothyroxine was started for PT-7310?", "type": "single", "answer": ["50 micrograms", "50 mcg", "50"] },
+  { "question": "On what date was the drug-eluting stent placed for PT-4821?", "type": "single", "answer": ["12 April 2026", "2026-04-12", "April 12, 2026"] },
+
+  { "question": "Which antiplatelet drug replaced ticagrelor for PT-4821, and why was the change made?", "type": "multi", "answer": ["clopidogrel"] },
+  { "question": "What is the role of the clinician who performed the coronary angiography on PT-4821?", "type": "multi", "answer": ["interventional cardiologist", "cardiologist"] },
+  { "question": "By how much did PT-4821's LDL cholesterol fall between the GP visit in March and the cardiology follow-up in June 2026 (in mmol/L)?", "type": "multi", "answer": ["2.5"] },
+  { "question": "To what substance is the patient who was started on metformin allergic?", "type": "multi", "answer": ["penicillin"] },
+
+  { "question": "How many distinct patients are described across all the documents?", "type": "aggregate", "answer": ["2", "two"] },
+  { "question": "How many separate encounters (visits or admissions) are documented across all notes?", "type": "aggregate", "answer": ["4", "four"] },
+  { "question": "How many medicines are on PT-4821's current medication list after the June 2026 follow-up?", "type": "aggregate", "answer": ["5", "five"] },
+  { "question": "Which care facility hosted the most documented encounters?", "type": "aggregate", "answer": ["Elmbrook"] }
+]

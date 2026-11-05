@@ -1,0 +1,25 @@
+{
+  "id": "hr",
+  "name": "HR",
+  "description": "Workers, positions, departments, employment contracts, compensation, leave, reviews, skills and locations.",
+  "purpose": "Build a people-operations graph from offer letters, contracts, org charts, leave records and review forms, so that reporting lines, contract terms, pay and skills can be queried in one place.",
+  "scope": "In scope: workers (employees and contractors), positions, organizational units, employment contracts, compensation components, leave periods, performance reviews, skills and work locations. Out of scope: payroll calculation, tax and benefits administration, and recruiting pipelines.",
+  "stories": [
+    "As an HR business partner I want each worker linked to their position, unit, manager and location so that I can produce an accurate org chart.",
+    "As a workforce planner I want positions linked to the skills they require and workers to the skills they hold so that I can find skill gaps and internal candidates.",
+    "As a people-operations analyst I want fixed-term contract end dates and leave periods per worker so that I can plan renewals and cover."
+  ],
+  "cqs": [
+    "Which position does each worker hold, and in which department or team does that position sit?",
+    "Who does each worker report to?",
+    "Which units are sub-units of a given department?",
+    "Which workers are on fixed-term contracts ending before a given date?",
+    "What base salary, bonus and allowances does each contract provide, with amount, currency and pay frequency?",
+    "Which workers have leave periods overlapping a given date range, and of which leave type?",
+    "What overall rating did a worker receive in their most recent performance review, and who reviewed them?",
+    "Which skills does a position require that its current holder does not have?",
+    "Which workers are based at a given work location?",
+    "What are each employee's id, hire date and contracted weekly hours?"
+  ],
+  "tboxFile": "tbox.ttl"
+}

@@ -1,0 +1,46 @@
+{
+  "name": "Equipment Manuals",
+  "description": "Operating manuals and a maintenance guide for a synthetic three-station mechatronic training line (feeder, inspection, sorting) built by an invented manufacturer.",
+  "purpose": "Turn technical equipment manuals into a knowledge graph of stations, components, I/O signals, sequence operations, parameters, workpieces and manufacturers, so that engineers can answer wiring, sequencing, sourcing and troubleshooting questions without searching several manuals.",
+  "scope": "In scope: stations and the order in which they pass workpieces, their cycle times and magazine capacity, components with device tags, part numbers and manufacturers, sensor types and the workpieces they detect, digital input and output signals with I/O addresses and safety relevance, sequence steps with performing component and triggering signal, and numeric component parameters with units. Out of scope: safety instruction text, maintenance intervals, fault-finding procedures, cabling terminals and commissioning adjustments.",
+  "stories": [
+    "As a controls engineer I want to look up every I/O signal with its address, component and controller, so that I can write and check the PLC program.",
+    "As a maintenance technician I want to know which manufacturer and part number each component has, so that I can order the right spare part.",
+    "As a process engineer I want to see the sequence of operations of each station and which signal triggers each step, so that I can diagnose a stalled cycle.",
+    "As a line planner I want to know the order of stations and their cycle times, so that I can find the throughput bottleneck."
+  ],
+  "cqs": [
+    {
+      "text": "Which components belong to each station, and what are their device tags?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/manuals#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?stationLabel ?componentLabel ?tag WHERE { ?component :partOf ?station . OPTIONAL { ?station rdfs:label ?stationLabel } OPTIONAL { ?component rdfs:label ?componentLabel } OPTIONAL { ?component :deviceTag ?tag } } ORDER BY ?stationLabel LIMIT 100"
+    },
+    {
+      "text": "Which signals are wired to each controller, with their I/O address and the component that emits or receives them?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/manuals#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?controllerLabel ?address ?signalLabel ?componentLabel WHERE { ?signal :connectedTo ?controller . OPTIONAL { ?controller rdfs:label ?controllerLabel } OPTIONAL { ?signal :ioAddress ?address } OPTIONAL { ?signal rdfs:label ?signalLabel } OPTIONAL { ?component :hasSignal ?signal . ?component rdfs:label ?componentLabel } } ORDER BY ?address LIMIT 100"
+    },
+    {
+      "text": "Which sensors detect each kind of workpiece?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/manuals#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?workpieceLabel ?sensorLabel WHERE { ?sensor :detects ?workpiece . ?workpiece a :Workpiece . OPTIONAL { ?workpiece rdfs:label ?workpieceLabel } OPTIONAL { ?sensor rdfs:label ?sensorLabel } } ORDER BY ?workpieceLabel LIMIT 100"
+    },
+    {
+      "text": "Which manufacturer makes each station and component, and what is its part number?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/manuals#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?equipmentLabel ?partNumber ?manufacturerLabel WHERE { ?equipment :manufacturedBy ?manufacturer . ?manufacturer a :Manufacturer . OPTIONAL { ?equipment rdfs:label ?equipmentLabel } OPTIONAL { ?equipment :partNumber ?partNumber } OPTIONAL { ?manufacturer rdfs:label ?manufacturerLabel } } LIMIT 100"
+    },
+    {
+      "text": "What parameters does each component have, with value and unit?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/manuals#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?componentLabel ?parameterLabel ?value ?unit WHERE { ?component :hasParameter ?parameter . OPTIONAL { ?component rdfs:label ?componentLabel } OPTIONAL { ?parameter rdfs:label ?parameterLabel } OPTIONAL { ?parameter :parameterValue ?value } OPTIONAL { ?parameter :parameterUnit ?unit } } LIMIT 100"
+    },
+    {
+      "text": "What is the sequence of operations of each station, which component performs each step and which signal triggers it?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/manuals#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?stationLabel ?step ?operationLabel ?componentLabel ?signalLabel WHERE { ?operation :performedBy ?component . ?component :partOf ?station . OPTIONAL { ?station rdfs:label ?stationLabel } OPTIONAL { ?operation :sequenceStep ?step } OPTIONAL { ?operation rdfs:label ?operationLabel } OPTIONAL { ?component rdfs:label ?componentLabel } OPTIONAL { ?operation :triggeredBy ?signal . ?signal rdfs:label ?signalLabel } } ORDER BY ?stationLabel ?step LIMIT 100"
+    },
+    {
+      "text": "In which order do the stations pass workpieces to each other, and what is each station's cycle time?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/manuals#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?stationLabel ?cycleTime ?nextLabel WHERE { ?station a :Station . OPTIONAL { ?station rdfs:label ?stationLabel } OPTIONAL { ?station :cycleTimeSeconds ?cycleTime } OPTIONAL { ?station :feedsInto ?next . ?next rdfs:label ?nextLabel } } LIMIT 100"
+    },
+    {
+      "text": "Which signals are safety-relevant, and which component do they belong to?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/manuals#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?address ?signalLabel ?componentLabel WHERE { ?signal :isSafetyRelevant ?safe . FILTER(LCASE(STR(?safe)) = \"true\") OPTIONAL { ?signal :ioAddress ?address } OPTIONAL { ?signal rdfs:label ?signalLabel } OPTIONAL { ?component :hasSignal ?signal . ?component rdfs:label ?componentLabel } } LIMIT 100"
+    }
+  ]
+}

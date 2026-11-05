@@ -1,0 +1,226 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="OntoLab Methodology" id="ontolab-methodology-loader">
+    <mxGraphModel dx="936" dy="566" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== TITLE ===== -->
+        <mxCell id="title" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=20;fontStyle=1;" value="OntoLab Methodology" vertex="1">
+          <mxGeometry height="36" width="320" x="250" y="20" as="geometry" />
+        </mxCell>
+
+        <!-- =========================================================== -->
+        <!-- ===== STAGE 1 : T-BOX GENERATION (schema design) ===== -->
+        <!-- =========================================================== -->
+        <mxCell id="s1label" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;fontStyle=1" value="OntoLab Stage 1 &#8212; T-Box Generation" vertex="1">
+          <mxGeometry height="30" width="260" x="110" y="250" as="geometry" />
+        </mxCell>
+
+        <!-- central engine -->
+        <mxCell id="e1" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fontStyle=1" value="OntoLab&lt;br&gt;T-Box Generation" vertex="1">
+          <mxGeometry height="80" width="80" x="374" y="380" as="geometry" />
+        </mxCell>
+
+        <!-- LLM + bidirectional arrow -->
+        <mxCell id="llm1" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="LLM" vertex="1">
+          <mxGeometry height="40" width="40" x="394" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="a-llm1" edge="1" parent="1" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="llm1" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="414" y="380" as="sourcePoint" />
+            <mxPoint x="464" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- inputs -->
+        <mxCell id="in1a" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="Base modules (.ttl)" vertex="1">
+          <mxGeometry height="70" width="70" x="200" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="a-in1a" edge="1" parent="1" source="in1a" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=-0.05;entryY=0.375;entryDx=0;entryDy=0;entryPerimeter=0;" target="e1" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="270" y="400" as="sourcePoint" />
+            <mxPoint x="370" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="in1b" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="Design docs (PDF, CAD)" vertex="1">
+          <mxGeometry height="80" width="80" x="200" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="a-in1b" edge="1" parent="1" source="in1b" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" target="e1" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="280" y="530" as="sourcePoint" />
+            <mxPoint x="370" y="530" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- outputs : candidate -> validate -> curated cloud -->
+        <mxCell id="cand" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="Candidate T-Box" vertex="1">
+          <mxGeometry height="60" width="60" x="510" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="a-e1cand" edge="1" parent="1" source="e1" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;" target="cand" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="460" y="430" as="sourcePoint" />
+            <mxPoint x="510" y="430" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="val" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="Validate vs base" vertex="1">
+          <mxGeometry height="60" width="60" x="620" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="a-candval" edge="1" parent="1" source="cand" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;" target="val" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="570" y="430" as="sourcePoint" />
+            <mxPoint x="620" y="430" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="curated" parent="1" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;" value="Curated T-Box (merged .ttl)" vertex="1">
+          <mxGeometry height="50" width="130" x="585" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="a-valcur" edge="1" parent="1" source="val" style="endArrow=classic;html=1;rounded=0;" target="curated" value="commit if no errors">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="650" y="400" as="sourcePoint" />
+            <mxPoint x="650" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Stage 1 freehand notes -->
+        <mxCell id="n1a" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Author: upload / AI generate / hand-edit" vertex="1">
+          <mxGeometry height="30" width="150" x="150" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="n1b" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="structural + regression diff" vertex="1">
+          <mxGeometry height="30" width="130" x="600" y="465" as="geometry" />
+        </mxCell>
+        <mxCell id="n1c" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="design only NEW terms; reference existing by name" vertex="1">
+          <mxGeometry height="30" width="150" x="455" y="345" as="geometry" />
+        </mxCell>
+
+        <!-- =========================================================== -->
+        <!-- ===== STAGE 2 : A-BOX GENERATION (extraction) ===== -->
+        <!-- =========================================================== -->
+        <mxCell id="s2label" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;fontStyle=1" value="OntoLab Stage 2 &#8212; A-Box Generation" vertex="1">
+          <mxGeometry height="30" width="260" x="120" y="640" as="geometry" />
+        </mxCell>
+
+        <!-- central engine -->
+        <mxCell id="e2" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;fontStyle=1" value="OntoLab&lt;br&gt;A-Box Generation" vertex="1">
+          <mxGeometry height="80" width="80" x="374" y="690" as="geometry" />
+        </mxCell>
+
+        <!-- LLM + bidirectional arrow -->
+        <mxCell id="llm2" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="LLM" vertex="1">
+          <mxGeometry height="40" width="40" x="404" y="605" as="geometry" />
+        </mxCell>
+        <mxCell id="a-llm2" edge="1" parent="1" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="llm2" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="424" y="685" as="sourcePoint" />
+            <mxPoint x="474" y="635" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- input docs -->
+        <mxCell id="in2" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="Design docs (PDF, DOCX)" vertex="1">
+          <mxGeometry height="60" width="60" x="240" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="a-in2" edge="1" parent="1" source="in2" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="e2" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="300" y="730" as="sourcePoint" />
+            <mxPoint x="374" y="730" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- cross-stage : curated T-Box guides extraction -->
+        <mxCell id="a-cross" edge="1" parent="1" source="e2" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="curated" value="guided by T-Box">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="450" y="690" as="sourcePoint" />
+            <mxPoint x="600" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- outputs : A-Box -> knowledge graph -->
+        <mxCell id="abox" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="A-Box" vertex="1">
+          <mxGeometry height="60" width="60" x="510" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="a-e2abox" edge="1" parent="1" source="e2" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;" target="abox" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="460" y="730" as="sourcePoint" />
+            <mxPoint x="510" y="730" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kg" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="Knowledge Graph" vertex="1">
+          <mxGeometry height="60" width="60" x="620" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="a-aboxkg" edge="1" parent="1" source="abox" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;" target="kg" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="570" y="730" as="sourcePoint" />
+            <mxPoint x="620" y="730" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Oxigraph cloud (SPARQL engine) -->
+        <mxCell id="oxi" parent="1" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;" value="Oxigraph SPARQL engine" vertex="1">
+          <mxGeometry height="50" width="120" x="615" y="615" as="geometry" />
+        </mxCell>
+        <mxCell id="a-kgoxi" edge="1" parent="1" source="kg" style="endArrow=classic;html=1;rounded=0;" target="oxi" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="650" y="700" as="sourcePoint" />
+            <mxPoint x="650" y="665" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ===== Verification cluster (cylinders, like reference domain modules) ===== -->
+        <mxCell id="v1" parent="1" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.database;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;" value="Validator" vertex="1">
+          <mxGeometry height="34" width="90" x="100" y="860" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" parent="1" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.database;whiteSpace=wrap;" value="SHACL" vertex="1">
+          <mxGeometry height="34" width="90" x="100" y="898" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" parent="1" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.database;whiteSpace=wrap;" value="Competency Q (SPARQL)" vertex="1">
+          <mxGeometry height="42" width="90" x="100" y="936" as="geometry" />
+        </mxCell>
+        <mxCell id="v4" parent="1" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.database;whiteSpace=wrap;" value="Export .ttl" vertex="1">
+          <mxGeometry height="34" width="90" x="100" y="982" as="geometry" />
+        </mxCell>
+
+        <!-- A-Box feeds verification -->
+        <mxCell id="a-verify" edge="1" parent="1" source="abox" style="endArrow=classic;html=1;rounded=0;" target="v1" value="verify">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="510" y="800" as="sourcePoint" />
+            <mxPoint x="195" y="877" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- verification -> conformant -->
+        <mxCell id="a-conf" edge="1" parent="1" source="v4" style="endArrow=classic;html=1;rounded=0;" target="conf" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="195" y="999" as="sourcePoint" />
+            <mxPoint x="250" y="999" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="conf" parent="1" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;strokeColor=#82b366;fillColor=#d5e8d4;" value="Conformant ontology" vertex="1">
+          <mxGeometry height="50" width="120" x="250" y="975" as="geometry" />
+        </mxCell>
+
+        <!-- Stage 2 freehand notes -->
+        <mxCell id="n2a" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Extract: automatic or interactive Q&amp;A" vertex="1">
+          <mxGeometry height="30" width="150" x="290" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="n2b" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Instances per class with data &amp; object properties" vertex="1">
+          <mxGeometry height="30" width="140" x="470" y="635" as="geometry" />
+        </mxCell>
+        <mxCell id="n2c" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="1) which classes covered?&lt;br&gt;2) any gaps? &#8594; extend T-Box (back to Stage 1)" vertex="1">
+          <mxGeometry height="40" width="230" x="455" y="780" as="geometry" />
+        </mxCell>
+        <mxCell id="n2d" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="Verification:&lt;br&gt;&#8226; validator: type / domain / range&lt;br&gt;&#8226; SHACL: shapes induced from T-Box&lt;br&gt;&#8226; competency Q: NL &#8594; SPARQL via Oxigraph" vertex="1">
+          <mxGeometry height="70" width="230" x="200" y="900" as="geometry" />
+        </mxCell>
+
+        <!-- iterate / feedback arrow : gaps -> extend T-Box -->
+        <mxCell id="a-feedback" edge="1" parent="1" source="n2c" style="endArrow=classic;html=1;rounded=0;dashed=1;strokeColor=#9673a6;fontColor=#6b4c7a;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=1;entryDx=0;entryDy=0;" target="cand" value="iterate">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="690" y="780" as="sourcePoint" />
+            <mxPoint x="570" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

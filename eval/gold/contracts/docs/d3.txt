@@ -1,0 +1,64 @@
+# Analytics Services Agreement SVC-2026-021
+
+## 1. Parties
+
+This Analytics Services Agreement, number SVC-2026-021 (the "Agreement"), is made between Kestrel Analytics B.V. of Utrecht, the Netherlands (the "Provider"), and Brightwater Robotics GmbH of Stuttgart, Germany (the "Client").
+
+Following a pilot carried out under separate confidentiality arrangements, the Client wishes to monitor the condition of its own test benches and of the servo actuators it manufactures. The Provider has agreed to supply its hosted analytics service for that purpose.
+
+## 2. Term
+
+The Agreement is effective from 1 May 2026 and runs for an initial term of 24 months, ending on 30 April 2028. Thereafter it renews automatically for further periods of twelve months unless terminated in accordance with Clause 11.
+
+## 3. Services
+
+The Provider shall make the following services available to the Client:
+
+- the Kestrel Predictive Maintenance Platform, a hosted software service that collects vibration, temperature and current data and predicts component failures; and
+- the Kestrel Onboarding Workshop, a one-off, two-day training and configuration workshop held at the Client's site in Stuttgart.
+
+The Platform will initially monitor 40 BR-7 servo actuators installed on the Client's endurance test benches. Further assets may be added by written change request.
+
+## 4. Fees
+
+| Fee item                          | Amount (EUR) | Basis           |
+|-----------------------------------|--------------|-----------------|
+| Platform subscription             | 7,000        | per month       |
+| Onboarding Workshop               | 12,000       | one-off         |
+| Total over initial term           | 180,000      | 24 months       |
+
+All fees are in euro (EUR) and exclude VAT. Fees are fixed for the initial term.
+
+## 5. Service Levels
+
+5.1 The Provider shall ensure that the Platform is available at least 99.5 percent of the time in each calendar month, excluding announced maintenance windows.
+
+5.2 If availability falls below that level, the Client is entitled to a service credit of 5 percent of the monthly subscription fee for each full 0.5 percent of shortfall, capped at 25 percent.
+
+## 6. Payment
+
+6.1 The Provider invoices the subscription monthly in advance and the workshop fee after completion of the workshop. The Client shall pay each invoice within 30 days of the invoice date.
+
+6.2 Overdue amounts bear interest of 5 percent per annum.
+
+## 9. Data Protection
+
+The Provider shall process the Client's machine data only on the Client's documented instructions and shall store all data in data centres located within the European Union. The Provider shall notify the Client of any security incident affecting the Client's data without undue delay and in any case within 48 hours.
+
+## 11. Termination
+
+11.1 Either party may terminate this Agreement by giving 60 days' written notice, provided that termination for convenience may not take effect before 1 May 2027.
+
+11.2 Either party may terminate immediately for material breach that is not remedied within 30 days of notice.
+
+11.3 On termination the Provider shall make the Client's data available for export for 30 days and then delete it.
+
+## 13. Governing Law
+
+This Agreement is governed by the laws of the Federal Republic of Germany. The courts of Stuttgart have jurisdiction.
+
+## Signatures
+
+For Kestrel Analytics B.V.: Sanne de Wit, Chief Executive Officer.
+
+For Brightwater Robotics GmbH: Jonas Brandt, Chief Financial Officer.

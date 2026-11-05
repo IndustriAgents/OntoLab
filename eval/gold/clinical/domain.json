@@ -1,0 +1,46 @@
+{
+  "name": "Clinical",
+  "description": "Synthetic clinical notes (GP consultation, discharge summary, outpatient letters) for two pseudonymous patients. No real patient data.",
+  "purpose": "Turn free-text clinical notes into a patient-centred knowledge graph of encounters, diagnoses, medication orders with dosage, procedures, lab results, allergies and the clinicians involved, so that care teams can review a patient's history and check medication safety across documents.",
+  "scope": "In scope: pseudonymous patient id and birth year, encounters (outpatient visits and inpatient admissions) with date and facility, attending clinicians and their roles, confirmed diagnoses with ICD-10 codes, medication orders with dose amount, unit and frequency and the prescribing physician, procedures with date and performer, numeric lab results with units, and allergies with the triggering substance and severity. Out of scope: patient names or other direct identifiers, vital signs, examination findings, social history, free-text plans and suspected (unconfirmed) diagnoses.",
+  "stories": [
+    "As a ward pharmacist I want to see every active medication order for a patient with dose and frequency, so that I can reconcile medicines at discharge.",
+    "As a prescribing physician I want to see a patient's documented allergies and the substances involved, so that I avoid prescribing a drug that could cause a reaction.",
+    "As a cardiologist I want to review a patient's procedures and lab results across encounters, so that I can assess the response to treatment.",
+    "As a clinical coder I want each diagnosis linked to its ICD-10 code and encounter, so that activity is recorded correctly."
+  ],
+  "cqs": [
+    {
+      "text": "Which medications have been ordered for each patient, with dose, unit and frequency?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/clinical#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?patientId ?medLabel ?dose ?unit ?frequency WHERE { ?patient :patientId ?patientId ; :hasEncounter ?enc . ?enc :hasMedicationOrder ?order . ?order :ordersMedication ?med . OPTIONAL { ?med rdfs:label ?medLabel } OPTIONAL { ?order :doseAmount ?dose } OPTIONAL { ?order :doseUnit ?unit } OPTIONAL { ?order :doseFrequency ?frequency } } LIMIT 100"
+    },
+    {
+      "text": "Which conditions has each patient been diagnosed with, and what are their ICD-10 codes?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/clinical#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?patientId ?conditionLabel ?code WHERE { ?patient :patientId ?patientId ; :hasEncounter ?enc . ?enc :hasDiagnosis ?condition . OPTIONAL { ?condition rdfs:label ?conditionLabel } OPTIONAL { ?condition :icd10Code ?code } } LIMIT 100"
+    },
+    {
+      "text": "What allergies does each patient have, to which substance, and how severe was the reaction?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/clinical#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?patientId ?substanceLabel ?severity WHERE { ?patient :hasAllergy ?allergy . OPTIONAL { ?patient :patientId ?patientId } OPTIONAL { ?allergy :allergicTo ?substance . ?substance rdfs:label ?substanceLabel } OPTIONAL { ?allergy :reactionSeverity ?severity } } LIMIT 100"
+    },
+    {
+      "text": "Which procedures were performed during each encounter, on which date and by whom?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/clinical#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?encounterLabel ?procedureLabel ?date ?performerLabel WHERE { ?enc :hasProcedure ?procedure . OPTIONAL { ?enc rdfs:label ?encounterLabel } OPTIONAL { ?procedure rdfs:label ?procedureLabel } OPTIONAL { ?procedure :procedureDate ?date } OPTIONAL { ?procedure :performedBy ?performer . ?performer rdfs:label ?performerLabel } } LIMIT 100"
+    },
+    {
+      "text": "Which lab results were recorded for each patient, with value and unit?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/clinical#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?patientId ?testLabel ?value ?unit ?date WHERE { ?patient :patientId ?patientId ; :hasEncounter ?enc . ?enc :hasLabResult ?result . OPTIONAL { ?enc :encounterDate ?date } OPTIONAL { ?result rdfs:label ?testLabel } OPTIONAL { ?result :resultValue ?value } OPTIONAL { ?result :resultUnit ?unit } } ORDER BY ?patientId ?date LIMIT 100"
+    },
+    {
+      "text": "Which physician prescribed each medication order?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/clinical#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?orderLabel ?medLabel ?physicianLabel WHERE { ?order :prescribedBy ?physician . ?physician a :Physician . OPTIONAL { ?order rdfs:label ?orderLabel } OPTIONAL { ?order :ordersMedication ?med . ?med rdfs:label ?medLabel } OPTIONAL { ?physician rdfs:label ?physicianLabel } } LIMIT 100"
+    },
+    {
+      "text": "Which clinicians attended encounters at each care facility, and in what role?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/clinical#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?facilityLabel ?clinicianLabel ?role WHERE { ?enc :atFacility ?facility ; :attendedBy ?clinician . OPTIONAL { ?facility rdfs:label ?facilityLabel } OPTIONAL { ?clinician rdfs:label ?clinicianLabel } OPTIONAL { ?clinician :clinicianRole ?role } } LIMIT 100"
+    },
+    {
+      "text": "Which patients were admitted as inpatients, and on which date?",
+      "sparql": "PREFIX : <https://w3id.org/ontolab/gold/clinical#> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?patientId ?date WHERE { ?patient :hasEncounter ?enc . ?enc rdf:type :InpatientAdmission . OPTIONAL { ?patient :patientId ?patientId } OPTIONAL { ?enc :encounterDate ?date } } LIMIT 100"
+    }
+  ]
+}

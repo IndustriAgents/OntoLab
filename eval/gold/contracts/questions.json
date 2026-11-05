@@ -1,0 +1,16 @@
+[
+  { "question": "What is the effective date of Supply Agreement SA-2026-014?", "type": "single", "answer": ["1 February 2026", "2026-02-01", "February 1, 2026"] },
+  { "question": "Which law governs the non-disclosure agreement between Northgate and Kestrel?", "type": "single", "answer": ["Netherlands", "Dutch"] },
+  { "question": "How much written notice is needed to terminate Analytics Services Agreement SVC-2026-021 for convenience?", "type": "single", "answer": ["60 days", "60"] },
+  { "question": "What is Ravi Okafor's job title?", "type": "single", "answer": ["Head of Data Science"] },
+
+  { "question": "What job title does the person who signed both the supply agreement SA-2026-014 and the NDA NDA-2026-003 hold?", "type": "multi", "answer": ["Chief Procurement Officer"] },
+  { "question": "After Amendment No. 1 took effect, within how many days must Northgate pay undisputed invoices from Brightwater?", "type": "multi", "answer": ["60"] },
+  { "question": "Under which country's law is the agreement governed in which Brightwater Robotics is the client rather than the supplier?", "type": "multi", "answer": ["Germany", "German"] },
+  { "question": "Who is the chief executive of the company with which Northgate signed a non-disclosure agreement?", "type": "multi", "answer": ["Sanne de Wit"] },
+
+  { "question": "How many distinct agreements, including amendments, are described across all the documents?", "type": "aggregate", "answer": ["4", "four"] },
+  { "question": "How many agreements (including amendments) is Northgate Components a party to?", "type": "aggregate", "answer": ["3", "three"] },
+  { "question": "Which agreement has the longest notice period for termination for convenience?", "type": "aggregate", "answer": ["SA-2026-014", "supply agreement"] },
+  { "question": "How many different people signed at least one of the agreements?", "type": "aggregate", "answer": ["5", "five"] }
+]
