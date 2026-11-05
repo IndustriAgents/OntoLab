@@ -7,6 +7,10 @@ directories:
 files:
   - .desktop/**/*
   - package.json
+  - LICENSE
+  - NOTICE
+  - LICENSES/**/*
+  - THIRD-PARTY-NOTICES.txt
 asar: true
 asarUnpack:
   - node_modules/onnxruntime-node/**/*

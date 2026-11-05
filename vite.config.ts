@@ -2,9 +2,8 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 
 /**
- * Production is served by the Node server (server/index.ts) under BASE_PATH —
- * "/ontolab" behind the industriagents-gateway Worker, or "/" when served at the
- * root. The SAME value drives Vite's `base` and the server's prefix stripping,
+ * The built app is served locally by server/index.ts under BASE_PATH,
+ * which defaults to the root path. The SAME value drives Vite's `base` and the server's prefix stripping,
  * and it is read from .env here (loadEnv) exactly as the server reads it via
  * dotenv, so a build and its server can never disagree about the mount point.
  *

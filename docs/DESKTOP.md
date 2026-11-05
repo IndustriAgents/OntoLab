@@ -64,9 +64,7 @@ Development uses an **OntoLab Development** profile; the packaged app uses
 
 The profile contains `workspace/` (persistent data and model cache), `desktop.log`,
 and an optional `desktop.env` file for provider configuration. The desktop app
-does not load the repository's `.env`, and it always selects local storage. A
-hosted deployment's database, gateway token and base path cannot redirect desktop
-storage or require a hosted sign-in. Developer environment variables still take
+does not load the repository's `.env`, and it always selects local storage. Database URLs, API tokens and base paths do not override these desktop defaults. Developer environment variables still take
 precedence over entries in `desktop.env`.
 
 For isolated development or smoke tests, set `ONTOLAB_DESKTOP_PROFILE` to an

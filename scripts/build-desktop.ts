@@ -3,6 +3,7 @@ import { build as buildWeb } from "vite";
 import { cp, mkdir, readFile, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 import sharp from "sharp";
+import { buildNotices } from "./build-notices.ts";
 import { buildBundledDocs } from "./build-docs.ts";
 
 const output = resolve(".desktop");
@@ -52,4 +53,5 @@ await bundle({
   outfile: resolve(output, "mcp.mjs"),
 });
 await cp("samples", resolve(output, "samples"), { recursive: true });
+await buildNotices(resolve(output, "third-party"));
 console.info("Desktop app built in .desktop/");

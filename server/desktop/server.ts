@@ -1,6 +1,6 @@
 import { acquireProfileLock } from "../mcp/profileLock.ts";
 // A private, single-user transport around the existing HTTP application.
-// Hosted authentication and server/index.ts keep their existing behavior.
+// The browser entry point in server/index.ts has its own loopback transport.
 import http from "node:http";
 import { dirname } from "node:path";
 import { createLocalAgent } from "../mcp/local.ts";

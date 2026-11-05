@@ -1,5 +1,5 @@
 // Per-project chunk embeddings, kept in the project's private blob storage
-// (works for the local and the Supabase adapter alike) and updated
+// (works for the local and the Postgres adapter alike) and updated
 // incrementally: only chunks whose text changed are embedded again. Used by the
 // relevance screen, dense passage retrieval and induction's topic clustering.
 // Brute-force cosine is fine at this scale (thousands of chunks).

@@ -1,4 +1,6 @@
 // Native end-to-end check: use a disposable profile and the offline model only.
+import type * as NodeFs from "node:fs";
+import type * as NodePath from "node:path";
 import assert from "node:assert/strict";
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -29,6 +31,19 @@ async function launch() {
 try {
   await mkdir(artifactDir, { recursive: true });
   let page = await launch();
+  const packagedNotices = await desktop!.evaluate(({ app }) => {
+    const fs = process.getBuiltinModule("fs") as typeof NodeFs;
+    const path = process.getBuiltinModule("path") as typeof NodePath;
+    const root = app.getAppPath();
+    return {
+      mit: fs.readFileSync(path.join(root, "LICENSE"), "utf8").includes("MIT License"),
+      apache: fs.readFileSync(path.join(root, "LICENSES/Apache-2.0.txt"), "utf8").includes("Apache License"),
+      helix: fs.readFileSync(path.join(root, "NOTICE"), "utf8").includes("HelixDB"),
+      native: fs.readFileSync(path.join(root, "THIRD-PARTY-NOTICES.txt"), "utf8").includes("libvips"),
+      dependencies: JSON.parse(fs.readFileSync(path.join(root, ".desktop/third-party/inventory.json"), "utf8")).length > 0,
+    };
+  });
+  assert.deepEqual(packagedNotices, { mit: true, apache: true, helix: true, native: true, dependencies: true });
   const oldOrigin = new URL(page.url()).origin;
   assert.equal((await fetch(`${oldOrigin}/api/projects`)).status, 401);
   const preferences = await desktop!.evaluate(({ BrowserWindow }) => {

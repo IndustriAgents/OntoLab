@@ -1,4 +1,4 @@
--- Dedicated namespace: independent of Supabase auth/storage and other apps.
+-- Dedicated namespace: independent of other applications.
 create schema if not exists ontolab;
 
 do $$ begin

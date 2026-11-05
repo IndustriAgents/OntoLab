@@ -1,6 +1,6 @@
 # OntoLab DL reasoner sidecar (OWL API 5 + HermiT).
 #   docker build -t ontolab-reasoner sidecar/reasoner
-#   docker run -p 8091:8091 ontolab-reasoner
+#   docker run -p 127.0.0.1:8091:8091 ontolab-reasoner
 # Then start the Node server with REASONER_URL=http://localhost:8091
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /src

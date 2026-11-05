@@ -1,11 +1,10 @@
 // Repository contracts. Services talk to these interfaces only; the local
-// adapter (JSON files on disk) and the Supabase adapter (Postgres + Storage
-// under row-level security) both implement them.
+// adapter (JSON files on disk) and the Postgres adapter both implement them.
 //
 // A `UserStore` is always bound to one authenticated user. Ownership is part of
 // the binding rather than a parameter every call has to remember: the local
-// adapter partitions its files by user id, and the Supabase adapter issues every
-// query with the user's own JWT so Postgres RLS applies.
+// adapter partitions files by user id, and the Postgres adapter scopes queries
+// using a transaction-local identity and row-level security.
 
 import type {
   Conversation,
@@ -172,8 +171,8 @@ export interface UserStore {
 
 /**
  * Privileged access for the background worker (B7): find runnable runs across
- * users and act as their owner. Absent when the deployment cannot offer it
- * (Supabase without a service-role key) — runs are then driven by the browser.
+ * users and act as their owner. Stores without worker access rely on
+ * browser-driven runs.
  */
 export interface WorkerAccess {
   activeEvaluations(): Promise<{ ownerId: string; projectId: string; evaluationId: string }[]>;

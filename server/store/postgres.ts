@@ -1,4 +1,4 @@
-// Long-lived Node/Cloud Run process: TCP pg pool, using Neon's pooled URL.
+// Local Node process: TCP pg pool, using Neon's pooled URL.
 // Every operation runs as a non-owner role with transaction-local RLS context.
 import { Pool, type PoolClient } from "pg";
 import { postgresConnectionString } from "./connection.ts";

@@ -9,7 +9,10 @@ import { exportBundle, importBundle } from "./archiveV2.ts";
 // metadata, document originals, every revision and the conversations — the
 // pilot's backup mechanism. Importing always creates a NEW project with new ids.
 
-import { gunzipSync } from "node:zlib";
+import { gunzip } from "node:zlib";
+import { promisify } from "node:util";
+import { MAX_ARCHIVE_BYTES, MAX_ARCHIVE_EXPANDED_BYTES } from "../config.ts";
+
 import { ARCHIVE_FORMAT, ARCHIVE_VERSION, type Project, type ProjectArchive, type RevisionContent } from "../../src/types/project.ts";
 import { serializeABox } from "../../src/lib/ontology/aboxSerializer.ts";
 import { HttpError } from "../http.ts";
@@ -20,6 +23,8 @@ import { schemaIssues, latestReport } from "./validation.ts";
 import { contentHash, contentStats, graphAbox, mergedModulesTurtle, reviewPolicyOf, tboxOf } from "./ontology.ts";
 import { uploadDocument } from "./documents.ts";
 import { validateChunkSettings } from "./research.ts";
+
+const decompress = promisify(gunzip);
 
 export type ExportScope = "abox" | "tbox" | "combined";
 
@@ -113,11 +118,18 @@ export async function exportArchive(ctx: ServiceCtx, projectId: string): Promise
   return exportBundle(ctx, projectId);
 }
 
-function parseArchive(bytes: Buffer): ProjectArchive {
+async function parseArchive(bytes: Buffer): Promise<ProjectArchive> {
+  if (bytes.length > MAX_ARCHIVE_BYTES) throw new HttpError(413, "The archive exceeds the upload size limit.");
   let text: string;
   try {
-    text = (bytes[0] === 0x1f && bytes[1] === 0x8b ? gunzipSync(bytes) : bytes).toString("utf8");
-  } catch {
+    const expanded =
+      bytes[0] === 0x1f && bytes[1] === 0x8b ? await decompress(bytes, { maxOutputLength: MAX_ARCHIVE_EXPANDED_BYTES }) : bytes;
+    if (expanded.length > MAX_ARCHIVE_EXPANDED_BYTES) throw new HttpError(413, "The expanded archive exceeds the size limit.");
+    text = expanded.toString("utf8");
+  } catch (error) {
+    if (error instanceof HttpError) throw error;
+    if ((error as NodeJS.ErrnoException).code === "ERR_BUFFER_TOO_LARGE")
+      throw new HttpError(413, "The expanded archive exceeds the size limit.");
     throw new HttpError(400, "The archive could not be decompressed.");
   }
   let data: ProjectArchive;
@@ -141,7 +153,7 @@ function parseArchive(bytes: Buffer): ProjectArchive {
  * drafts, documents are re-uploaded and re-parsed.
  */
 export async function importArchive(ctx: ServiceCtx, bytes: Buffer): Promise<Project> {
-  const data = parseArchive(bytes);
+  const data = await parseArchive(bytes);
   if (data.version >= 2) return importBundle(ctx, data);
   const project = await createProject(ctx, {
     name: `${String(data.project.name || "Imported project").slice(0, 180)}`,
