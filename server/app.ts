@@ -38,6 +38,7 @@ import {
   MAX_FILE_BASE64,
   MAX_GRAPH_NODES,
   MAX_UPLOAD_BYTES,
+  MAX_ARCHIVE_BYTES,
   MAX_DOCUMENTS_PER_PROJECT,
   MAX_SOURCES_PER_CORPUS,
   STORAGE_QUOTA_BYTES,
@@ -308,7 +309,7 @@ function buildRouter(): Router<RouteCtx> {
   );
   r.post("/api/projects/:pid/evidence/original", async ({ svc, params, json: body }) => {
     const { bytes, doc } = await evidenceOriginal(svc, params.pid, parseEvidenceRequest(await body()));
-    return new FileResponse(bytes, doc.mediaType, doc.name, true);
+    return new FileResponse(bytes, doc.mediaType, doc.name);
   });
   r.post("/api/projects/:pid/evidence/structure", async ({ svc, params, json: body }) => {
     const b = await body();
@@ -341,8 +342,7 @@ function buildRouter(): Router<RouteCtx> {
   });
   r.post(
     "/api/projects/import",
-    async ({ svc, raw }) =>
-      new StatusResponse(201, { project: await archive.importArchive(svc, await raw(MAX_UPLOAD_BYTES * MAX_DOCUMENTS_PER_PROJECT)) }),
+    async ({ svc, raw }) => new StatusResponse(201, { project: await archive.importArchive(svc, await raw(MAX_ARCHIVE_BYTES)) }),
   );
   r.get("/api/projects/:pid", async ({ svc, params }) => ({ project: await projects.requireProject(svc, params.pid) }));
   r.patch("/api/projects/:pid", async ({ svc, params, json: body }) => ({
@@ -480,7 +480,7 @@ function buildRouter(): Router<RouteCtx> {
   });
   r.get("/api/projects/:pid/documents/:did/file", async ({ svc, params }) => {
     const { bytes, doc } = await documents.documentFile(svc, params.pid, params.did);
-    return new FileResponse(bytes, doc.mediaType, doc.name, true);
+    return new FileResponse(bytes, doc.mediaType, doc.name);
   });
   r.post("/api/projects/:pid/documents/:did/retry", async ({ svc, params }) => ({
     document: await documents.retryParse(svc, params.pid, params.did, true),
@@ -1126,12 +1126,12 @@ export function createApp(deps: AppDeps): http.RequestListener {
         return;
       }
       if (result instanceof FileResponse) {
-        const disposition = result.filename
-          ? `${result.inline ? "inline" : "attachment"}; filename*=UTF-8''${encodeURIComponent(result.filename)}`
-          : undefined;
+        const disposition = result.filename ? `attachment; filename*=UTF-8''${encodeURIComponent(result.filename)}` : "attachment";
         send(res, 200, result.body, result.contentType, {
           "cache-control": "private, no-store",
-          ...(disposition ? { "content-disposition": disposition } : {}),
+          "content-disposition": disposition,
+          // Original uploads and imported metadata are untrusted, including HTML/XML/SVG.
+          "content-security-policy": "sandbox; default-src 'none'; base-uri 'none'; form-action 'none'",
         });
       } else if (result instanceof StatusResponse) {
         status = result.status;

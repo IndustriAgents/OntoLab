@@ -25,7 +25,7 @@ report.
 
 ```sh
 docker build -t ontolab-reasoner sidecar/reasoner
-docker run -p 8091:8091 ontolab-reasoner
+docker run -p 127.0.0.1:8091:8091 ontolab-reasoner
 REASONER_URL=http://localhost:8091 npm run dev
 ```
 

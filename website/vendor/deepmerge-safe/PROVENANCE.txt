@@ -1,0 +1,10 @@
+Derived from deepmerge 4.3.1, https://github.com/TehShrike/deepmerge/tree/v4.3.1
+Original MIT license retained in LICENSE.
+
+Modification by IndustriAgents on 2026-11-05: filter __proto__, constructor
+and prototype keys from both source and target, at every merge depth.
+Addresses GHSA-gcqx-w48m-w2h4. Remove this override when a reviewed upstream
+fix is available. Test coverage lives in website/scripts/deepmerge.test.mjs.
+
+Rebuild from the repository root with:
+npm pack ./website/vendor/deepmerge-safe --pack-destination website/vendor

@@ -102,7 +102,7 @@ Markdown.
 
 ```sh
 docker build -t ontolab-docling sidecar/docling
-docker run -p 8001:8001 ontolab-docling
+docker run -p 127.0.0.1:8001:8001 ontolab-docling
 
 curl http://localhost:8001/health
 curl -X POST --data-binary @paper.pdf -H "x-file-name: paper.pdf" http://localhost:8001/parse
@@ -118,7 +118,7 @@ Without Docker (Python 3.10 to 3.12 recommended for Docling):
 ```sh
 cd sidecar/docling
 pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt
-uvicorn app:app --host 0.0.0.0 --port 8001
+uvicorn app:app --host 127.0.0.1 --port 8001
 ```
 
 Tests (serializer only, standard library, no Docling needed):

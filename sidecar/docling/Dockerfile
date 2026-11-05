@@ -1,6 +1,6 @@
 # OntoLab document-parsing sidecar (Docling, MIT).
 #   docker build -t ontolab-docling sidecar/docling
-#   docker run -p 8001:8001 ontolab-docling
+#   docker run -p 127.0.0.1:8001:8001 ontolab-docling
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \

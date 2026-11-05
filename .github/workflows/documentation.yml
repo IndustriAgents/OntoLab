@@ -1,24 +1,8 @@
 name: Documentation
 on:
   pull_request:
-    paths:
-      [
-        "website/**",
-        "samples/mechatronic-tbox.ttl",
-        "samples/distributing-manual.txt",
-        "src/styles/helix.css",
-        ".github/workflows/documentation.yml",
-      ]
   push:
     branches: [main]
-    paths:
-      [
-        "website/**",
-        "samples/mechatronic-tbox.ttl",
-        "samples/distributing-manual.txt",
-        "src/styles/helix.css",
-        ".github/workflows/documentation.yml",
-      ]
   workflow_dispatch:
 permissions:
   contents: read
@@ -27,6 +11,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   check:
+    name: Documentation checks
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -39,7 +24,7 @@ jobs:
           cache: npm
           cache-dependency-path: website/package-lock.json
       - run: npm ci
-      - run: npm audit --audit-level=moderate
+      - run: npm audit --audit-level=low
       - run: npm run check
       - run: npm run build
       - uses: actions/upload-artifact@v4

@@ -112,7 +112,7 @@ Evaluate UI ── evaluation API ── evaluation service ── owner-scoped 
 
 Extract reusable ranking from `hybridPassages()` into a service accepting authorized snapshot scope, query, mode, candidate limits, result limits, filters and an immutable profile. Record the actual embedding backend and any fallback. Use this service in live graph-chat evidence search and retrieval evaluation. Begin with existing storage and ranking; add Qdrant or a reranking sidecar only when a measured experiment warrants it.
 
-**Independent evaluation records.** Add typed repositories to `UserStore` and implementations for local, Postgres and Supabase. Reuse lease/checkpoint patterns but give evaluations their own worker access and lifecycle; extraction `RunKind` and its step assumptions should not become a container for unrelated state. Extend Activity to aggregate evaluation attempts. Model-calling routes retain the existing LLM request controls.
+**Independent evaluation records.** Add typed repositories to `UserStore` and implementations for local and Postgres. Reuse lease/checkpoint patterns but give evaluations their own worker access and lifecycle; extraction `RunKind` and its step assumptions should not become a container for unrelated state. Extend Activity to aggregate evaluation attempts. Model-calling routes retain the existing LLM request controls.
 
 | Proposed record | Contents |
 | --- | --- |

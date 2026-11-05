@@ -67,4 +67,4 @@ Each run stores its full configuration in `run.config`. Configurations never sha
   - The LLMs4OL challenge-JSON loader (tasks B and C are computed from the induced ontology instead).
   - Assistant "Propose" producing T-Box change sets.
   - Restoring the advisory T-Box coverage panel (`/api/suggest-tbox`). CQ gaps and proposals now cover most of what it did.
-- **Supabase.** No migration is needed: the new data lives in the JSON content and the jsonb columns. The live Supabase project is still untested.
+- **Storage.** Research data lives in JSON content and Postgres jsonb columns.

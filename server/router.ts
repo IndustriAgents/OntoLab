@@ -78,7 +78,6 @@ export class FileResponse {
     readonly body: Buffer | string,
     readonly contentType: string,
     readonly filename?: string,
-    readonly inline = false,
   ) {}
 }
 

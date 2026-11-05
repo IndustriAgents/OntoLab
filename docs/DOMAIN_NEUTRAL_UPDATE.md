@@ -60,14 +60,13 @@ the component `BuildWithAiPage.tsx` and its hook state remain but are unused.
 | A6 RDF/XML and JSON-LD import (Oxigraph), alignment with retrieve-then-verify | `server/services/rdfConvert.ts`, `server/services/alignment.ts`, review panel |
 
 **Open:** the sidecar's unit tests pass but it has not been run against real
-Docling (the image is several GB); Supabase migration `0002` is untested live,
-like `0001`.
+Docling (the image is several GB).
 
 ## Phase 5 — scale and cost ✅
 
 | Item | Where |
 |---|---|
-| B7 background worker (local store; Supabase with a service-role key) and parallel chunk steps | `server/worker.ts`, `WorkerAccess` in `server/store/types.ts`, `PARALLEL_STEPS` |
+| B7 background worker (local and Postgres stores) and parallel chunk steps | `server/worker.ts`, `WorkerAccess` in `server/store/types.ts`, `PARALLEL_STEPS` |
 | B9 estimate before a run, per-run and per-project budgets, relevance screen, result cache keyed by chunk + T-Box + model + prompt version | `estimateRun`, cache helpers and `relevant` in `runs.ts`, `server/services/pricing.ts` |
 
 ## Phase 6 — assistant and versioning ✅
@@ -90,8 +89,8 @@ to end. The Docling serializer has its own `python -m unittest` suite.
 
 - Review and extend the gold set, then run the harness with a real model and
   use its gates to decide when each phase is done.
-- Hosting decision (single-user vs hosted with sign-in and worker) — the worker
-  is off by default and needs non-sleeping hosting.
+- The public edition uses a local single-user workspace. Background extraction
+  requires the local process to remain running.
 - Graph store: stays RDF (Oxigraph) as recommended.
 - First live run of the local transformers.js models (downloaded on first use)
   and of the Docling image.

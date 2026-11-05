@@ -221,7 +221,11 @@ For Postgres-backed corpus integration checks, inject `CORPUS_TEST_DATABASE_URL`
 
 ### Document preparation
 
-The document workflow is **Upload original → automatic parsing → inspect readable text → configure and save chunks → generate**. Uploads return after durable storage; a separate parsing worker runs automatically for local and Postgres storage, independent of `WORKER=1`. Queued documents and expiring processing leases survive restarts. The legacy Supabase adapter retains synchronous parsing.
+Project archives may be imported as gzip or plain JSON. The defaults allow 64 MiB
+per upload and 128 MiB of expanded JSON. `MAX_ARCHIVE_BYTES` and
+`MAX_ARCHIVE_EXPANDED_BYTES` can be raised for trusted larger backups.
+
+The document workflow is **Upload original → automatic parsing → inspect readable text → configure and save chunks → generate**. Uploads return after durable storage; a separate parsing worker runs automatically for local and Postgres storage, independent of `WORKER=1`. Queued documents and expiring processing leases survive restarts.
 
 Each file shows its upload and parsing status. Failed parsing retains the original and can be retried. Readable-text and original-file views are available before generation. The original can always be downloaded; PDF, image and text originals have an inline preview. No readable text is flagged, and unparsed or unchunked inputs cannot enter generation.
 
@@ -289,3 +293,7 @@ The Explore graph and paper theme include modified code from
 [Helix Foundry](https://github.com/HelixDB/helix-foundry) under
 [Apache-2.0](LICENSES/Apache-2.0.txt). The affected files carry an Apache-2.0
 header. See the upstream [notice](NOTICE) for attribution.
+
+Desktop builds include these licenses and a generated dependency inventory. See
+[third-party notices](THIRD-PARTY-NOTICES.txt), including the native libvips terms
+and source-distribution requirements for binary releases.

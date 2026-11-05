@@ -7,12 +7,12 @@
  * API_PORT wins over PORT. That matters in dev: the tooling that launches the
  * app often injects PORT for the *web* server (Vite is on 5173), and if the API
  * silently adopted it both processes would fight over one port and every /api
- * call would fail with ECONNREFUSED. Cloud Run only sets PORT, which still works.
+ * call would fail with ECONNREFUSED. PORT remains a supported fallback.
  */
 export const PORT = Number(process.env.API_PORT || process.env.PORT) || 3000;
 
 /**
- * Mount prefix, e.g. "/ontolab" when served behind the gateway Worker.
+ * Mount prefix, e.g. "/ontolab" for a local installation under a prefix.
  * Must match the base the SPA was built with (vite.config.ts).
  */
 export const BASE_PATH = (process.env.BASE_PATH ?? "").replace(/\/+$/, "");
@@ -60,6 +60,9 @@ export const STORE_MODE = process.env.STORE_MODE || (DATABASE_URL ? "postgres" :
 /** Pilot limits, explained to the user before upload or execution. */
 export const MAX_UPLOAD_BYTES = Number(process.env.MAX_UPLOAD_BYTES) || 20 * 1024 * 1024;
 export const MAX_DOCUMENTS_PER_PROJECT = Number(process.env.MAX_DOCUMENTS_PER_PROJECT) || 50;
+/** Independent limits for archive uploads and their expanded JSON representation. */
+export const MAX_ARCHIVE_BYTES = Number(process.env.MAX_ARCHIVE_BYTES) || 64 * 1024 * 1024;
+export const MAX_ARCHIVE_EXPANDED_BYTES = Number(process.env.MAX_ARCHIVE_EXPANDED_BYTES) || 128 * 1024 * 1024;
 /** Corpus source files; historical versions and preparation variants do not consume source slots. */
 export const MAX_SOURCES_PER_CORPUS = Number(process.env.MAX_SOURCES_PER_CORPUS) || 1000;
 /** Per-user storage budget (originals + extracted text), configurable for the backing store. */

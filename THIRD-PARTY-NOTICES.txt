@@ -1,0 +1,34 @@
+OntoLab third-party software notices
+
+OntoLab original code is MIT licensed. See LICENSE.
+Modified Helix Foundry code retains Apache-2.0 terms. See NOTICE and
+LICENSES/Apache-2.0.txt. These terms also apply to the compiled graph and theme.
+
+Third-party dependencies retain their own licenses. During desktop builds,
+scripts/build-notices.ts inventories installed runtime and documentation
+packages from the lockfiles, preserving their license/notice files (or their
+README when a package omits separate license files). The generated inventory
+and texts are packaged in .desktop/third-party/, including exact versions,
+license expressions and upstream source/package URLs. This inventory is not
+an assertion that every upstream package ships complete license information.
+
+Native libvips
+
+Optional local models use sharp and dynamically linked libvips. The bundled
+@img/sharp-libvips libraries have separate LGPL-3.0-or-later and other terms.
+See LICENSES/sharp-libvips-1.3.4-notices.txt for upstream's component inventory,
+LICENSES/sharp-libvips-1.3.4-versions.txt for its build versions, and the included
+LGPL-3.0.txt and GPL-3.0.txt for full license texts. No OntoLab restriction
+prohibits modifying/replacing these libraries or reverse engineering to debug
+such modifications.
+
+Upstream packaging release v1.3.4, exact source and build recipes:
+https://github.com/lovell/sharp-libvips/tree/ebb95f8add54eee8bed840e3fb587e4cbec857d7
+https://github.com/lovell/sharp-libvips/blob/ebb95f8add54eee8bed840e3fb587e4cbec857d7/build/lin.sh
+The build recipes identify component source archives using the pinned versions.
+Before distributing native binaries, provide their corresponding source and
+build material through the same release channel under the applicable terms.
+
+The documentation build uses a patched deepmerge 4.3.1, MIT licensed.
+Its original license and modification provenance are retained in
+website/vendor/deepmerge-safe/ and the generated dependency notices.

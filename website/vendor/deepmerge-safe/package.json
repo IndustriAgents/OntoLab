@@ -1,0 +1,12 @@
+{
+  "name": "@ontolab/deepmerge-safe",
+  "version": "4.3.1-ontolab.1",
+  "license": "MIT",
+  "private": true,
+  "main": "index.cjs",
+  "files": [
+    "index.cjs",
+    "LICENSE",
+    "PROVENANCE.txt"
+  ]
+}

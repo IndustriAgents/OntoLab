@@ -1,4 +1,4 @@
-// Keyword retrieval for the local adapter (the Supabase adapter uses Postgres
+// Keyword retrieval for the local adapter (the Postgres adapter uses Postgres
 // full-text search instead). BM25 over the project's chunks — small, dependency
 // free and good enough for a few thousand chunks.
 
