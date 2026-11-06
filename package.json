@@ -47,7 +47,7 @@
     "docs:bundle": "tsx scripts/build-docs.ts --dev"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22.22.0"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.69.0",
@@ -72,8 +72,8 @@
     "pdfjs-dist": "^4.10.38",
     "pg": "^8.23.1",
     "rdf-validate-shacl": "^0.6.5",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^19.2.9",
+    "react-dom": "^19.2.9",
     "react-markdown": "^10.1.0",
     "react-router": "^8.5.1",
     "remark-gfm": "^4.0.1",
@@ -88,8 +88,8 @@
     "@types/n3": "^1.21.1",
     "@types/node": "^22.10.5",
     "@types/pg": "^8.23.1",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
     "@types/sparqljs": "^3.1.12",
     "@vitejs/plugin-react": "^4.3.4",
     "concurrently": "^9.1.0",

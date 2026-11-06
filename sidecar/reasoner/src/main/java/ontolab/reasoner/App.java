@@ -35,23 +35,24 @@ public final class App {
     long maxBytes = Long.parseLong(System.getenv().getOrDefault("MAX_BODY_BYTES", String.valueOf(50L * 1024 * 1024)));
     long timeoutMs = Long.parseLong(System.getenv().getOrDefault("REASON_TIMEOUT_MS", "55000"));
 
-    Javalin app = Javalin.create(cfg -> cfg.http.maxRequestSize = maxBytes);
-    app.get("/health", ctx -> ctx.json(Map.of("ok", true, "reasoner", "hermit", "owlapi", "5")));
-    app.post("/reason", ctx -> {
-      if (!token.isEmpty() && !token.equals(ctx.header("x-token"))) {
-        ctx.status(401).json(Map.of("error", "unauthorised"));
-        return;
-      }
-      Request req;
-      try {
-        req = JSON.readValue(ctx.body(), Request.class);
-      } catch (Exception e) {
-        ctx.status(400).json(Map.of("error", "invalid JSON body"));
-        return;
-      }
-      respond(ctx, req, timeoutMs);
-    });
-    app.start(port);
+    Javalin.create(cfg -> {
+      cfg.http.maxRequestSize = maxBytes;
+      cfg.routes.get("/health", ctx -> ctx.json(Map.of("ok", true, "reasoner", "hermit", "owlapi", "5")));
+      cfg.routes.post("/reason", ctx -> {
+        if (!token.isEmpty() && !token.equals(ctx.header("x-token"))) {
+          ctx.status(401).json(Map.of("error", "unauthorised"));
+          return;
+        }
+        Request req;
+        try {
+          req = JSON.readValue(ctx.body(), Request.class);
+        } catch (Exception e) {
+          ctx.status(400).json(Map.of("error", "invalid JSON body"));
+          return;
+        }
+        respond(ctx, req, timeoutMs);
+      });
+    }).start(port);
   }
 
   private static void respond(Context ctx, Request req, long timeoutMs) {

@@ -14,7 +14,21 @@
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <owlapi.version>5.1.20</owlapi.version>
+    <jackson.version>2.22.4</jackson.version>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- OWL API also brings Jackson. Keep all Jackson modules on the patched line. -->
+      <dependency>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
+        <version>${jackson.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>
@@ -40,7 +54,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.18.11</version>
+      <version>${jackson.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

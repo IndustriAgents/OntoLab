@@ -1,6 +1,6 @@
 # Local development with Docker Postgres
 
-Install Node 22+, Docker with Compose, and Make. Start Docker, then run:
+Install Node 22.22+, Docker with Compose, and Make. Start Docker, then run:
 
 ```bash
 make up

@@ -269,7 +269,7 @@ export default function AssistantPage() {
   const [focusSource, setFocusSource] = useState<string | undefined>(linkedSource?.[1]);
   const [selectedPassage, setSelectedPassage] = useState<AnswerPassage & { revisionId: string; sourceLabel: string }>();
   const returnFocus = useRef<HTMLElement | null>(null);
-  const returnSelector = useRef<string>();
+  const returnSelector = useRef<string | undefined>(undefined);
   const restoreEvidenceFocus = useCallback(
     () =>
       requestAnimationFrame(() => {

@@ -3,7 +3,7 @@ title: "Run OntoLab locally"
 description: "Start an offline demonstration or a configured development installation."
 ---
 
-Use Node.js 22 or newer. Application and documentation dependencies are separate so a documentation build does not install or start the backend.
+Use Node.js 22.22 or newer. Application and documentation dependencies are separate so a documentation build does not install or start the backend.
 
 ## Offline application demo
 

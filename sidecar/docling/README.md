@@ -23,7 +23,7 @@ otherwise it keeps its built-in parsers.
 ### `GET /health`
 
 ```json
-{"ok": true, "parser": "docling", "version": "2.130.0"}
+{"ok": true, "parser": "docling", "version": "2.145.0"}
 ```
 
 `version` is the installed Docling package version.
