@@ -69,6 +69,16 @@ describe("layout-aware text", () => {
     expect(serializeBlocks(blocks).text).not.toContain("evil");
   });
 
+  it("omits hidden HTML content and decodes visible text once", () => {
+    const html = "<p>Visible<!-- hidden --><script>hidden()</script   > &amp;lt; &lt;b&gt;</p>";
+    expect(htmlToBlocks(html)).toEqual([{ kind: "paragraph", text: "Visible &lt; <b>" }]);
+  });
+
+  it("escapes backslashes and pipes in a Markdown table cell", () => {
+    const st = serializeBlocks([{ kind: "table", text: "", rows: [["Value"], ["\\|"]] }]);
+    expect(st.text).toBe("| Value |\n| --- |\n| " + "\\".repeat(3) + "| |\n");
+  });
+
   it("finds Markdown sections and pipe tables without changing the text", () => {
     const text = "# A\n\nintro\n\n## B\n\n| x | y |\n| - | - |\n| 1 | 2 |\n\n# C\n";
     const st = markdownStructure(text);
@@ -240,7 +250,7 @@ describe("evidence gate", () => {
 
 describe("schema migration", () => {
   it("renames individuals' terms and flags removed ones", () => {
-    const after = parseTBox(TBOX.replace(/:Supplier/g, ":Vendor").replace('rdfs:label "Supplier"', 'rdfs:label "Supplier"').replace(/:value a owl:DatatypeProperty[^\n]*\n/, ""));
+    const after = parseTBox(TBOX.replace(/:Supplier/g, ":Vendor").replace(/:value a owl:DatatypeProperty[^\n]*\n/, ""));
     expect(detectRenames(tbox, after).get(`${NS}Supplier`)).toBe(`${NS}Vendor`);
     const { abox, report } = migrateAbox(tbox, after, {
       individuals: [

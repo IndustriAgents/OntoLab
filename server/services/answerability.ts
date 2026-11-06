@@ -175,7 +175,9 @@ export function applyRenames(sparql: string, renamed: { from: string; to: string
     for (const m of sparql.matchAll(/PREFIX\s+([A-Za-z][\w-]*)?:\s*<([^>]+)>/gi)) {
       if (m[2] !== ns || namespaceOf(r.to) !== ns) continue;
       const pfx = m[1] ?? "";
-      out = out.replace(new RegExp(`(^|[\\s(,;./{])${pfx}:${localName(r.from)}(?![\\w-])`, "g"), `$1${pfx}:${localName(r.to)}`);
+      const local = localName(r.from).replace(/[.*+?^{}()|[\]\\$]/g, "\\$&");
+      const pattern = new RegExp("(^|[\\s(,;./{])" + pfx + ":" + local + "(?![\\w-])", "g");
+      out = out.replace(pattern, (_, boundary: string) => boundary + pfx + ":" + localName(r.to));
     }
   }
   return out;
