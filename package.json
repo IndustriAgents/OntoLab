@@ -110,7 +110,7 @@
     "vitest": "^4.1.11"
   },
   "optionalDependencies": {
-    "@huggingface/transformers": "4.3.0"
+    "@huggingface/transformers": "4.3.2"
   },
   "overrides": {
     "@electron/universal": {
