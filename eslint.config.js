@@ -31,7 +31,9 @@ export default tseslint.config(
     },
     plugins: { "react-hooks": reactHooks, "jsx-a11y": jsxA11y },
     rules: {
-      ...reactHooks.configs.recommended.rules,
+      // Keep the existing Hooks checks when upgrading the plugin.
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
       ...jsxA11y.flatConfigs.recommended.rules,
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
