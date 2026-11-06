@@ -27,7 +27,7 @@ jobs:
       - run: npm audit --audit-level=low
       - run: npm run check
       - run: npm run build
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ontolab-docs-${{ github.sha }}
           path: website/build
