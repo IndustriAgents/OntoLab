@@ -78,7 +78,7 @@ export function CapturedAnswer({
   );
 }
 
-function AnswerTrace({ capture, traceRef }: { capture: EvaluationCapture; traceRef?: RefObject<HTMLDetailsElement> }) {
+function AnswerTrace({ capture, traceRef }: { capture: EvaluationCapture; traceRef?: RefObject<HTMLDetailsElement | null> }) {
   return (
     <details className="evaluation-trace" ref={traceRef}>
       <summary>Queries, results and model usage</summary>

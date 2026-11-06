@@ -7,7 +7,7 @@ Postgres installed.
 
 ## Develop and package
 
-Development requires Node 22+ and npm:
+Development requires Node 22.22+ and npm:
 
 ```bash
 npm ci
