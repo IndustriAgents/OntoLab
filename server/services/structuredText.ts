@@ -5,6 +5,7 @@
 // (sidecar/docling/serialize.py), so chunking and evidence offsets behave the
 // same whichever parser ran.
 
+import { parse, defaultTreeAdapter, type DefaultTreeAdapterTypes } from "parse5";
 import type { PageSpan, SectionSpan, TableSpan } from "../../src/types/project.ts";
 
 export interface Block {
@@ -35,7 +36,7 @@ const multiLine = (s: string) =>
     .trim();
 
 export function tableToMarkdown(rows: string[][]): string {
-  const grid = rows.map((r) => r.map((c) => oneLine(c).replace(/\|/g, "\\|"))).filter((r) => r.length);
+  const grid = rows.map((r) => r.map((c) => oneLine(c).replace(/[\\|]/g, "\\$&"))).filter((r) => r.length);
   if (!grid.length || !grid.some((r) => r.some(Boolean))) return "";
   const width = Math.max(...grid.map((r) => r.length));
   const pad = (r: string[]) => [...r, ...Array(width - r.length).fill("")];
@@ -146,59 +147,70 @@ export function markdownStructure(text: string): Pick<StructuredText, "sections"
 
 /* ───────────────────────── HTML (and DOCX via mammoth's HTML) ───────────────────────── */
 
-const ENTITIES: Record<string, string> = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ", ndash: "–", mdash: "—", hellip: "…", rsquo: "’", lsquo: "‘", rdquo: "”", ldquo: "“", copy: "©", reg: "®", deg: "°" };
+type HtmlNode = DefaultTreeAdapterTypes.Node;
 
-export function decodeEntities(s: string): string {
-  return s.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (all, e: string) => {
-    if (e[0] === "#") {
-      const code = e[1] === "x" || e[1] === "X" ? parseInt(e.slice(2), 16) : parseInt(e.slice(1), 10);
-      return Number.isFinite(code) && code > 0 && code < 0x110000 ? String.fromCodePoint(code) : all;
+const { isElementNode, isTextNode } = defaultTreeAdapter;
+const OMITTED_TAGS = new Set(["script", "style", "noscript", "template", "svg", "head", "nav", "footer"]);
+const BLOCK_TAGS = new Set(["h1", "h2", "h3", "h4", "h5", "h6", "p", "li", "table", "pre", "blockquote", "dt", "dd", "caption"]);
+const FALLBACK_BREAKS = new Set(["div", "section", "article", "tr"]);
+
+function* htmlNodes(root: HtmlNode, descend: (node: HtmlNode) => boolean = () => true): Iterable<HtmlNode> {
+  const stack = [root];
+  while (stack.length) {
+    const node = stack.pop()!;
+    if (isElementNode(node) && OMITTED_TAGS.has(node.tagName)) continue;
+    yield node;
+    if ("childNodes" in node && descend(node)) {
+      for (let i = node.childNodes.length - 1; i >= 0; i--) stack.push(node.childNodes[i]);
     }
-    return ENTITIES[e.toLowerCase()] ?? all;
-  });
+  }
 }
 
-const stripTags = (s: string) => decodeEntities(s.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, "")).replace(/[ \t\f\v\u00a0]+/g, " ");
+function htmlText(root: HtmlNode, fallback = false): string {
+  const parts: string[] = [];
+  for (const node of htmlNodes(root)) {
+    if (isTextNode(node)) parts.push(node.value);
+    else if (isElementNode(node) && node.tagName === "br") parts.push("\n");
+    else if (fallback && isElementNode(node) && FALLBACK_BREAKS.has(node.tagName)) parts.push("\n\n");
+  }
+  return parts
+    .join("")
+    .replace(/[ \t\f\v\u00a0]+/g, " ")
+    .trim();
+}
 
-/**
- * Blocks from HTML: headings, paragraphs, list items and tables in document
- * order. Deliberately small (no DOM): good enough for mammoth's clean HTML and
- * ordinary web pages; scripts, styles and navigation chrome are dropped.
- */
+function htmlTable(table: DefaultTreeAdapterTypes.Element): string[][] {
+  const rows: string[][] = [];
+  for (const row of htmlNodes(table, (node) => node === table || !isElementNode(node) || node.tagName !== "table")) {
+    if (!isElementNode(row) || row.tagName !== "tr") continue;
+    const cells = row.childNodes.filter((node) => isElementNode(node) && (node.tagName === "td" || node.tagName === "th"));
+    if (cells.length) rows.push(cells.map((cell) => htmlText(cell)));
+  }
+  return rows;
+}
+
+/** Extract text blocks from an inert HTML tree. This output is text, not sanitized HTML. */
 export function htmlToBlocks(html: string): Block[] {
-  const body = html
-    .replace(/<!--[\s\S]*?-->/g, "")
-    .replace(/<(script|style|noscript|template|svg|head|nav|footer)\b[\s\S]*?<\/\1>/gi, "")
-    .replace(/<(script|style)\b[^>]*\/>/gi, "");
+  const document = parse(html);
   const blocks: Block[] = [];
-  const re = /<(h[1-6]|p|li|table|pre|blockquote|dt|dd|caption)\b[^>]*>([\s\S]*?)<\/\1>/gi;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(body))) {
-    const tag = m[1].toLowerCase();
-    const inner = m[2];
+  for (const node of htmlNodes(document, (node) => !isElementNode(node) || !BLOCK_TAGS.has(node.tagName))) {
+    if (!isElementNode(node) || !BLOCK_TAGS.has(node.tagName)) continue;
+    const tag = node.tagName;
     if (tag === "table") {
-      const rows: string[][] = [];
-      for (const tr of inner.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)) {
-        rows.push([...tr[1].matchAll(/<(td|th)\b[^>]*>([\s\S]*?)<\/\1>/gi)].map((c) => stripTags(c[2])));
-      }
+      const rows = htmlTable(node);
       if (rows.length) blocks.push({ kind: "table", text: "", rows });
       continue;
     }
-    // A paragraph wrapping nested block elements is handled by its children.
-    if (/<(table|h[1-6]|li)\b/i.test(inner)) {
-      blocks.push(...htmlToBlocks(inner));
-      continue;
-    }
-    const text = stripTags(inner).trim();
+    const text = htmlText(node);
     if (!text) continue;
     if (tag[0] === "h") blocks.push({ kind: "heading", text, level: Number(tag[1]) });
     else if (tag === "li") blocks.push({ kind: "list_item", text });
     else blocks.push({ kind: "paragraph", text });
   }
-  // Pages that keep text in bare <div>s: fall back to their text.
   if (!blocks.length) {
-    const text = stripTags(body.replace(/<\/(div|section|article|tr|br)>/gi, "\n\n")).trim();
-    for (const para of text.split(/\n\s*\n/)) if (para.trim()) blocks.push({ kind: "paragraph", text: para.trim() });
+    for (const para of htmlText(document, true).split(/\n\s*\n/)) {
+      if (para.trim()) blocks.push({ kind: "paragraph", text: para.trim() });
+    }
   }
   return blocks;
 }

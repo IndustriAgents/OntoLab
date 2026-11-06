@@ -175,7 +175,18 @@ export function applyRenames(sparql: string, renamed: { from: string; to: string
     for (const m of sparql.matchAll(/PREFIX\s+([A-Za-z][\w-]*)?:\s*<([^>]+)>/gi)) {
       if (m[2] !== ns || namespaceOf(r.to) !== ns) continue;
       const pfx = m[1] ?? "";
-      out = out.replace(new RegExp(`(^|[\\s(,;./{])${pfx}:${localName(r.from)}(?![\\w-])`, "g"), `$1${pfx}:${localName(r.to)}`);
+      const from = pfx + ":" + localName(r.from);
+      const to = pfx + ":" + localName(r.to);
+      const parts: string[] = [];
+      let cursor = 0;
+      for (let start = out.indexOf(from); start !== -1; start = out.indexOf(from, start + from.length)) {
+        const end = start + from.length;
+        if (start > 0 && !/[\s(,;./{]/.test(out[start - 1])) continue;
+        if (/[\w-]/.test(out[end] ?? "")) continue;
+        parts.push(out.slice(cursor, start), to);
+        cursor = end;
+      }
+      if (parts.length) out = parts.join("") + out.slice(cursor);
     }
   }
   return out;

@@ -3,36 +3,52 @@
 [![CI](https://github.com/IndustriAgents/OntoLab/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/IndustriAgents/OntoLab/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**Turn documents into a knowledge graph you can review, query, and export.**
+**Build ontologies and knowledge graphs from documents.**
 
-OntoLab is an open-source workspace for building ontologies and extracting facts from documents. Start with your own ontology, a template, or a draft generated from your sources. Review each proposed fact alongside its source passage, then save a version of the graph.
+OntoLab is an open-source workspace for defining a domain’s vocabulary and turning documents into facts you can trace to their sources. Build and align ontologies on their own, or use a saved ontology to guide knowledge graph extraction.
 
-[Quick start](#quick-start) · [Sample walkthrough](website/docs/start/quickstart.md) · [Documentation](#documentation) · [Contributing](#contributing)
+[Two workflows](#two-workflows) · [Quick start](#quick-start) · [Documentation](#documentation) · [Contributing](#contributing)
 
 ![OntoLab sample workspace with workflows for building an ontology, extracting knowledge, and aligning standards](website/static/img/sample-workspace.png)
 
+## Two workflows
+
+### 1. Build, edit, and align ontologies
+
+An ontology defines the kinds of things your graph can describe and how they relate.
+
+- **Build from documents.** Upload sources, define the questions your ontology should answer, and generate a draft of classes and properties. Use new documents to refine an existing ontology. [Build an ontology from documents](website/docs/guides/build-tbox.md)
+- **Edit directly.** Start from a template or import Turtle, RDF/XML, or JSON-LD. Use the editor to add or change classes, properties, and relationships. [Manual editing](website/docs/guides/manual-editing.md#edit-the-schema)
+- **Align and merge.** Compare ontologies or standards, review proposed matches, and save the mappings you accept. [Ontology alignment](website/docs/guides/align-merge.md)
+
+### 2. Build and edit knowledge graphs
+
+A knowledge graph records the specific entities and facts found in your sources.
+
+- **Extract from documents.** Choose a saved ontology and extract entities, attributes, and relationships from PDFs, Word documents, spreadsheets, and other supported files. [Build a knowledge graph](website/docs/guides/extract-abox.md)
+- **Review and edit facts.** Inspect source passages, resolve duplicates, and accept, reject, or edit proposed facts. You can also edit graph entities and relationships directly. [Review evidence](website/docs/guides/review.md) · [Edit graph facts](website/docs/guides/manual-editing.md#edit-assertions)
+- **Validate and use the graph.** Save a reviewed version, ask questions with citations, or export RDF as Turtle. [Ask questions](website/docs/guides/ask.md) · [Export a graph](website/docs/guides/export.md)
+
 ## Quick start
 
-Install **Node.js 22.22 or newer**. The demo uses local files and an offline mock model.
+Install **Node.js 22.22 or newer** and choose a model provider. If you already use **Codex CLI** or **Claude Code**, install and sign in through the official CLI on the same machine and account where you’ll run OntoLab. [Local CLI setup](docs/LOCAL_CLI_PROVIDERS.md)
 
 ```bash
 git clone https://github.com/IndustriAgents/OntoLab.git
 cd OntoLab
 npm ci
 npm --prefix website ci
-STORE_MODE=local MOCK_LLM=1 DATA_DIR=.data-demo npm run dev
+STORE_MODE=local npm run dev
 ```
 
-Open [localhost:5173](http://localhost:5173) and choose **Open the sample project**. The sample includes a synthetic technical manual and a saved ontology. Follow the [sample walkthrough](website/docs/start/quickstart.md) to extract facts with the mock model, review their evidence, and export Turtle. The mock demonstrates the workflow and produces simulated results.
+Open [localhost:5173](http://localhost:5173) and select **Codex** or **Claude Code** under **Local CLIs** in the model picker when setting up a run.
 
-For real extraction, configure a model provider in `.env` using [the environment template](.env.example). The browser app runs locally as a single-user workspace. Desktop and Postgres setup are covered in the documentation below.
+- **Try graph extraction first.** Choose **Open the sample project** to start with a synthetic technical manual and a saved ontology. [Sample walkthrough](website/docs/start/quickstart.md)
+- **Build an ontology first.** Create a project, open **Ontology → Build & sources**, and choose **From documents**. [First project guide](website/docs/start/first-project.md)
 
-## What you can do
+### Use Ollama or an API key
 
-- **Build or import an ontology.** Define what your graph should answer, generate an ontology from documents, or import Turtle, RDF/XML, or JSON-LD. Align external standards with your own terms.
-- **Extract facts and review the evidence.** Ingest PDF, Word, Excel, HTML, XML, Markdown, and text. Inspect source passages, resolve duplicate entities, and accept or reject proposed facts.
-- **Validate and version your graph.** Run schema, SHACL, and competency-question checks. Save reviewed graphs as numbered versions and compare changes across source updates.
-- **Ask questions and export.** Explore saved graphs, inspect cited sources and SPARQL results, and export RDF as Turtle. Use a project archive to move a workspace.
+For **Ollama**, start Ollama and pull a model such as `llama3.1`. Set `OLLAMA_BASE_URL=http://127.0.0.1:11434` and `OLLAMA_MODELS=llama3.1` in `.env`. For an **API provider**, set its key in `.env`, such as `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`. Restart OntoLab and select the provider in the model picker. [Environment template](.env.example) · [Supported providers](website/docs/reference/integrations.md)
 
 ## Documentation
 

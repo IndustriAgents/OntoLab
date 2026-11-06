@@ -172,6 +172,7 @@ describe("T-Box evidence navigation", () => {
     const xml = "<article><title>Housing &amp; policy</title><p>A source passage.</p></article>";
     expect(readableChunkPreview(xml, true)).toBe("Housing & policy A source passage.");
     expect(xml).toContain("<title>");
+    expect(readableChunkPreview("<p>&amp;lt;tag&amp;gt; &lt;tag&gt;</p>", true)).toBe("&lt;tag&gt; <tag>");
   });
   it("keeps topic membership separate from request batches", () => {
     const data = buildTboxEvidence(fixture());

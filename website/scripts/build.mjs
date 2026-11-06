@@ -1,3 +1,4 @@
+import { parse } from "parse5";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
@@ -29,12 +30,31 @@ if (process.env.ONTOLAB_BUNDLED_DOCS === "1") {
       else if (entry.name.endsWith(".html")) {
         const html = await readFile(path, "utf8");
         const scripts = new Map();
-        const next = html.replace(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi, (whole, attrs, body) => {
-          if (/\bsrc\s*=|\btype\s*=\s*["']application\/(?:ld\+)?json/i.test(attrs) || !body.trim()) return whole;
-          const name = `bootstrap-${createHash("sha256").update(body).digest("hex").slice(0, 16)}.js`;
+        const edits = [];
+        const nodes = [parse(html, { sourceCodeLocationInfo: true })];
+        while (nodes.length) {
+          const node = nodes.pop();
+          if (node.childNodes) nodes.push(...node.childNodes);
+          if (node.tagName !== "script") continue;
+          if (node.attrs.some(({ name, value }) => name === "src" || (name === "type" && /^application\/(?:ld\+)?json$/i.test(value))))
+            continue;
+          const { startTag, endTag } = node.sourceCodeLocation ?? {};
+          if (!startTag || !endTag) continue;
+          const body = html.slice(startTag.endOffset, endTag.startOffset);
+          if (!body.trim()) continue;
+          const name = "bootstrap-" + createHash("sha256").update(body).digest("hex").slice(0, 16) + ".js";
           scripts.set(name, body);
-          return `<script${attrs} src="${base}assets/js/${name}"></script>`;
-        });
+          const opening = html.slice(startTag.startOffset, startTag.endOffset - 1).replace(/\/$/, "");
+          edits.push({
+            start: startTag.startOffset,
+            end: endTag.endOffset,
+            text: opening + ' src="' + base + "assets/js/" + name + '"></script>',
+          });
+        }
+        let next = html;
+        for (const { start, end, text } of edits.sort((a, b) => b.start - a.start)) {
+          next = next.slice(0, start) + text + next.slice(end);
+        }
         for (const [name, body] of scripts) {
           const file = join(output, "assets/js", name);
           await mkdir(dirname(file), { recursive: true });

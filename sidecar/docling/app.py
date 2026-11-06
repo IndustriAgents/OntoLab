@@ -339,8 +339,8 @@ async def parse(request: Request) -> JSONResponse:
     file_name = unquote(request.headers.get("x-file-name", "")).strip()
     try:
         fmt, ext = _detect(file_name, data[:8])
-    except UnsupportedType as exc:
-        return _error(415, str(exc))
+    except UnsupportedType:
+        return _error(415, "unsupported file type")
     if not data:
         return _error(422, "empty file")
 
@@ -349,8 +349,8 @@ async def parse(request: Request) -> JSONResponse:
     async with _semaphore:
         try:
             body = await asyncio.to_thread(convert_bytes, data, fmt, ext, ocr)
-        except ParseFailure as exc:
-            return _error(422, str(exc))
+        except ParseFailure:
+            return _error(422, "the document could not be parsed")
         except Exception:  # noqa: BLE001 - never leak internals
             log.exception("parse failed for %s", fmt)
             return _error(422, "the document could not be parsed")

@@ -65,6 +65,12 @@ SELECT ?r WHERE { ?r a u:Researcher ; u:memberOf ?o . ?o a <${NS}Organization> }
     expect(staleIris(q, TBOX)).toEqual([U("memberOf")]);
   });
 
+  it("treats punctuation in renamed terms literally", () => {
+    const input = "PREFIX ex: <https://example.org/> SELECT * WHERE { ?s ex:old.name ?o . ?s ex:oldXname ?v }";
+    const result = applyRenames(input, [{ from: "https://example.org/old.name", to: "https://example.org/new.name" }]);
+    expect(result).toBe(input.replace("ex:old.name", "ex:new.name"));
+  });
+
   it("rewrites renamed terms in both prefixed and full form", () => {
     const out = applyRenames(q, [
       { from: U("memberOf"), to: U("worksAt") },

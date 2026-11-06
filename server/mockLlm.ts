@@ -131,9 +131,8 @@ export async function mockStructured(call: MockCall): Promise<{ data: Obj; usage
   }
 
   if (call.toolName === "emit_answer") {
-    const first = /\[(C\d+)\]/.exec(call.extra ?? "")?.[1];
-    // Quote the first substantial line of that excerpt (a heading number like "1.3" cannot be located).
-    const body = first ? (new RegExp(`\\[${first}\\][^\\n]*\\n([\\s\\S]*?)(?:\\n\\[C\\d+\\]|$)`).exec(call.extra ?? "")?.[1] ?? "") : "";
+    // Quote the first substantial line of the first excerpt.
+    const [, first, body = ""] = /\[(C\d+)\](?:[^\n]*\n([\s\S]*?)(?=\n\[C\d+\]|$))?/.exec(call.extra ?? "") ?? [];
     const quote = (body.split("\n").find((l) => l.trim().length >= 20) ?? "").trim().slice(0, 160);
     return {
       data: {

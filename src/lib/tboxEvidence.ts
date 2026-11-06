@@ -304,13 +304,8 @@ export function evidenceFiles(data: TboxEvidence) {
 
 /** Presentation only: the exact saved XML is always retained for source inspection. */
 export function readableChunkPreview(text: string, xml: boolean) {
-  const readable = xml
-    ? text
-        .replace(/<[^>]*>/g, " ")
-        .replace(/&amp;/g, "&")
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-    : text;
+  const entities: Record<string, string> = { "&amp;": "&", "&lt;": "<", "&gt;": ">" };
+  const readable = xml ? text.replace(/<[^>]*>/g, " ").replace(/&(?:amp|lt|gt);/g, (entity) => entities[entity]) : text;
   return readable.replace(/\s+/g, " ").trim();
 }
 
