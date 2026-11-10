@@ -9,7 +9,9 @@ OntoLab is an open-source workspace for defining a domain’s vocabulary and tur
 
 [How it works](#how-it-works) · [Two workflows](#two-workflows) · [Quick start](#quick-start) · [Architecture](#architecture) · [Documentation](#documentation) · [Contributing](#contributing)
 
-![OntoLab sample workspace with workflows for building an ontology, extracting knowledge, and aligning standards](website/static/img/sample-workspace.png)
+<video src="media/ontolab-linkedin-40s-horizontal-16x9.mp4" controls muted width="100%">
+  <a href="media/ontolab-linkedin-40s-horizontal-16x9.mp4">Watch the OntoLab 40-second overview</a>
+</video>
 
 ## Why OntoLab
 
