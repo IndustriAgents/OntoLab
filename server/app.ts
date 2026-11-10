@@ -6,6 +6,7 @@ import { agentChat } from "./actions/assistant.ts";
 import { registerConnectionRoutes } from "./connections/routes.ts";
 import { serveDocumentation } from "./documentation.ts";
 import { registerCorpusRoutes } from "./corpusRoutes.ts";
+import { deleteModelEndpoint, discoverModels, listModelEndpoints, saveModelEndpoint } from "./customProviders.ts";
 import {
   inspectEvidence,
   parseEvidenceRequest,
@@ -304,6 +305,16 @@ function buildRouter(): Router<RouteCtx> {
   registerCorpusRoutes(r);
   registerEvaluationRoutes(r);
   registerConnectionRoutes(r);
+  // Saved OpenAI-compatible endpoints. Responses never include the stored key.
+  r.get("/api/model-endpoints", async () => listModelEndpoints());
+  r.post("/api/model-endpoints", async ({ svc, json: body }) => ({
+    endpoint: await saveModelEndpoint(await body(), undefined, svc.now()),
+  }));
+  r.put("/api/model-endpoints/:eid", async ({ svc, params, json: body }) => ({
+    endpoint: await saveModelEndpoint(await body(), params.eid, svc.now()),
+  }));
+  r.delete("/api/model-endpoints/:eid", async ({ params }) => deleteModelEndpoint(params.eid));
+  r.post("/api/model-endpoints/discover", async ({ json: body, signal }) => discoverModels(await body(), signal));
   r.post("/api/projects/:pid/evidence/inspect", async ({ svc, params, json: body }) =>
     inspectEvidence(svc, params.pid, parseEvidenceRequest(await body())),
   );

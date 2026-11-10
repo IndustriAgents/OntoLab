@@ -9,9 +9,10 @@ import { HttpError } from "./http.ts";
 import { cliProviders, isCliProvider, type CliProviderId } from "./cli/catalog.ts";
 import { callCli } from "./cli/invoke.ts";
 import { ProviderError } from "./providerErrors.ts";
+import { customEndpoint, customProviderInfos, isCustomProvider, type CustomProviderId } from "./customProviders.ts";
 export { ProviderError, TruncatedOutputError } from "./providerErrors.ts";
 
-export type ProviderId = "openai" | "gemini" | "claude" | "deepseek" | "ollama" | "mock" | CliProviderId;
+export type ProviderId = "openai" | "gemini" | "claude" | "deepseek" | "ollama" | "mock" | CliProviderId | CustomProviderId;
 
 export interface ChatMessage {
   role: "user" | "assistant";
@@ -85,6 +86,7 @@ export function listProviders({ includeLocalCli = true }: { includeLocalCli?: bo
         .map((m) => m.trim())
         .filter(Boolean),
     },
+    ...customProviderInfos(),
   ];
   if (includeLocalCli) list.push(...cliProviders());
   // Deterministic offline model for automated tests and demos without keys.
@@ -244,6 +246,10 @@ export async function callProvider(provider: ProviderId, args: CallArgs): Promis
     });
     return result.data.answer as string;
   }
+  if (isCustomProvider(provider)) {
+    const custom = customEndpoint(provider);
+    return openaiCompatible(custom.url, custom.apiKey, args, custom.label, "max_tokens");
+  }
   switch (provider) {
     case "openai":
       return openaiCompatible("https://api.openai.com/v1/chat/completions", process.env.OPENAI_API_KEY!, args, "OpenAI");
@@ -267,6 +273,8 @@ async function openaiCompatible(
   key: string,
   { model, messages, graphContext, signal }: CallArgs,
   label: string,
+  // Compatible servers predate max_completion_tokens; OpenAI's newer models require it.
+  tokenParam: "max_tokens" | "max_completion_tokens" = "max_completion_tokens",
 ): Promise<string> {
   const data = (await postJson(
     url,
@@ -274,9 +282,9 @@ async function openaiCompatible(
       model,
       messages: [{ role: "system", content: systemPrompt(graphContext) }, ...messages],
       temperature: 0.2,
-      max_completion_tokens: CHAT_MAX_TOKENS,
+      [tokenParam]: CHAT_MAX_TOKENS,
     },
-    { authorization: `Bearer ${key}` },
+    key ? { authorization: `Bearer ${key}` } : {},
     { label, signal },
   )) as { choices?: { message?: { content?: string } }[] };
   return data.choices?.[0]?.message?.content ?? "";

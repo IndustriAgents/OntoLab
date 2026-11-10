@@ -81,6 +81,11 @@ The existing provider picker supports three approaches:
   does not imply offline inference. See [Local CLI providers](LOCAL_CLI_PROVIDERS.md).
 - **Ollama:** run Ollama locally and configure `OLLAMA_BASE_URL` and
   `OLLAMA_MODELS` in `desktop.env`.
+- **OpenAI-compatible endpoints:** add them in **Settings → AI providers → Add
+  endpoint** (base URL, optional API key, models). Keys are encrypted in the
+  profile's `workspace/` directory. `OPENAI_COMPAT_BASE_URL`,
+  `OPENAI_COMPAT_API_KEY` and `OPENAI_COMPAT_MODELS` in `desktop.env` configure
+  one endpoint without the UI.
 - **API providers:** configure the existing provider keys in `desktop.env`.
   These calls send model inputs to the selected provider.
 

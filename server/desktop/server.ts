@@ -13,6 +13,7 @@ import { startDocumentWorker } from "../documentWorker.ts";
 import { startWorker } from "../worker.ts";
 import { consoleLogger } from "../services/context.ts";
 import { json } from "../http.ts";
+import { openModelEndpoints } from "../customProviders.ts";
 
 export const DESKTOP_CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
@@ -40,6 +41,7 @@ export async function startDesktopServer(options: {
   if (secret.length < 32) throw new Error("Desktop sessions require a random secret of at least 32 characters.");
   const releaseProfile = await acquireProfileLock(dirname(options.dataDir));
   const store = createLocalStore(options.dataDir);
+  await openModelEndpoints(options.dataDir);
   const documentWorker = startDocumentWorker(store, consoleLogger);
   const worker = startWorker(store, consoleLogger);
   const shutdownController = new AbortController();

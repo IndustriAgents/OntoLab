@@ -509,3 +509,40 @@
   padding: 0;
   max-width: none;
 }
+.settings-endpoints-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+.settings-endpoints-head .btn {
+  flex: none;
+}
+.settings-endpoint-url {
+  font-family: var(--mono);
+  overflow-wrap: anywhere;
+}
+.settings-endpoint-actions {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+.settings-endpoint-form {
+  display: grid;
+  gap: 20px;
+}
+.settings-endpoint-form textarea {
+  width: 100%;
+  font-family: var(--mono);
+  resize: vertical;
+}
+.settings-endpoint-discover {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.settings-endpoint-ok {
+  color: var(--ok);
+  font-size: 12px;
+}

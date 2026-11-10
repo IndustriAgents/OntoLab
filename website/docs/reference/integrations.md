@@ -9,6 +9,7 @@ Integrations are enabled by the installation operator. A provider or sidecar tha
 | --- | --- | --- |
 | Claude, OpenAI, Gemini, DeepSeek | Induction, extraction and assistant model calls | Server-side provider credentials |
 | Ollama | Models hosted on an accessible Ollama server | Base URL and allowed models |
+| OpenAI-compatible endpoints | Any server that speaks the OpenAI chat-completions API, such as LiteLLM, vLLM, LM Studio or an institutional gateway | **Settings → AI providers → Add endpoint**, or `OPENAI_COMPAT_BASE_URL`, `OPENAI_COMPAT_API_KEY` and `OPENAI_COMPAT_MODELS` |
 | Docling | Layout-aware parsing, OCR, additional formats | `PARSER_URL` and matching token |
 | Graph databases | Read existing RDF/Neo4j graphs; publish saved RDF versions | Per-account encrypted connections; optional publishing endpoint |
 | DL reasoner | Additional OWL consistency checks | Reasoner sidecar URL, tier and optional token |

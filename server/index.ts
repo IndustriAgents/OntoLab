@@ -7,6 +7,7 @@ import { listProviders } from "./providers.ts";
 import { createApp } from "./app.ts";
 import { createLocalAuth } from "./auth.ts";
 import { enableLocalConnections } from "./connections/policy.ts";
+import { openModelEndpoints } from "./customProviders.ts";
 import { json } from "./http.ts";
 import { createLocalStore } from "./store/local.ts";
 import { createPostgresStore } from "./store/postgres.ts";
@@ -30,6 +31,7 @@ if (!["local", "postgres"].includes(STORE_MODE)) throw new Error("STORE_MODE mus
 if (STORE_MODE === "postgres" && !DATABASE_URL) throw new Error("Postgres storage requires DATABASE_URL.");
 
 enableLocalConnections();
+await openModelEndpoints(DATA_DIR);
 const store = STORE_MODE === "postgres" ? createPostgresStore(DATABASE_URL) : createLocalStore(DATA_DIR);
 const documentWorker = startDocumentWorker(store, consoleLogger);
 const worker = WORKER_ENABLED ? startWorker(store, consoleLogger) : null;
