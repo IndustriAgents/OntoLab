@@ -1,6 +1,6 @@
 import { readFile, readdir, stat, writeFile } from "node:fs/promises";
-import { join, resolve, sep } from "node:path";
-import { pathToFileURL } from "node:url";
+import { join, relative, resolve, sep } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
 const root = new URL("../", import.meta.url);
 const output = process.env.ONTOLAB_DOCS_OUTPUT ? pathToFileURL(resolve(process.env.ONTOLAB_DOCS_OUTPUT) + sep) : new URL("build/", root);
@@ -15,13 +15,15 @@ async function walk(dir) {
     else if (e.name.endsWith(".md")) pages.push(p);
   }
 }
-await walk(new URL("docs", root).pathname);
+// fileURLToPath, not URL.pathname: on Windows the latter yields "/C:/…", which resolves to "C:\C:\…".
+const docsDir = fileURLToPath(new URL("docs", root));
+await walk(docsDir);
 assert.ok(pages.length >= 25, "Core documentation pages are missing");
 const index = await readFile(new URL("index.html", output), "utf8");
 assert.ok(index.includes(origin + base), "Canonical URL missing");
 const search = await readFile(new URL("pagefind/pagefind.js", output), "utf8");
 assert.ok(search.length > 1000, "Search bundle missing");
-const links = pages.map((p) => base + p.split("/docs/")[1].replace(/\.md$/, "/"));
+const links = pages.map((p) => base + relative(docsDir, p).split(sep).join("/").replace(/\.md$/, "/"));
 const htmlPages = [index];
 for (const link of links) {
   htmlPages.push(await readFile(new URL(link.slice(base.length) + "index.html", output), "utf8"));

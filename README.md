@@ -50,13 +50,63 @@ A knowledge graph records the specific entities and facts found in your sources.
 
 Install **Node.js 22.22 or newer** and choose a model provider. If you already use **Codex CLI** or **Claude Code**, install and sign in through the official CLI on the same machine and account where you’ll run OntoLab. [Local CLI setup](docs/LOCAL_CLI_PROVIDERS.md)
 
+Follow the guide for your operating system. Each one installs the prerequisites, fetches the code, and starts OntoLab with local storage.
+
+### macOS
+
+Install Git and Node.js with [Homebrew](https://brew.sh), then run OntoLab from Terminal:
+
 ```bash
+brew install git node@22
+brew link --overwrite node@22
+node -v   # must print v22.22.0 or newer
+
 git clone https://github.com/IndustriAgents/OntoLab.git
 cd OntoLab
 npm ci
 npm --prefix website ci
 STORE_MODE=local npm run dev
 ```
+
+### Windows
+
+Install Git and Node.js with `winget` in PowerShell, then open a **new** PowerShell window so both are on your `PATH`:
+
+```powershell
+winget install Git.Git
+winget install OpenJS.NodeJS.22
+```
+
+```powershell
+node -v   # must print v22.22.0 or newer
+
+git clone https://github.com/IndustriAgents/OntoLab.git
+cd OntoLab
+npm ci
+npm --prefix website ci
+$env:STORE_MODE = "local"
+npm run dev
+```
+
+PowerShell does not accept the `STORE_MODE=local npm run dev` form used on macOS and Linux; set the variable on its own line as shown. In Command Prompt, use `set STORE_MODE=local` instead. If PowerShell blocks `npm` with a script execution policy error, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once and try again.
+
+### Linux
+
+Install Git with your package manager and Node.js with [nvm](https://github.com/nvm-sh/nvm#installing-and-updating), since distribution packages are often older than Node.js 22.22:
+
+```bash
+sudo apt install git        # Debian/Ubuntu; use dnf, pacman, or zypper on other distributions
+nvm install 22
+node -v   # must print v22.22.0 or newer
+
+git clone https://github.com/IndustriAgents/OntoLab.git
+cd OntoLab
+npm ci
+npm --prefix website ci
+STORE_MODE=local npm run dev
+```
+
+### Open OntoLab
 
 Open [localhost:5173](http://localhost:5173) and select **Codex** or **Claude Code** under **Local CLIs** in the model picker when setting up a run.
 
