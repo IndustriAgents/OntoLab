@@ -117,7 +117,7 @@ Open [localhost:5173](http://localhost:5173) and select **Codex** or **Claude Co
 
 ### Use Ollama or an API key
 
-For **Ollama**, start Ollama and pull a model such as `llama3.1`. Set `OLLAMA_BASE_URL=http://127.0.0.1:11434` and `OLLAMA_MODELS=llama3.1` in `.env`. For an **API provider**, set its key in `.env`, such as `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`. Restart OntoLab and select the provider in the model picker. [Environment template](.env.example) · [Supported providers](website/docs/reference/integrations.md)
+For **Ollama**, start Ollama and pull a model such as `llama3.1`. Set `OLLAMA_BASE_URL=http://127.0.0.1:11434` and `OLLAMA_MODELS=llama3.1` in `.env`. For an **API provider**, set its key in `.env`, such as `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`. Restart OntoLab and select the provider in the model picker. For any other **OpenAI-compatible server** (LiteLLM, vLLM, LM Studio, a university or company gateway), open **Settings → AI providers → Add endpoint** and enter its base URL, API key and models; no restart is needed. [Environment template](.env.example) · [Supported providers](website/docs/reference/integrations.md)
 
 ## Architecture
 

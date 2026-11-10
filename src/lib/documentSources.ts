@@ -56,6 +56,7 @@ export function chunkConfigurationLabel(document: Pick<ProjectDocument, "chunkCo
     claude: "Claude",
     deepseek: "DeepSeek",
     ollama: "Ollama",
+    "openai-compatible": "OpenAI-compatible",
     mock: "Mock",
   };
   const model = tokens ? `${providers[tokens.generation.provider] ?? tokens.generation.provider} / ${tokens.generation.model} · ` : "";

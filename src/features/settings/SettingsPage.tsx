@@ -1,5 +1,6 @@
 import AgentConnectionsSettings from "../agent/ConnectionsSettings";
 import ConnectionsSettings from "../connections/ConnectionsSettings";
+import ModelEndpointsSettings from "./ModelEndpointsSettings";
 import ProjectsPage from "../projects/ProjectsPage";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "react-router";
@@ -146,6 +147,7 @@ export default function SettingsPage() {
                   : "API providers use this computer’s configuration. Usage is billed by each provider where applicable."}
               </p>
             </section>
+            <ModelEndpointsSettings onChange={choice.reload} />
             <section className="card settings-card" aria-labelledby="st-default">
               <div className="settings-section-head">
                 <h2 id="st-default">Default model</h2>

@@ -5,7 +5,18 @@ import { rawRequest, ApiError, CancelledError, NetworkError } from "./http";
 
 export { CancelledError, NetworkError };
 
-export type ProviderId = "openai" | "gemini" | "claude" | "deepseek" | "ollama" | "mock" | "claude-cli" | "codex-cli" | "agy-cli";
+export type ProviderId =
+  | "openai"
+  | "gemini"
+  | "claude"
+  | "deepseek"
+  | "ollama"
+  | "mock"
+  | "claude-cli"
+  | "codex-cli"
+  | "agy-cli"
+  | "openai-compatible"
+  | `openai-compatible:${string}`;
 
 export interface ProviderInfo {
   id: ProviderId;

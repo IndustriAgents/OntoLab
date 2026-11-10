@@ -6,6 +6,7 @@ import { chunkEmbeddingText } from "./vectorIndex.ts";
 import { sectionPathAt } from "./chunking.ts";
 import { HttpError } from "../http.ts";
 import { isCliProvider } from "../cli/catalog.ts";
+import { isCustomProvider } from "../customProviders.ts";
 
 export function validateTokenSettings(t: TokenChunkSettings): TokenChunkSettings {
   if (!t?.embedding || !t.generation) throw new HttpError(400, "Select embedding and generation models before token chunking.");
@@ -14,7 +15,7 @@ export function validateTokenSettings(t: TokenChunkSettings): TokenChunkSettings
     throw new HttpError(400, `Embedding passage budget must be 8–${profile.inputLimit} tokens.`);
   const g = t.generation;
   if (
-    (!["openai", "claude", "gemini", "deepseek", "ollama", "mock"].includes(g.provider) && !isCliProvider(g.provider)) ||
+    (!["openai", "claude", "gemini", "deepseek", "ollama", "mock"].includes(g.provider) && !isCliProvider(g.provider) && !isCustomProvider(g.provider)) ||
     typeof g.model !== "string" ||
     !g.model ||
     g.model.length > 160

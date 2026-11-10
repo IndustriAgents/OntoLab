@@ -16,6 +16,7 @@ import { LLM_TIMEOUT_MS, MAX_OUTPUT_TOKENS } from "./config.ts";
 import { geminiThinkingConfig } from "../src/lib/generationLimits.ts";
 import { isCliProvider } from "./cli/catalog.ts";
 import { callCli } from "./cli/invoke.ts";
+import { customEndpoint, isCustomProvider } from "./customProviders.ts";
 
 export interface Usage {
   input_tokens: number;
@@ -73,6 +74,10 @@ async function dispatch(call: StructuredCall): Promise<Parsed> {
       signal: call.signal,
       outputTokens: generationOutputTokens(MAX_OUTPUT_TOKENS),
     });
+  }
+  if (isCustomProvider(call.provider)) {
+    const custom = customEndpoint(call.provider);
+    return callOpenAICompatible(call, custom.url, custom.apiKey, custom.label, false, true);
   }
   switch (call.provider) {
     case "claude":
@@ -179,13 +184,25 @@ async function callClaude(call: StructuredCall): Promise<Parsed> {
 
 /* ───────────────────────── OpenAI-compatible ───────────────────────── */
 
-async function callOpenAICompatible(call: StructuredCall, url: string, key: string, label: string, strict: boolean): Promise<Parsed> {
-  if (!key) throw new ProviderError(`${label} is not configured on the server.`, 400, false);
+/**
+ * `generic` is a user-configured endpoint: the key is optional (local servers),
+ * the older max_tokens parameter is used, and a JSON object in the message
+ * content is accepted when the server ignores the forced tool call.
+ */
+async function callOpenAICompatible(
+  call: StructuredCall,
+  url: string,
+  key: string,
+  label: string,
+  strict: boolean,
+  generic = false,
+): Promise<Parsed> {
+  if (!key && !generic) throw new ProviderError(`${label} is not configured on the server.`, 400, false);
   const parameters = strict ? toStrictSchema(call.schema) : call.schema;
   const payload = {
     model: call.model,
     // Newer OpenAI models reject max_tokens in favour of max_completion_tokens.
-    max_completion_tokens: generationOutputTokens(MAX_OUTPUT_TOKENS),
+    [generic ? "max_tokens" : "max_completion_tokens"]: generationOutputTokens(MAX_OUTPUT_TOKENS),
     temperature: 0,
     messages: [
       { role: "system", content: call.system },
@@ -197,19 +214,28 @@ async function callOpenAICompatible(call: StructuredCall, url: string, key: stri
     tool_choice: { type: "function", function: { name: call.toolName } },
   };
   await checkGenerationRequest(call.provider, call.model, payload, call.signal);
-  const data = (await postJson(url, payload, { authorization: `Bearer ${key}` }, { label, signal: call.signal })) as {
-    choices?: { finish_reason?: string; message?: { tool_calls?: { function?: { arguments?: string } }[] } }[];
+  const data = (await postJson(url, payload, key ? { authorization: `Bearer ${key}` } : {}, { label, signal: call.signal })) as {
+    choices?: { finish_reason?: string; message?: { content?: string | null; tool_calls?: { function?: { arguments?: string } }[] } }[];
     usage?: { prompt_tokens?: number; completion_tokens?: number };
   };
 
   const choice = data.choices?.[0];
   if (choice?.finish_reason === "length") throw new TruncatedOutputError(label);
-  const args = choice?.message?.tool_calls?.[0]?.function?.arguments;
+  const args = choice?.message?.tool_calls?.[0]?.function?.arguments || (generic ? jsonObjectText(choice?.message?.content) : undefined);
   if (!args) throw new NoStructuredResultError(label, choice?.finish_reason);
   return {
     data: parseModelJson(args, label),
     usage: { input_tokens: data.usage?.prompt_tokens ?? 0, output_tokens: data.usage?.completion_tokens ?? 0 },
   };
+}
+
+/** The JSON object in a plain-text reply, with any Markdown fence removed. */
+function jsonObjectText(content: string | null | undefined): string | undefined {
+  const text = content
+    ?.trim()
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```$/, "");
+  return text?.startsWith("{") ? text : undefined;
 }
 
 /* ───────────────────────── Gemini ───────────────────────── */
@@ -255,7 +281,10 @@ async function callGemini(call: StructuredCall): Promise<Parsed> {
     output_tokens: (data.usageMetadata?.candidatesTokenCount ?? 0) + (data.usageMetadata?.thoughtsTokenCount ?? 0),
   };
   if (candidate?.finishReason === "MAX_TOKENS") throw new TruncatedOutputError("Gemini", usage, outputLimit);
-  const text = (candidate?.content?.parts ?? []).filter((p) => !(p as { thought?: boolean }).thought).map((p) => p.text ?? "").join("");
+  const text = (candidate?.content?.parts ?? [])
+    .filter((p) => !(p as { thought?: boolean }).thought)
+    .map((p) => p.text ?? "")
+    .join("");
   if (!text.trim()) throw new NoStructuredResultError("Gemini", candidate?.finishReason);
   return {
     data: parseModelJson(text, "Gemini"),

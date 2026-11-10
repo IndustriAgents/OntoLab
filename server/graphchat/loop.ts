@@ -12,6 +12,7 @@ import { HttpError } from "../http.ts";
 import { postJson, type ChatMessage, type ProviderId } from "../providers.ts";
 import type { LlmTool } from "./backend.ts";
 import { isCliProvider } from "../cli/catalog.ts";
+import { customEndpoint, isCustomProvider } from "../customProviders.ts";
 import { runCliLoop } from "./cliLoop.ts";
 
 export interface LoopArgs {
@@ -43,6 +44,10 @@ export const graphLoopImplementation = () =>
 
 export function runLoop(args: LoopArgs): Promise<LoopResult> {
   if (isCliProvider(args.provider)) return runCliLoop({ ...args, provider: args.provider });
+  if (isCustomProvider(args.provider)) {
+    const custom = customEndpoint(args.provider);
+    return runOpenAICompatible(args, custom.url, custom.apiKey, custom.label, "max_tokens");
+  }
   switch (args.provider) {
     case "claude":
       return runClaude(args);
@@ -143,6 +148,7 @@ async function runOpenAICompatible(
   url: string,
   key: string,
   label: string,
+  tokenParam = label === "OpenAI" ? "max_completion_tokens" : "max_tokens",
 ): Promise<LoopResult> {
   const messages: OaiMessage[] = [
     { role: "system", content: system },
@@ -163,7 +169,7 @@ async function runOpenAICompatible(
         messages,
         tools: apiTools,
         tool_choice: last ? "none" : "auto",
-        ...(label === "OpenAI" ? { max_completion_tokens: MAX_TOKENS } : { max_tokens: MAX_TOKENS }),
+        [tokenParam]: MAX_TOKENS,
       },
       key ? { authorization: `Bearer ${key}` } : {},
       { label, signal },
