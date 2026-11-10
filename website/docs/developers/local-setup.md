@@ -15,6 +15,13 @@ npm --prefix website ci
 STORE_MODE=local MOCK_LLM=1 DATA_DIR=.data-demo npm run dev
 ```
 
+On Windows PowerShell, set the variables first:
+
+```powershell
+$env:STORE_MODE = "local"; $env:MOCK_LLM = "1"; $env:DATA_DIR = ".data-demo"
+npm run dev
+```
+
 Open `http://localhost:5173`. On Projects, open the sample and select the **mock** provider/model when running extraction. The offline mock makes no provider calls for its results. It demonstrates control flow, not factual accuracy.
 
 The application listens on loopback and opens a single-user workspace without sign-in. `STORE_MODE=local` keeps the demo independent of any configured database URL.
