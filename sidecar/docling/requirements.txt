@@ -1,6 +1,6 @@
 # Docling (MIT) document conversion. Install with the PyTorch CPU index to
 # avoid pulling CUDA wheels:
 #   pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt
-docling==2.145.0
+docling==2.149.0
 fastapi==0.162.0
 uvicorn[standard]==0.54.0
