@@ -70,7 +70,7 @@
     "n3": "^1.21.3",
     "oxigraph": "^0.5.9",
     "parse5": "^8.1.0",
-    "pdfjs-dist": "^4.10.38",
+    "pdfjs-dist": "^6.5.438",
     "pg": "^8.23.1",
     "rdf-validate-shacl": "^0.6.5",
     "react": "^19.2.9",
