@@ -1,3 +1,4 @@
+import { openExecutionSettings } from "./executionSettings.ts";
 // Local server for the built SPA, project API and provider proxy.
 
 import "./env.ts";
@@ -32,6 +33,7 @@ if (STORE_MODE === "postgres" && !DATABASE_URL) throw new Error("Postgres storag
 
 enableLocalConnections();
 await openModelEndpoints(DATA_DIR);
+await openExecutionSettings(DATA_DIR);
 const store = STORE_MODE === "postgres" ? createPostgresStore(DATABASE_URL) : createLocalStore(DATA_DIR);
 const documentWorker = startDocumentWorker(store, consoleLogger);
 const worker = WORKER_ENABLED ? startWorker(store, consoleLogger) : null;

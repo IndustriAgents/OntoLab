@@ -1,3 +1,4 @@
+import { openExecutionSettings, saveExecutionSettings, executionSettings } from "../server/executionSettings.ts";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { chmod, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -48,6 +49,8 @@ process.stdin.setEncoding('utf8');
 process.stdin.on('data', text => prompt += text);
 process.stdin.on('end', () => {
  fs.writeFileSync(${JSON.stringify(join(root, "last-call.json"))}, JSON.stringify({args, prompt, cwd:process.cwd(), env:process.env}));
+ const marker = prompt.match(/fixture:slot-(\\w+)/)?.[1];
+ if (marker) fs.writeFileSync(${JSON.stringify(root)} + '/slot-' + marker, 'started');
  if (prompt.includes('fixture:hang')) { setInterval(() => {}, 1000); return; }
  if (prompt.includes('fixture:missing-result')) { process.exit(0); }
  if (prompt.includes('fixture:invalid-stream')) { console.log('not JSON'); return; }
@@ -237,6 +240,33 @@ describe("local CLI provider contract", () => {
     controller.abort();
     await expectation;
     expect((await invoke()).data.answer).toBe("ok");
+  });
+  it("runs multiple CLI workers, bounds concurrency, and cancels queued requests", async () => {
+    enable();
+    await openExecutionSettings(root);
+    const initial = executionSettings();
+    await saveExecutionSettings({ ...initial, cliConcurrency: 2 });
+    const controllers = [new AbortController(), new AbortController(), new AbortController()];
+    const jobs = controllers.map((controller, i) =>
+      invoke(`fixture:hang fixture:slot-${["one", "two", "three"][i]}`, controller.signal).catch((e) => e),
+    );
+    try {
+      await vi.waitFor(async () => {
+        expect(await readFile(join(root, "slot-one"), "utf8")).toBe("started");
+        expect(await readFile(join(root, "slot-two"), "utf8")).toBe("started");
+      });
+      await expect(readFile(join(root, "slot-three"))).rejects.toThrow();
+      controllers[2].abort();
+      expect((await jobs[2]).status).toBe(499);
+      controllers[0].abort();
+      controllers[1].abort();
+      await Promise.all(jobs);
+      expect((await invoke()).data.answer).toBe("ok");
+    } finally {
+      controllers.forEach((controller) => controller.abort());
+      await Promise.all(jobs);
+      await saveExecutionSettings(initial);
+    }
   });
   it("keeps CLI token checks local, includes native overhead and rejects oversized requests", async () => {
     enable();

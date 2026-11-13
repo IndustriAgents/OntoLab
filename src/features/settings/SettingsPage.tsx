@@ -1,3 +1,4 @@
+import ExecutionSettings from "./ExecutionSettings";
 import AgentConnectionsSettings from "../agent/ConnectionsSettings";
 import ConnectionsSettings from "../connections/ConnectionsSettings";
 import ModelEndpointsSettings from "./ModelEndpointsSettings";
@@ -148,6 +149,7 @@ export default function SettingsPage() {
               </p>
             </section>
             <ModelEndpointsSettings onChange={choice.reload} />
+            <ExecutionSettings />
             <section className="card settings-card" aria-labelledby="st-default">
               <div className="settings-section-head">
                 <h2 id="st-default">Default model</h2>

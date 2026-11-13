@@ -1,3 +1,4 @@
+import { executionSettings, saveExecutionSettings } from "./executionSettings.ts";
 import { searchSavedEvidence, savedPassageContext } from "./services/sourceRetrieval.ts";
 import { workspaceEvents, readState } from "./actions/state.ts";
 import { actionDefinitions, executeAction } from "./actions/index.ts";
@@ -306,6 +307,8 @@ function buildRouter(): Router<RouteCtx> {
   registerEvaluationRoutes(r);
   registerConnectionRoutes(r);
   // Saved OpenAI-compatible endpoints. Responses never include the stored key.
+  r.get("/api/execution-settings", async () => executionSettings());
+  r.put("/api/execution-settings", async ({ json: body }) => saveExecutionSettings(await body()));
   r.get("/api/model-endpoints", async () => listModelEndpoints());
   r.post("/api/model-endpoints", async ({ svc, json: body }) => ({
     endpoint: await saveModelEndpoint(await body(), undefined, svc.now()),
