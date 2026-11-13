@@ -69,7 +69,7 @@ export function runRL(input: RLInput): RLSession {
   const cap = input.explanationCap ?? 24;
   const axById = new Map(input.axioms.map((a) => [a.id, a]));
   const incomplete: string[] = [
-    "OWL 2 RL: individuals implied by someValuesFrom / minCardinality are not created, and unions, complements and nominals are not interpreted",
+    "OWL 2 RL: individuals implied by someValuesFrom / minCardinality are not created. Anonymous domain/range expressions and complex restriction fillers (including unions), complements and nominals are not interpreted; no full OWL consistency conclusion is available",
   ];
   if (!una) incomplete.push("Without the unique-name assumption, functional properties only suggest owl:sameAs; their consequences are not propagated");
 

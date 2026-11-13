@@ -74,8 +74,10 @@ function pickText(literals: { value: string; lang: string }[]): string | undefin
  *
  * Anonymous class expressions never leak as classes: blank-node subjects are
  * only followed, never declared.
+ * `reasoning` retains only supported named expressions and asserted domains /
+ * ranges. Extraction's flattened union alternatives must not become axioms.
  */
-export function parseTBox(text: string, baseIriOverride?: string): TBoxModel {
+export function parseTBox(text: string, baseIriOverride?: string, opts: { reasoning?: boolean } = {}): TBoxModel {
   const prefixMap: Record<string, string> = {};
   let quads: Quad[];
   try {
@@ -101,6 +103,10 @@ export function parseTBox(text: string, baseIriOverride?: string): TBoxModel {
   const expand = (t: Term | undefined, seen = new Set<string>()): string[] => {
     if (!t) return [];
     if (t.termType === "NamedNode") return [t.value];
+    // The extraction model accepts flattened alternatives. They are NOT
+    // separate OWL domain/range axioms. The rule engine cannot interpret
+    // anonymous expressions, so omit them rather than strengthen their meaning.
+    if (opts.reasoning) return [];
     if (t.termType !== "BlankNode" || seen.has(t.value)) return [];
     seen.add(t.value);
     const union = firstObj(t, UNION_OF);
@@ -157,6 +163,9 @@ export function parseTBox(text: string, baseIriOverride?: string): TBoxModel {
     if (prop?.termType !== "NamedNode") return;
     const qualifier = firstObj(bn, ON_CLASS) ?? firstObj(bn, ON_DATARANGE);
     const qValue = qualifier ? expand(qualifier)[0] : undefined;
+    // Dropping a complex qualifier would turn a qualified maximum into an
+    // unqualified maximum, introducing false contradictions.
+    if (opts.reasoning && qualifier && !qValue) return;
     const num = (p: string): number | undefined => {
       const t = firstObj(bn, p);
       if (t?.termType !== "Literal") return undefined;
@@ -337,10 +346,14 @@ export function parseTBox(text: string, baseIriOverride?: string): TBoxModel {
       stack.push(...(parent.subPropertyOf ?? []));
     }
   };
-  for (const p of propByUri.values()) {
-    inherit(p, "domain");
-    inherit(p, "range");
+  if (!opts.reasoning) {
+    for (const p of propByUri.values()) {
+      inherit(p, "domain");
+      inherit(p, "range");
+    }
   }
+  // Reasoning follows subproperty axioms itself, across all modules. Keeping
+  // only asserted domains/ranges also keeps explanations faithful to the file.
 
   // Only keep restrictions whose property is known (anything else is noise for us).
   const knownRestrictions = restrictions.filter((r) => propByUri.has(r.onProperty));

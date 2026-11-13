@@ -73,7 +73,9 @@ export function ValidationView({ pid, revisionId, showCommit = true }: { pid: st
               <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(String(id))}>
                 <strong>{label}</strong>
                 <span>
-                  {count} {id === "cq" ? "queries" : "findings"}
+                  {id === "shacl" && sh?.status === "empty-data"
+                    ? "Not run — no individuals"
+                    : `${count} ${id === "cq" ? "queries" : "findings"}`}
                 </span>
               </button>
             ))}
@@ -170,7 +172,13 @@ export function ValidationView({ pid, revisionId, showCommit = true }: { pid: st
                   <>
                     <p>
                       {r.reasoner.reasoner} · {r.reasoner.tier} · {r.reasoner.ms} ms ·{" "}
-                      {r.reasoner.consistent ? "No inconsistency detected" : "Inconsistency detected"}
+                      {r.reasoner.consistent ? "No instance clashes detected" : "Inconsistency detected"}
+                      {` · ${r.reasoner.unsatisfiable} unsatisfiable classes`}
+                    </p>
+                    <p>
+                      {r.reasoner.tier === "rl"
+                        ? "Limited rule-based check. Unsupported OWL expressions are not evaluated; use a full OWL reasoner for confirmation."
+                        : "Results from the configured OWL reasoner."}
                     </p>
                     <ValidationPanel issues={r.reasonerIssues ?? []} />
                     <MethodDetails>

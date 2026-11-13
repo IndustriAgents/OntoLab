@@ -48,7 +48,7 @@ export function axiomsOfModules(modules: Pick<OntoModule, "name" | "turtle">[], 
   for (const mod of modules) {
     let tbox: TBoxModel;
     try {
-      tbox = parseTBox(mod.turtle);
+      tbox = parseTBox(mod.turtle, undefined, { reasoning: true });
     } catch {
       continue;
     }

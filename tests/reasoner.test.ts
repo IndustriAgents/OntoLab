@@ -1,6 +1,12 @@
 // The DL reasoner sidecar's HTTP contract, against a stand-in server (the real
 // one is Java: sidecar/reasoner), and the fallback to the in-process RL tier.
 import http from "node:http";
+import { createHash } from "node:crypto";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { createLocalStore } from "../server/store/local.ts";
+import { silentLogger } from "../server/services/context.ts";
 import type { AddressInfo } from "node:net";
 import { describe, expect, it } from "vitest";
 import { effectiveTier, reasonContent } from "../server/services/reasoner.ts";
@@ -102,4 +108,24 @@ describe("DL reasoner sidecar contract", () => {
     expect(effectiveTier("dl", "")).toBe("rl");
     expect(effectiveTier("off", "http://x")).toBe("off");
   });
+});
+
+
+it("does not reuse a cached report from the union-flattening reasoner", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "ontolab-reason-cache-"));
+  try {
+    const user = { id: "test" };
+    const store = createLocalStore(dir).forUser(user);
+    const key = createHash("sha256")
+      .update(JSON.stringify(["reason-1", "rl", true, true, content.modules.map((m) => [m.name, m.turtle]), content.abox, content.baseIri]))
+      .digest("hex").slice(0, 40);
+    await store.blobs.put(`p1/reasoning/${key}.json`, Buffer.from(JSON.stringify({ reasoner: "obsolete-result" })), "application/json");
+    const ctx = { store, user, log: silentLogger, now: () => new Date(), requestId: "upgrade-test" };
+    const result = await reasonContent(ctx, "p1", content, { tier: "rl" });
+    expect(result!.reasoner).toBe("ontolab-rl");
+    expect(result!.clashes.length).toBeGreaterThan(0);
+    expect(await reasonContent(ctx, "p1", content, { tier: "rl" })).toEqual(result);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
 });

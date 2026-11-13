@@ -249,3 +249,73 @@ describe("entailmentDiff", () => {
     expect(d.newlyUnsat).toEqual([C("C")]);
   });
 });
+
+describe("OWL unions in reasoning", () => {
+  const classes = `:A a owl:Class ; owl:disjointWith :B . :B a owl:Class .
+    :Allowed rdfs:subClassOf :A . :Value a owl:Class .`;
+
+  it("does not turn a union domain into two mandatory domains", () => {
+    const s = reasonModules([mod(classes + `
+      :p a owl:ObjectProperty ; rdfs:domain [ owl:unionOf (:A :B) ] .
+      :Allowed rdfs:subClassOf [ owl:onProperty :p ; owl:someValuesFrom :Value ] .
+    `)], { abox: { individuals: [ind("a", "Allowed", { objectProperties: [{ propUri: C("p"), targetId: "v" }] }), ind("v", "Value")] } });
+    expect(s.report.unsatisfiable).toEqual([]);
+    expect(s.report.clashes).toEqual([]);
+    expect(s.report.inferredTypes.a ?? []).not.toContain(C("B"));
+    expect(s.report.incomplete.join(" ")).toContain("Anonymous domain/range");
+  });
+
+  it("does not turn a union range into two mandatory ranges", () => {
+    const s = reasonModules([mod(classes + `
+      :p a owl:ObjectProperty ; rdfs:range [ owl:unionOf (:B :A) ] .
+      :Value rdfs:subClassOf [ owl:onProperty :p ; owl:someValuesFrom :Allowed ] .
+    `)], { abox: { individuals: [ind("v", "Value", { objectProperties: [{ propUri: C("p"), targetId: "a" }] }), ind("a", "Allowed")] } });
+    expect(s.report.unsatisfiable).toEqual([]);
+    expect(s.report.clashes).toEqual([]);
+  });
+
+  it("keeps genuine conflicts from separate named domain and range axioms", () => {
+    for (const field of ["domain", "range"]) {
+      const s = reasonModules([mod(classes + `
+        :p a owl:ObjectProperty ; rdfs:${field} :A, :B .
+        :Allowed rdfs:subClassOf [ owl:onProperty :p ; owl:someValuesFrom :A ] .
+      `)]);
+      expect(s.report.unsatisfiable.map((u) => u.cls)).toContain(C("Allowed"));
+    }
+  });
+
+  it("retains named constraints alongside a union and follows subproperties across modules", () => {
+    const s = reasonModules([
+      mod(classes + `:p a owl:ObjectProperty ; rdfs:domain [ owl:unionOf (:A :B) ], :B .`, "base.ttl"),
+      mod(`:q a owl:ObjectProperty ; rdfs:subPropertyOf :p .
+        :Allowed rdfs:subClassOf [ owl:onProperty :q ; owl:someValuesFrom :Value ] .`, "child.ttl"),
+    ]);
+    const issue = s.report.unsatisfiable.find((u) => u.cls === C("Allowed"));
+    expect(issue).toBeDefined();
+    expect(issue!.explanation).toEqual(expect.arrayContaining([
+      expect.objectContaining({ kind: "domain", args: [C("p"), C("B")], module: "base.ttl" }),
+      expect.objectContaining({ kind: "subPropertyOf", args: [C("q"), C("p")], module: "child.ttl" }),
+    ]));
+  });
+
+  it("does not pick the first union member as an existential or universal filler", () => {
+    const s = reasonModules([mod(classes + `
+      :p a owl:ObjectProperty ; rdfs:range :A .
+      :Value rdfs:subClassOf
+        [ owl:onProperty :p ; owl:someValuesFrom [ owl:unionOf (:B :A) ] ],
+        [ owl:onProperty :p ; owl:someValuesFrom :A ],
+        [ owl:onProperty :p ; owl:allValuesFrom [ owl:unionOf (:B :A) ] ] .
+    `)]);
+    expect(s.report.unsatisfiable).toEqual([]);
+  });
+
+  it("does not turn an unsupported qualified maximum into an unqualified maximum", () => {
+    const s = reasonModules([mod(classes + `
+      :p a owl:ObjectProperty .
+      :Value rdfs:subClassOf
+        [ owl:onProperty :p ; owl:minCardinality 1 ],
+        [ owl:onProperty :p ; owl:maxQualifiedCardinality 0 ; owl:onClass [ owl:unionOf (:A :B) ] ] .
+    `)]);
+    expect(s.report.unsatisfiable).toEqual([]);
+  });
+});
