@@ -1,3 +1,5 @@
+import { executionSettings, withExecutionSettings } from "../executionSettings.ts";
+import { isCliProvider } from "../cli/catalog.ts";
 import { projectForBuild, requirementsHistory, projectRequirements } from "../../src/lib/requirementsVersions.ts";
 import { saveRequirements } from "./requirements.ts";
 import { selectKnownEntities } from "../../src/lib/ontology/knownEntities.ts";
@@ -74,7 +76,6 @@ import {
   FACT_ACCEPT_THRESHOLD,
   LEASE_TTL_MS,
   MAX_ACTIVE_STEPS,
-  MAX_STEP_ATTEMPTS,
   NLI_BACKEND,
   NLI_REVIEW_THRESHOLD,
   PARALLEL_STEPS,
@@ -1291,7 +1292,10 @@ function ordinalOf(run: ExtractionRun, step: RunStep): number {
   return step.kind === "qa" ? 100_000 + run.qaRound : run.steps.findIndex((s) => s.key === step.key);
 }
 
-export async function advanceRun(ctx: ServiceCtx, projectId: string, id: string): Promise<AdvanceResult> {
+export function advanceRun(ctx: ServiceCtx, projectId: string, id: string): Promise<AdvanceResult> {
+  return withExecutionSettings(() => advanceRunWithSettings(ctx, projectId, id));
+}
+async function advanceRunWithSettings(ctx: ServiceCtx, projectId: string, id: string): Promise<AdvanceResult> {
   let run = await requireRun(ctx, projectId, id);
   const view = async (r: ExtractionRun) => toView(r, await ctx.store.runs.checkpoints(projectId, id), ctx.now());
 
@@ -1304,7 +1308,14 @@ export async function advanceRun(ctx: ServiceCtx, projectId: string, id: string)
   const started = Date.now();
   let batch: RunStep[] = [];
   try {
-    const acquired = await ctx.store.runs.acquireLease(projectId, id, holder, LEASE_TTL_MS, ctx.now());
+    // Keep the lease longer than the configured model request timeout.
+    const acquired = await ctx.store.runs.acquireLease(
+      projectId,
+      id,
+      holder,
+      Math.max(LEASE_TTL_MS, executionSettings().timeoutMs + 30_000),
+      ctx.now(),
+    );
     if (!acquired) return { run: await view(run), waitMs: 3000 };
     leased = true;
     run = acquired;
@@ -1334,7 +1345,7 @@ export async function advanceRun(ctx: ServiceCtx, projectId: string, id: string)
         });
       }
     }
-    batch = nextSteps(run, stepsDone(cps), PARALLEL_STEPS);
+    batch = nextSteps(run, stepsDone(cps), isCliProvider(run.provider) ? executionSettings().cliConcurrency : PARALLEL_STEPS);
     if (!batch.length) {
       // Crash recovery: a clarification round was checkpointed but the run was
       // never moved on. Re-derive the state from the checkpoint.
@@ -1616,7 +1627,7 @@ export async function advanceRun(ctx: ServiceCtx, projectId: string, id: string)
       ms: Date.now() - started,
     });
     if (fresh.status === "cancelled" || fresh.status === "paused") return { run: await view(fresh) };
-    if (transient && attempts < MAX_STEP_ATTEMPTS) {
+    if (transient && attempts < executionSettings().maxStepAttempts) {
       run = await ctx.store.runs.update(projectId, id, { attempts, error: `Retrying after: ${message}`, updatedAt: iso(ctx.now()) });
       return { run: await view(run), waitMs: Math.min(30_000, 2000 * 2 ** (attempts - 1)) };
     }

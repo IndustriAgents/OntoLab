@@ -739,6 +739,8 @@ export interface CqResult {
 }
 
 export interface StoredValidationReport {
+  /** Validation implementation version; older reports must be rerun. */
+  validatorVersion?: number;
   shaclExecution?: ShaclExecution;
   ontologyIssues?: OntologyIssue[];
   execution?: {

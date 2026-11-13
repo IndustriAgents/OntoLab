@@ -20,6 +20,8 @@ import { graphAbox, graphKey, reviewPolicyOf, tboxOf } from "./ontology.ts";
 import { requireProject } from "./projects.ts";
 import { explanationLines, reasonContent, type ReasonerTier } from "./reasoner.ts";
 
+export const VALIDATOR_VERSION = 2;
+
 export interface SavedQuery {
   question: string;
   sparql?: string;
@@ -136,6 +138,7 @@ export async function validateRevision(ctx: ServiceCtx, projectId: string, revis
   const cqPassRate = ran ? cqResults.filter((r) => !r.error && r.rows.length > 0 && !(r.columns.length === 1 && r.columns[0] === "result" && r.rows[0]?.result === "false")).length / ran : null;
   const report: StoredValidationReport = {
     id: newId("rpt"),
+    validatorVersion: VALIDATOR_VERSION,
     projectId,
     revisionId,
     contentHash: rev.contentHash,
@@ -159,7 +162,7 @@ export async function validateRevision(ctx: ServiceCtx, projectId: string, revis
 export async function latestReport(ctx: ServiceCtx, projectId: string, revisionId: string): Promise<ReportView | null> {
   const rev = await requireRevision(ctx, projectId, revisionId);
   const report = await ctx.store.reports.latest(projectId, revisionId);
-  return report ? { ...report, stale: report.contentHash !== rev.contentHash } : null;
+  return report ? { ...report, stale: report.contentHash !== rev.contentHash || report.validatorVersion !== VALIDATOR_VERSION } : null;
 }
 
 async function reasonerIssuesOf(ctx: ServiceCtx, projectId: string, content: RevisionContent, abox: ABoxResult) {

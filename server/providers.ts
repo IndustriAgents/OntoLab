@@ -1,9 +1,10 @@
+import { executionSettings } from "./executionSettings.ts";
 // Provider registry + adapters. API keys are read from the environment here and
 // never reach the client. Both the Q&A chat and the structured (tool-calling)
 // extraction path go through this module, so timeouts, retries and error
 // handling behave identically everywhere.
 
-import { LLM_TIMEOUT_MS, MOCK_LLM } from "./config.ts";
+import { MOCK_LLM } from "./config.ts";
 import { mockChat } from "./mockLlm.ts";
 import { HttpError } from "./http.ts";
 import { cliProviders, isCliProvider, type CliProviderId } from "./cli/catalog.ts";
@@ -142,7 +143,7 @@ export interface FetchOptions {
  * client (they can carry key fragments and internal detail).
  */
 export async function postJson(url: string, body: unknown, headers: Record<string, string>, opts: FetchOptions): Promise<unknown> {
-  const timeoutMs = opts.timeoutMs ?? LLM_TIMEOUT_MS;
+  const timeoutMs = opts.timeoutMs ?? executionSettings().timeoutMs;
   const maxAttempts = (opts.retries ?? 2) + 1;
   let lastErr: Error | undefined;
 

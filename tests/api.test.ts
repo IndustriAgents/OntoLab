@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { gunzipSync } from "node:zlib";
+import { createLocalStore } from "../server/store/local.ts";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { startApp, driveRun, type TestApp, type Client } from "./helpers.ts";
 
@@ -301,6 +302,20 @@ describe("revisions, validation and export", () => {
     await alice.json("PUT", `/api/projects/${pid}/revisions/${draftId}`, { content });
     const again = await alice.json<J>("GET", `/api/projects/${pid}/revisions/${draftId}/report`);
     expect(again.body.report.stale).toBe(true);
+  });
+
+  it("marks reports from an older validator outdated until checks are rerun", async () => {
+    const { pid, draftId } = await reviewedDraft();
+    const route = `/api/projects/${pid}/revisions/${draftId}`;
+    const first = await alice.json<J>("POST", `${route}/validate`, {});
+    expect(first.body.report.validatorVersion).toBeDefined();
+    const store = createLocalStore(app.dataDir).forUser({ id: "alice" });
+    const old = (await store.reports.latest(pid, draftId))!;
+    delete old.validatorVersion;
+    await store.reports.put(old);
+    expect((await alice.json<J>("GET", `${route}/report`)).body.report.stale).toBe(true);
+    await alice.json("POST", `${route}/validate`, {});
+    expect((await alice.json<J>("GET", `${route}/report`)).body.report.stale).toBe(false);
   });
 
   it("only runs read-only SELECT/ASK queries", async () => {

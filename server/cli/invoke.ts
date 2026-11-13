@@ -6,7 +6,7 @@ import { promisify } from "node:util";
 import Ajv from "ajv";
 import { HttpError } from "../http.ts";
 import { ProviderError, TruncatedOutputError } from "../providerErrors.ts";
-import { LLM_TIMEOUT_MS } from "../config.ts";
+import { executionSettings, cliConcurrency, onExecutionSettingsChange } from "../executionSettings.ts";
 import { checkGenerationRequest } from "../ml/generationBudget.ts";
 import { toStrictSchema, type JsonSchema } from "../schemas.ts";
 import { cliBinary, cliModels, CLI_DEFINITIONS, localCliEnabled, validateCliReasoning, type CliProviderId } from "./catalog.ts";
@@ -15,11 +15,12 @@ import { prepareAgy } from "./agy.ts";
 import type { Parsed } from "../structured.ts";
 
 const exec = promisify(execFile);
-let occupied = false;
+let occupied = 0;
 const waiting = new Set<() => void>();
+onExecutionSettingsChange(() => [...waiting].forEach((ready) => ready()));
 async function acquire(signal: AbortSignal): Promise<() => void> {
   if (waiting.size >= 32) throw new ProviderError("The local CLI queue is full. Wait for running requests to finish.", 429, false);
-  while (occupied) {
+  while (occupied >= cliConcurrency()) {
     signal.throwIfAborted();
     await new Promise<void>((resolve, reject) => {
       const ready = () => {
@@ -37,10 +38,10 @@ async function acquire(signal: AbortSignal): Promise<() => void> {
     });
   }
   signal.throwIfAborted();
-  occupied = true;
+  occupied++;
   return () => {
-    occupied = false;
-    waiting.values().next().value?.();
+    occupied--;
+    [...waiting].forEach((ready) => ready());
   };
 }
 
@@ -80,7 +81,7 @@ export async function callCli(call: CliCall): Promise<Parsed> {
   if (Buffer.byteLength(prompt) > 2 * 1024 * 1024)
     throw new ProviderError("The CLI request is too large. Reduce the chunk or conversation context.", 413, false);
   await checkGenerationRequest(call.provider, call.model, { prompt, schema, nativeContextAllowance: 8192 }, call.signal);
-  const timeout = AbortSignal.timeout(LLM_TIMEOUT_MS);
+  const timeout = AbortSignal.timeout(executionSettings().timeoutMs);
   const signal = call.signal ? AbortSignal.any([call.signal, timeout]) : timeout;
   let release: (() => void) | undefined;
   let root: string | undefined;

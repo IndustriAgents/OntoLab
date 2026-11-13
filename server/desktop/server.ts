@@ -1,3 +1,4 @@
+import { openExecutionSettings } from "../executionSettings.ts";
 import { acquireProfileLock } from "../mcp/profileLock.ts";
 // A private, single-user transport around the existing HTTP application.
 // The browser entry point in server/index.ts has its own loopback transport.
@@ -42,6 +43,7 @@ export async function startDesktopServer(options: {
   const releaseProfile = await acquireProfileLock(dirname(options.dataDir));
   const store = createLocalStore(options.dataDir);
   await openModelEndpoints(options.dataDir);
+  await openExecutionSettings(options.dataDir);
   const documentWorker = startDocumentWorker(store, consoleLogger);
   const worker = startWorker(store, consoleLogger);
   const shutdownController = new AbortController();

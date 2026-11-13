@@ -1,3 +1,4 @@
+import { executionSettings } from "./executionSettings.ts";
 // Structured (tool-calling) provider layer. Every provider is asked for a JSON
 // object matching a schema, and every response is checked for truncation before
 // it is parsed — a model that hit its output cap used to yield a partial
@@ -12,7 +13,7 @@ import { postJson, parseModelJson, ProviderError, TruncatedOutputError } from ".
 import { toGeminiSchema, toStrictSchema, type JsonSchema } from "./schemas.ts";
 import { docsToText } from "./prompts.ts";
 import { mockStructured } from "./mockLlm.ts";
-import { LLM_TIMEOUT_MS, MAX_OUTPUT_TOKENS } from "./config.ts";
+import { MAX_OUTPUT_TOKENS } from "./config.ts";
 import { geminiThinkingConfig } from "../src/lib/generationLimits.ts";
 import { isCliProvider } from "./cli/catalog.ts";
 import { callCli } from "./cli/invoke.ts";
@@ -145,7 +146,7 @@ function claudeContent(call: StructuredCall): Anthropic.ContentBlockParam[] {
 async function callClaude(call: StructuredCall): Promise<Parsed> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new ProviderError("ANTHROPIC_API_KEY is not configured on the server.", 400, false);
-  const client = new Anthropic({ apiKey, timeout: LLM_TIMEOUT_MS, maxRetries: 2 });
+  const client = new Anthropic({ apiKey, timeout: executionSettings().timeoutMs, maxRetries: 2 });
   const tool = { name: call.toolName, description: call.toolDesc, input_schema: call.schema as Anthropic.Tool.InputSchema };
 
   const payload: Anthropic.MessageCreateParamsNonStreaming = {

@@ -100,7 +100,7 @@ export async function reasonWithSidecar(
 
 function cacheKey(content: RevisionContent, tier: string, withAbox: boolean, una: boolean): string {
   return createHash("sha256")
-    .update(JSON.stringify(["reason-1", tier, withAbox, una, content.modules.map((m) => [m.name, m.turtle]), withAbox ? content.abox : null, content.baseIri]))
+    .update(JSON.stringify(["reason-2", tier, withAbox, una, content.modules.map((m) => [m.name, m.turtle]), withAbox ? content.abox : null, content.baseIri]))
     .digest("hex")
     .slice(0, 40);
 }
