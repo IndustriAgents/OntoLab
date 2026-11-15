@@ -212,8 +212,10 @@ export async function publishVersion(
     return { publication: record };
   } catch (e) {
     record.status = "failed";
-    record.error =
-      "Publication did not complete. A partial graph may remain at this attempt’s graph IRI. Earlier publications are unchanged.";
+    const detail = e instanceof HttpError ? e.message : e instanceof Error ? e.message : "";
+    record.error = detail
+      ? `Publication did not complete: ${detail} A partial graph may remain at this attempt’s graph IRI. Earlier publications are unchanged.`
+      : "Publication did not complete. A partial graph may remain at this attempt’s graph IRI. Earlier publications are unchanged.";
     await publicationRecord(ctx, pid, record);
     throw e;
   }
