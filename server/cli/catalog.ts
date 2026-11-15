@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { delimiter, isAbsolute, join } from "node:path";
 import type { ProviderInfo } from "../providers.ts";
 import { HttpError } from "../http.ts";
+import { cliEnvironment } from "./process.ts";
 
 export const CLI_IDS = ["claude-cli", "codex-cli", "agy-cli"] as const;
 export type CliProviderId = (typeof CLI_IDS)[number];
@@ -82,10 +83,7 @@ export function validateCliReasoning(provider: string, model: string, effort?: s
 
 /** Local CLI execution is on in development and opt-in in production builds. */
 export function localCliEnabled(): boolean {
-  return (
-    process.env.LOCAL_CLI_ENABLED === "1" ||
-    (process.env.LOCAL_CLI_ENABLED !== "0" && process.env.NODE_ENV !== "production")
-  );
+  return process.env.LOCAL_CLI_ENABLED === "1" || (process.env.LOCAL_CLI_ENABLED !== "0" && process.env.NODE_ENV !== "production");
 }
 export function cliBinary(id: CliProviderId): string | undefined {
   const binary = CLI_DEFINITIONS[id].binary;
@@ -106,17 +104,60 @@ export function cliBinary(id: CliProviderId): string | undefined {
     }
   }
 }
+const agyModels = new Map<string, { at: number; models: string[] }>();
+
+/** Native account catalog only; `agy models` does not start an inference session. */
+export function agyModelCatalog(): string[] {
+  const binary = cliBinary("agy-cli");
+  if (!localCliEnabled() || process.platform !== "darwin" || !binary || agyCompatibility(binary)) return [];
+  const env = cliEnvironment();
+  const key = JSON.stringify([binary, env.HOME, env.XDG_CONFIG_HOME]);
+  const cached = agyModels.get(key);
+  if (cached && Date.now() - cached.at < 60_000) return cached.models;
+  let models = cached?.models ?? [];
+  try {
+    const output = execFileSync(binary, ["models"], {
+      encoding: "utf8",
+      cwd: tmpdir(),
+      env,
+      timeout: 5000,
+      maxBuffer: 128 * 1024,
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+    models = [
+      ...new Set(
+        output.split(/\r?\n/).flatMap((line) => {
+          // Native output is ID<TAB>display name. Ignore banners and malformed rows.
+          const [id, label] = line.split("\t");
+          return label?.trim() && /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,159}$/.test(id) ? [id] : [];
+        }),
+      ),
+    ];
+  } catch {
+    // Discovery failure must not prevent the native default or a previously listed model.
+  }
+  agyModels.set(key, { at: Date.now(), models });
+  return models;
+}
+
 export function cliModels(id: CliProviderId): string[] {
   const value = process.env[`ONTOLAB_${CLI_DEFINITIONS[id].binary.toUpperCase()}_MODELS`];
   return (
     value
       ?.split(",")
       .map((model) => model.trim())
-      .filter(Boolean) ?? (id === "codex-cli" ? ["default", ...Object.keys(codexModelCatalog())] : CLI_DEFINITIONS[id].models)
+      .filter(Boolean) ??
+    (id === "codex-cli"
+      ? ["default", ...Object.keys(codexModelCatalog())]
+      : id === "agy-cli"
+        ? ["default", ...agyModelCatalog().filter((model) => model !== "default")]
+        : CLI_DEFINITIONS[id].models)
   );
 }
 const agyVersions = new Map<string, { at: number; reason?: string }>();
-export const agyVersionSupported = (version: string): boolean => ["1.4.4", "1.4.5", "1.4.6", "1.4.7"].includes(version.trim());
+export const AGY_SUPPORTED_VERSIONS = "1.4.4–1.4.7 and 1.5.9";
+// Exact versions only: each addition requires checking the isolated runtime profile.
+export const agyVersionSupported = (version: string): boolean => ["1.4.4", "1.4.5", "1.4.6", "1.4.7", "1.5.9"].includes(version.trim());
 function agyCompatibility(binary: string): string | undefined {
   const cached = agyVersions.get(binary);
   if (cached && Date.now() - cached.at < 60_000) return cached.reason;
@@ -130,7 +171,8 @@ function agyCompatibility(binary: string): string | undefined {
       env: { PATH: "/usr/bin:/bin", HOME: tmpdir() },
       stdio: ["ignore", "pipe", "ignore"],
     }).trim();
-    if (!agyVersionSupported(version)) reason = "Installed Antigravity version needs an updated isolation profile (supported: 1.4.4–1.4.7)";
+    if (!agyVersionSupported(version))
+      reason = `Installed Antigravity version needs an updated isolation profile (supported: ${AGY_SUPPORTED_VERSIONS})`;
   } catch {
     reason = "Could not verify the installed Antigravity version";
   }

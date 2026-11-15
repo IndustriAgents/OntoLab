@@ -4,7 +4,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
 import { ProviderError } from "../providerErrors.ts";
-import { agyVersionSupported } from "./catalog.ts";
+import { AGY_SUPPORTED_VERSIONS, agyVersionSupported } from "./catalog.ts";
 
 const exec = promisify(execFile);
 
@@ -14,7 +14,7 @@ export async function prepareAgy(root: string, binary: string, schemaFile: strin
   const version = await exec(binary, ["--version"], { timeout: 5000, maxBuffer: 8192, env: { PATH: "/usr/bin:/bin" } });
   if (!agyVersionSupported(version.stdout))
     throw new ProviderError(
-      "Antigravity CLI needs a verified 1.4.4–1.4.7 isolation profile. Use Claude Code or Codex until this version is supported.",
+      `Antigravity CLI needs a verified isolation profile (supported: ${AGY_SUPPORTED_VERSIONS}). Use Claude Code or Codex until this version is supported.`,
       503,
       false,
     );
@@ -70,6 +70,7 @@ subagent: false
 commandExecutionPolicy: off
 mcpServers: []
 inheritCustomizations: false
+excludeDefaultComponents: true
 skills: []
 plugins: []
 ---
