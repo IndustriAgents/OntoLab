@@ -117,17 +117,38 @@ export async function remoteRequest(
         (res) => {
           const status = res.statusCode ?? 500;
           if (status < 200 || status >= 300) {
-            res.resume();
-            reject(
-              new HttpError(
-                status === 401 || status === 403 ? 422 : 502,
-                status >= 300 && status < 400
-                  ? "Database redirects are refused. Enter the final endpoint URL."
-                  : status === 401 || status === 403
-                    ? "Database authentication or permission was refused. Check the connection credentials."
-                    : `Database returned HTTP ${status}. Check the endpoint and database logs.`,
-              ),
-            );
+            const errChunks: Buffer[] = [];
+            let errSize = 0;
+            res.on("data", (chunk: Buffer) => {
+              errSize += chunk.length;
+              if (errSize <= 8192) errChunks.push(chunk);
+            });
+            res.on("end", () => {
+              const body = Buffer.concat(errChunks).toString("utf8").slice(0, 800).trim();
+              const detail = body ? ` Response: ${body}` : "";
+              reject(
+                new HttpError(
+                  status === 401 || status === 403 ? 422 : 502,
+                  status >= 300 && status < 400
+                    ? "Database redirects are refused. Enter the final endpoint URL."
+                    : status === 401 || status === 403
+                      ? "Database authentication or permission was refused. Check the connection credentials."
+                      : `Database returned HTTP ${status}. Check the endpoint and database logs.${detail}`,
+                ),
+              );
+            });
+            res.on("error", () => {
+              reject(
+                new HttpError(
+                  status === 401 || status === 403 ? 422 : 502,
+                  status >= 300 && status < 400
+                    ? "Database redirects are refused. Enter the final endpoint URL."
+                    : status === 401 || status === 403
+                      ? "Database authentication or permission was refused. Check the connection credentials."
+                      : `Database returned HTTP ${status}. Check the endpoint and database logs.`,
+                ),
+              );
+            });
             return;
           }
           const chunks: Buffer[] = [];
