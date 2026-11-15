@@ -104,7 +104,9 @@ export async function callCli(call: CliCall): Promise<Parsed> {
         : call.provider === "codex-cli"
           ? ["--output-schema", "--ignore-user-config", "--ephemeral"]
           : ["--json-schema", "--settings", "--agent", "--disable-slash-commands"];
-    if (!required.every((flag) => help.stdout.includes(flag)))
+    // Go-based CLIs such as agy write successful --help output to stderr.
+    const helpText = `${help.stdout}\n${help.stderr}`;
+    if (!required.every((flag) => helpText.includes(flag)))
       throw new ProviderError(`${label} lacks required isolation/output controls. Update the CLI before retrying.`, 503, false);
     let launch = { binary, args: [] as string[], env };
     let input = prompt;
@@ -219,6 +221,7 @@ export async function callCli(call: CliCall): Promise<Parsed> {
             structured_output?: unknown;
             response?: string;
             status?: string;
+            finished_reason?: string;
             usage?: typeof usage;
             denied_actions?: unknown[];
           };
@@ -230,7 +233,7 @@ export async function callCli(call: CliCall): Promise<Parsed> {
               if (!Object.hasOwn(properties, name)) delete (data as Record<string, unknown>)[name];
           }
           text = r.response ?? "";
-          if (r.status !== "SUCCESS" || r.denied_actions?.length) error = JSON.stringify(r);
+          if (r.status !== "SUCCESS" || r.finished_reason || r.denied_actions?.length) error = JSON.stringify(r);
           usage.input_tokens = r.usage?.input_tokens ?? 0;
           usage.output_tokens = r.usage?.output_tokens ?? 0;
         }

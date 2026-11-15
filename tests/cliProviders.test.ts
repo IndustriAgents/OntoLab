@@ -1,12 +1,13 @@
 import { openExecutionSettings, saveExecutionSettings, executionSettings } from "../server/executionSettings.ts";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import { chmod, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { callCli } from "../server/cli/invoke.ts";
 import { cliEnvironment, runCliProcess } from "../server/cli/process.ts";
 import {
   agyVersionSupported,
+  agyModelCatalog,
   cliProviders,
   localCliEnabled,
   codexModelCatalog,
@@ -19,6 +20,7 @@ import { withGenerationBudget } from "../server/ml/generationBudget.ts";
 import { priceOf } from "../server/services/pricing.ts";
 import { runLoop } from "../server/graphchat/loop.ts";
 import { prepareAgy } from "../server/cli/agy.ts";
+import * as agy from "../server/cli/agy.ts";
 
 let root: string, binary: string;
 const schema = { type: "object", properties: { answer: { type: "string" } }, required: ["answer"], additionalProperties: false };
@@ -42,8 +44,14 @@ beforeAll(async () => {
     `#!${process.execPath}
 const fs = require('node:fs');
 const args = process.argv.slice(2);
-if (args.includes('--version')) { console.log('1.4.7'); process.exit(0); }
-if (args.includes('--help')) { console.log('--json-schema --restricted --tools --strict-mcp-config --setting-sources --output-schema --ignore-user-config --ephemeral --settings --agent --disable-slash-commands'); process.exit(0); }
+if (args.includes('--version')) { console.log('1.5.9'); process.exit(0); }
+if (args[0] === 'models') {
+ fs.appendFileSync(${JSON.stringify(join(root, "catalog-calls.txt"))}, 'models\\n');
+ console.error('Fetching available models...');
+ console.log('gemini-3.8-flash-medium\\tGemini 3.8 Flash (Medium)\\nclaude-sonnet-4-6\\tClaude Sonnet 4.6 (Thinking)\\ngemini-3.8-flash-medium\\tDuplicate\\nFetching available models...\\n--invalid\\tInvalid ID\\nbad model\\tInvalid ID');
+ process.exit(0);
+}
+if (args.includes('--help')) { console.error('--json-schema --restricted --tools --strict-mcp-config --setting-sources --output-schema --ignore-user-config --ephemeral --settings --agent --disable-slash-commands'); process.exit(0); }
 let prompt = '';
 process.stdin.setEncoding('utf8');
 process.stdin.on('data', text => prompt += text);
@@ -62,7 +70,11 @@ process.stdin.on('end', () => {
    data = prompt.includes('cli_0_0') ? {answer:'The graph contains 2 items [Q1].', calls:[]} :
     {answer:'', calls:[{name:'sparql_query', arguments:JSON.stringify({query: prompt.includes('fixture:graph-invalid') ? 42 : 'SELECT * WHERE { ?s ?p ?o } LIMIT 2'})}]};
  }
- if (args[0] === 'exec') {
+ if (args.includes('--agy-fixture')) {
+   const finished_reason = prompt.includes('fixture:partial') ? 'print_timeout' : undefined;
+   const denied_actions = prompt.includes('fixture:denied') ? ['read_file'] : [];
+   console.log(JSON.stringify({event:'result',result:{status:'SUCCESS',finished_reason,denied_actions,structured_output:{...data,toolAction:'finish',toolSummary:'Done'},usage:{input_tokens:100,output_tokens:10}}}));
+ } else if (args[0] === 'exec') {
    console.log(JSON.stringify({type:'item.completed', item:{type:'agent_message', text:JSON.stringify(data)}}));
    console.log(JSON.stringify({type:'turn.completed', usage:{input_tokens:100,output_tokens:10,cached_input_tokens:4}}));
  } else {
@@ -76,7 +88,10 @@ process.stdin.on('end', () => {
 afterAll(async () => {
   await rm(root, { recursive: true, force: true });
 });
-afterEach(() => vi.unstubAllEnvs());
+afterEach(() => {
+  vi.unstubAllEnvs();
+  vi.restoreAllMocks();
+});
 function enable() {
   vi.stubEnv("LOCAL_CLI_ENABLED", "1");
   vi.stubEnv("ONTOLAB_CLAUDE_BIN", binary);
@@ -320,9 +335,67 @@ describe("local CLI provider contract", () => {
     expect(result.usage.input).toBe(208);
     expect(emit).toHaveBeenCalledWith({ type: "round_end", hadTools: true });
   });
+  it.skipIf(process.platform !== "darwin")("discovers and caches Antigravity model IDs, preserving explicit allowlists", async () => {
+    enable();
+    vi.stubEnv("ONTOLAB_AGY_BIN", binary);
+    vi.stubEnv("ONTOLAB_AGY_MODELS", undefined);
+    expect(agyModelCatalog()).toEqual(["gemini-3.8-flash-medium", "claude-sonnet-4-6"]);
+    expect(cliModels("agy-cli")).toEqual(["default", "gemini-3.8-flash-medium", "claude-sonnet-4-6"]);
+    expect(cliProviders().find((p) => p.id === "agy-cli")?.models).toEqual(cliModels("agy-cli"));
+    expect(await readFile(join(root, "catalog-calls.txt"), "utf8")).toBe("models\n");
+    vi.stubEnv("ONTOLAB_AGY_MODELS", "claude-sonnet-4-6,custom-model");
+    expect(cliModels("agy-cli")).toEqual(["claude-sonnet-4-6", "custom-model"]);
+    vi.stubEnv("LOCAL_CLI_ENABLED", "0");
+    expect(agyModelCatalog()).toEqual([]);
+  });
+  it.skipIf(process.platform !== "darwin")("keeps Antigravity's default usable when catalog discovery fails", async () => {
+    enable();
+    const unavailable = join(root, "no-catalog-agy");
+    await writeFile(
+      unavailable,
+      `#!${process.execPath}\nif (process.argv.includes('--version')) { console.log('1.5.9'); } else { process.exit(1); }\n`,
+    );
+    await chmod(unavailable, 0o700);
+    vi.stubEnv("ONTOLAB_AGY_BIN", unavailable);
+    expect(cliModels("agy-cli")).toEqual(["default"]);
+    expect(cliProviders().find((p) => p.id === "agy-cli")).toMatchObject({ enabled: true, models: ["default"] });
+  });
+  it("accepts Antigravity 1.5.9 structured results and rejects partial or denied results", async () => {
+    enable();
+    vi.stubEnv("ONTOLAB_AGY_BIN", binary);
+    vi.stubEnv("ONTOLAB_AGY_MODELS", "default,gemini-3.8-flash-medium");
+    // Exercise production transport/parsing without a model account or a macOS sandbox.
+    vi.spyOn(agy, "prepareAgy").mockResolvedValue({ binary, args: ["--agy-fixture"], env: cliEnvironment() });
+    if (process.platform === "darwin")
+      expect(cliProviders().find((p) => p.id === "agy-cli")).toMatchObject({ enabled: true, authStatus: "unknown" });
+    const request = (prompt: string) =>
+      callCli({ provider: "agy-cli", model: "default", system: "Return data", prompt, schema, outputTokens: 4096 });
+    await expect(request("fixture:valid")).resolves.toMatchObject({
+      data: { answer: "ok" },
+      usage: { input_tokens: 100, output_tokens: 10 },
+    });
+    await callCli({
+      provider: "agy-cli",
+      model: "gemini-3.8-flash-medium",
+      system: "Return data",
+      prompt: "fixture:valid",
+      schema,
+      outputTokens: 4096,
+    });
+    expect(agy.prepareAgy).toHaveBeenLastCalledWith(
+      expect.any(String),
+      await realpath(binary),
+      expect.any(String),
+      "gemini-3.8-flash-medium",
+    );
+    await expect(request("fixture:partial")).rejects.toMatchObject({ status: 502 });
+    await expect(request("fixture:denied")).rejects.toMatchObject({ status: 502 });
+    await expect(request("fixture:invalid-schema")).rejects.toThrow("does not match");
+  });
   it("fails closed for unsupported Antigravity runtime profiles", async () => {
-    expect(agyVersionSupported("1.4.7\n")).toBe(true);
-    for (const version of ["1.4.11", "1.4.70", "1.4.7-beta", "unknown"]) expect(agyVersionSupported(version)).toBe(false);
+    for (const version of ["1.4.4", "1.4.5", "1.4.6", "1.4.7\n", "1.5.9\n"]) expect(agyVersionSupported(version)).toBe(true);
+    for (const version of ["1.4.11", "1.4.70", "1.4.7-beta", "1.5.8", "1.5.90", "1.5.9-beta", "1.6.0", "unknown"])
+      expect(agyVersionSupported(version)).toBe(false);
     if (process.platform === "darwin") {
       const invalid = join(root, "invalid-agy");
       await writeFile(invalid, `#!${process.execPath}\nconsole.log('99.0.0')\n`);
