@@ -53,7 +53,16 @@ export function parseAblation(spec: string): Partial<RunOptions> {
 
 const opts = parse(process.argv.slice(2));
 const provider = String(opts.provider ?? "mock");
-if (provider === "mock") process.env.MOCK_LLM = "1";
+if (provider === "mock") {
+  process.env.MOCK_LLM = "1";
+  // MOCK_LLM also switches the default backends (server/config.ts): say so, because
+  // "semantic" alignment and entailment numbers from a mock run are lexical heuristics.
+  const embeddings = process.env.EMBEDDINGS_BACKEND || "hash (lexical)";
+  const nli = process.env.NLI_BACKEND || "lexical";
+  console.warn(
+    `[eval] mock provider: embeddings backend ${embeddings}, entailment backend ${nli}${process.env.EMBEDDINGS_BACKEND && process.env.NLI_BACKEND ? "" : " (mock defaults; set EMBEDDINGS_BACKEND/NLI_BACKEND=local for real models)"}. Mock scores test the harness, not model quality.`,
+  );
+}
 if (!opts.reuse) process.env.REUSE_SOURCES = "";
 
 const base = {
