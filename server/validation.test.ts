@@ -30,6 +30,22 @@ describe("conformAbox", () => {
     expect(abox.individuals[1].objectProperties).toEqual([{ propUri: NS + "partOf", targetId: "s1" }]);
   });
 
+  it("keeps one evidence reference per quoted sentence, from quote and moreQuotes, without duplicates", () => {
+    const raw = [
+      { id: "s1", classUri: NS + "Station" },
+      {
+        id: "c1",
+        classUri: NS + "Component",
+        objectProperties: [{ propUri: NS + "partOf", targetId: "s1", quote: "C1 sits in S1.", moreQuotes: ["S1 houses C1.", "C1 sits in S1.", " "] }],
+        dataProperties: [{ propUri: NS + "pressure", value: "5", quote: "C1 runs at 5 bar.", moreQuotes: "not an array" }],
+      },
+    ];
+    const ind = conformAbox(raw, tbox).abox.individuals[1];
+    expect(ind.objectProperties?.[0].evidence?.map((e) => e.quote)).toEqual(["C1 sits in S1.", "S1 houses C1."]);
+    expect(ind.objectProperties?.[0].evidence?.every((e) => e.status === "unverified")).toBe(true);
+    expect(ind.dataProperties?.[0].evidence?.map((e) => e.quote)).toEqual(["C1 runs at 5 bar."]);
+  });
+
   it("drops individuals whose class is not in the T-Box", () => {
     const { abox, notes, dropped } = conformAbox([{ id: "x", classUri: "http://elsewhere#Thing" }], tbox);
     expect(abox.individuals).toHaveLength(0);

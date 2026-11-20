@@ -129,9 +129,12 @@ export function optionalStringArray(v: unknown, field: string): string[] | undef
  * in a document (and upgrading it to "verified") is the run service's job — it
  * knows which chunk the model was reading; this pass does not.
  */
-function rawEvidence(v: unknown): EvidenceRef[] | undefined {
-  if (!isStr(v) || !v.trim()) return undefined;
-  return [{ quote: v.trim().slice(0, 2000), status: "unverified" }];
+function rawEvidence(v: unknown, more?: unknown): EvidenceRef[] | undefined {
+  // `moreQuotes`: further sentences stating the same fact, so a fact repeated
+  // across a chunk keeps a located reference for every sentence that states it
+  const quotes = [v, ...(Array.isArray(more) ? more.slice(0, 3) : [])].filter((q): q is string => isStr(q) && !!q.trim()).map((q) => q.trim().slice(0, 2000));
+  const unique = [...new Set(quotes)];
+  return unique.length ? unique.map((quote) => ({ quote, status: "unverified" as const })) : undefined;
 }
 
 export interface ConformanceReport {
@@ -216,7 +219,7 @@ export function conformAbox(raw: unknown, tbox: TBoxModel, opts: { knownIds?: Se
           const dt = normalizeDatatype(isStr(dp.datatype) ? dp.datatype : undefined);
           if (dt) entry.datatype = dt;
         }
-        const ev = rawEvidence(dp.quote);
+        const ev = rawEvidence(dp.quote, dp.moreQuotes);
         if (ev) entry.evidence = ev;
         out.push(entry);
       }
@@ -231,7 +234,7 @@ export function conformAbox(raw: unknown, tbox: TBoxModel, opts: { knownIds?: Se
           continue;
         }
         if (!isStr(op.targetId) || !op.targetId.trim()) continue;
-        const ev = rawEvidence(op.quote);
+        const ev = rawEvidence(op.quote, op.moreQuotes);
         out.push(ev ? { propUri: op.propUri, targetId: op.targetId.trim(), evidence: ev } : { propUri: op.propUri, targetId: op.targetId.trim() });
       }
       if (out.length) ind.objectProperties = out;
