@@ -360,6 +360,27 @@ describe("local CLI provider contract", () => {
     expect(cliModels("agy-cli")).toEqual(["default"]);
     expect(cliProviders().find((p) => p.id === "agy-cli")).toMatchObject({ enabled: true, models: ["default"] });
   });
+  it.skipIf(process.platform !== "darwin")("retries Antigravity discovery after a failure instead of caching an empty catalog", async () => {
+    enable();
+    const flaky = join(root, "flaky-agy");
+    const counter = join(root, "flaky-calls.txt");
+    await writeFile(
+      flaky,
+      `#!${process.execPath}
+const fs = require('fs');
+if (process.argv.includes('--version')) { console.log('1.5.9'); process.exit(0); }
+const n = fs.existsSync(${JSON.stringify(counter)}) ? Number(fs.readFileSync(${JSON.stringify(counter)}, 'utf8')) : 0;
+fs.writeFileSync(${JSON.stringify(counter)}, String(n + 1));
+if (n === 0) process.exit(1);
+console.log('gemini-3.8-flash-low\tGemini 3.8 Flash (Low)');
+`,
+    );
+    await chmod(flaky, 0o700);
+    vi.stubEnv("ONTOLAB_AGY_BIN", flaky);
+    vi.stubEnv("ONTOLAB_AGY_MODELS", undefined);
+    expect(cliModels("agy-cli")).toEqual(["default"]);
+    expect(cliModels("agy-cli")).toEqual(["default", "gemini-3.8-flash-low"]);
+  });
   it("accepts Antigravity 1.5.9 structured results and rejects partial or denied results", async () => {
     enable();
     vi.stubEnv("ONTOLAB_AGY_BIN", binary);
@@ -393,8 +414,8 @@ describe("local CLI provider contract", () => {
     await expect(request("fixture:invalid-schema")).rejects.toThrow("does not match");
   });
   it("fails closed for unsupported Antigravity runtime profiles", async () => {
-    for (const version of ["1.4.4", "1.4.5", "1.4.6", "1.4.7\n", "1.5.9\n"]) expect(agyVersionSupported(version)).toBe(true);
-    for (const version of ["1.4.11", "1.4.70", "1.4.7-beta", "1.5.8", "1.5.90", "1.5.9-beta", "1.6.0", "unknown"])
+    for (const version of ["1.4.4", "1.4.5", "1.4.6", "1.4.7\n", "1.5.9\n", "1.5.13\n"]) expect(agyVersionSupported(version)).toBe(true);
+    for (const version of ["1.4.11", "1.4.70", "1.4.7-beta", "1.5.8", "1.5.12", "1.5.90", "1.5.9-beta", "1.5.130", "1.6.0", "unknown"])
       expect(agyVersionSupported(version)).toBe(false);
     if (process.platform === "darwin") {
       const invalid = join(root, "invalid-agy");
