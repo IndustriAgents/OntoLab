@@ -14,7 +14,7 @@ Provider pickers and AI provider settings separate **APIs** from **Local CLIs**.
 
 ## Models and executables
 
-Claude Code offers `sonnet`, `opus` and `haiku`. Codex and Antigravity offer `Provider default`, which uses the CLI's native model default in the isolated invocation. Codex also reads named models from its local model catalog. Antigravity reads the signed-in account's named models with `agy models`, including model variants with built-in thinking levels. Discovery starts no inference session, is bounded to five seconds, and is cached for one minute. If discovery fails, `Provider default` remains available (along with previously discovered models, if any). Selecting a named model forwards its exact ID to the CLI.
+Claude Code offers `sonnet`, `opus` and `haiku`. Codex and Antigravity offer `Provider default`, which uses the CLI's native model default in the isolated invocation. Codex also reads named models from its local model catalog. Antigravity reads the signed-in account's named models with `agy models`, including model variants with built-in thinking levels. Discovery starts no inference session, is bounded to fifteen seconds (`agy models` contacts the account service and can take several seconds), and successful results are cached for one minute; a failed discovery is retried on the next request. If discovery fails, `Provider default` remains available (along with previously discovered models, if any). Selecting a named model forwards its exact ID to the CLI.
 
 OntoLab never retries a failure with another provider or model. To override automatic discovery with an explicit model allowlist for the installed CLI/account, set a comma-separated server variable:
 
@@ -41,7 +41,7 @@ Executable/model variables are server configuration, never accepted from a brows
 - One CLI request runs at a time, with a bounded queue, the existing provider timeout, cancellation of the process group, and an output-size limit. Authentication/quota failures are not automatically retried as fresh inference requests.
 - Database credentials, API keys and the application's API token are not forwarded to CLI children. Login remains owned by the official CLI.
 - Claude Code requires its restricted/tool-control flags. Codex requires its ephemeral, ignore-user-config and structured-output controls. Unsupported installations fail closed rather than dropping controls.
-- Antigravity currently requires macOS and the Code Flow isolation profile verified for versions **1.4.4–1.4.7 and 1.5.9**. It uses a fresh protected home, a finish-only agent with default components and inherited customizations disabled, and an OS sandbox, with native Keychain authentication. Other versions/platforms require a reviewed profile update. There is no permissive fallback.
+- Antigravity currently requires macOS and the Code Flow isolation profile verified for versions **1.4.4–1.4.7, 1.5.9 and 1.5.13**. It uses a fresh protected home, a finish-only agent with default components and inherited customizations disabled, and an OS sandbox, with native Keychain authentication. Other versions/platforms require a reviewed profile update. There is no permissive fallback.
 - CLI providers currently consume parsed document text. PDF image/vision inputs require a vision-capable API provider.
 
 ## Tokens and costs

@@ -58,34 +58,66 @@ export const lexicalScorer: NliScorer = {
 
 /* ───────────────────────── local cross-encoder ───────────────────────── */
 
-type Classifier = (input: { text: string; text_pair: string }[], opts: { top_k: null }) => Promise<{ label: string; score: number }[][]>;
+// The text-classification pipeline is not used: transformers.js ignores
+// `{ text, text_pair }` inputs there and classifies a constant string, so every
+// pair scored the same (0.89 with the default model). The premise and the
+// hypothesis are encoded as a real sentence pair and the model is run directly.
+interface PairModel {
+  tokenizer: (texts: string[], opts: { text_pair: string[]; padding: boolean; truncation: boolean }) => Promise<Record<string, unknown>>;
+  model: (inputs: Record<string, unknown>) => Promise<{ logits: { data: ArrayLike<number>; dims: number[] } }>;
+  entailIndex: number;
+}
 
-let localClassifier: Promise<Classifier> | null = null;
+let localModel: Promise<PairModel> | null = null;
 
-async function loadLocal(): Promise<Classifier> {
-  localClassifier ??= (async () => {
+async function loadLocal(): Promise<PairModel> {
+  localModel ??= (async () => {
     const mod = (await import("@huggingface/transformers")) as unknown as {
-      pipeline: (task: string, model: string, opts?: Record<string, unknown>) => Promise<Classifier>;
+      AutoTokenizer: { from_pretrained: (model: string) => Promise<PairModel["tokenizer"]> };
+      AutoModelForSequenceClassification: {
+        from_pretrained: (model: string, opts?: Record<string, unknown>) => Promise<PairModel["model"] & { config: { id2label: Record<string, string> } }>;
+      };
       env: { cacheDir: string };
     };
     mod.env.cacheDir = MODEL_CACHE_DIR;
-    return mod.pipeline("text-classification", NLI_LOCAL_MODEL, { dtype: "q8" });
+    const [tokenizer, model] = await Promise.all([
+      mod.AutoTokenizer.from_pretrained(NLI_LOCAL_MODEL),
+      mod.AutoModelForSequenceClassification.from_pretrained(NLI_LOCAL_MODEL, { dtype: "q8" }),
+    ]);
+    const labels = model.config.id2label;
+    const entail = Object.keys(labels).find((k) => /entail/i.test(labels[k]));
+    if (entail === undefined) throw new Error(`${NLI_LOCAL_MODEL} has no entailment label`);
+    return { tokenizer, model, entailIndex: Number(entail) };
   })();
-  return localClassifier;
+  return localModel;
+}
+
+/** Softmax probability of the entailment class for each row of a [rows, classes] logits tensor. */
+export function entailmentProbabilities(logits: { data: ArrayLike<number>; dims: number[] }, entailIndex: number): number[] {
+  const [rows, classes] = logits.dims;
+  const out: number[] = [];
+  for (let r = 0; r < rows; r++) {
+    const row = Array.from({ length: classes }, (_, c) => Number(logits.data[r * classes + c]));
+    const max = Math.max(...row);
+    const exp = row.map((x) => Math.exp(x - max));
+    out.push(exp[entailIndex] / exp.reduce((a, b) => a + b, 0));
+  }
+  return out;
 }
 
 export const localScorer: NliScorer = {
   id: `local-${NLI_LOCAL_MODEL}`,
   backend: "local",
   async score(pairs) {
-    const clf = await loadLocal();
+    const { tokenizer, model, entailIndex } = await loadLocal();
     const out: number[] = [];
     for (let i = 0; i < pairs.length; i += 8) {
-      const batch = pairs.slice(i, i + 8).map((p) => ({ text: p.premise.slice(0, 1500), text_pair: p.hypothesis.slice(0, 500) }));
-      const res = await clf(batch, { top_k: null });
-      // A single input comes back un-nested on some versions.
-      const rows = (batch.length === 1 && !Array.isArray(res[0]) ? [res as unknown as { label: string; score: number }[]] : res) as { label: string; score: number }[][];
-      for (const labels of rows) out.push(labels.find((l) => /entail/i.test(l.label))?.score ?? 0);
+      const batch = pairs.slice(i, i + 8);
+      const inputs = await tokenizer(
+        batch.map((p) => p.premise.slice(0, 1500)),
+        { text_pair: batch.map((p) => p.hypothesis.slice(0, 500)), padding: true, truncation: true },
+      );
+      out.push(...entailmentProbabilities((await model(inputs)).logits, entailIndex));
     }
     return out;
   },

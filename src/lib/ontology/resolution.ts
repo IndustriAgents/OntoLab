@@ -6,10 +6,11 @@
 // person applies them (or the recommended set) — a wrong merge is invisible
 // once made, a duplicate is not.
 
-import type { ABoxIndividual, ABoxResult } from "../../types/abox";
+import type { ABoxIndividual, ABoxObjectProp, ABoxResult } from "../../types/abox";
 import type { MergeCandidate } from "../../types/project";
 import type { TBoxModel } from "../../types/tbox";
-import { mergeInto } from "./aboxMerge";
+import { mergeEvidence, mergeInto, mergeOrigins } from "./aboxMerge";
+import { mergeReview } from "./factReview";
 
 const LEGAL_SUFFIX =
   /\b(inc|incorporated|ltd|limited|llc|llp|plc|gmbh|ag|sa|sas|bv|nv|corp|corporation|co|company|kg|oy|ab|spa|srl|pty)\b\.?/g;
@@ -110,15 +111,27 @@ export function applyMerge(abox: ABoxResult, ids: string[]): { abox: ABoxResult;
     .map((i) => (i.id === keepId ? merged : i))
     .map((i) => {
       if (!i.objectProperties?.some((op) => gone.has(op.targetId))) return i;
-      const seen = new Set<string>();
-      const ops = i.objectProperties
-        .map((op) => (gone.has(op.targetId) ? { ...op, targetId: keepId } : op))
-        .filter((op) => {
-          const k = `${op.propUri}|${op.targetId}`;
-          if (seen.has(k)) return false;
-          seen.add(k);
-          return true;
-        });
+      // Links that become identical after retargeting are one claim: keep the
+      // first and fold the others' evidence, origins and review into it.
+      const seen = new Map<string, ABoxObjectProp>();
+      const ops: ABoxObjectProp[] = [];
+      for (const raw of i.objectProperties) {
+        const op = gone.has(raw.targetId) ? { ...raw, targetId: keepId } : raw;
+        const k = `${op.propUri}|${op.targetId}`;
+        const first = seen.get(k);
+        if (!first) {
+          const copy = { ...op };
+          seen.set(k, copy);
+          ops.push(copy);
+          continue;
+        }
+        const evidence = mergeEvidence(first.evidence, op.evidence);
+        const origins = mergeOrigins(first.origins, op.origins);
+        const review = mergeReview(first.review, op.review);
+        if (evidence) first.evidence = evidence;
+        if (origins) first.origins = origins;
+        if (review) first.review = review;
+      }
       return { ...i, objectProperties: ops };
     });
   return {

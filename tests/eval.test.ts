@@ -128,7 +128,7 @@ describe("Docling sidecar contract", () => {
 
 describe("research metrics", async () => {
   const { axiomMetrics, calibration, claimScores, cqTermCoverage, llms4olMetrics, alignmentMetrics, extensionRecovery, leafClasses } = await import("../eval/research.ts");
-  const { loadOaeiAlignment } = await import("../eval/oaei.ts");
+  const { loadOaeiAlignment, thresholdUnverified } = await import("../eval/oaei.ts");
   const P = `@prefix owl: <http://www.w3.org/2002/07/owl#> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .`;
   const gold = parseTBox(`@prefix : <${NS}> . ${P}
     :Organisation a owl:Class ; owl:disjointWith :Agreement . :Agreement a owl:Class . :Supplier rdfs:subClassOf :Organisation . :Buyer rdfs:subClassOf :Organisation .
@@ -187,6 +187,37 @@ describe("research metrics", async () => {
     );
     expect(m).toMatchObject({ tp: 2, predicted: 2, gold: 2 });
     expect(m.equivalenceOnly).toMatchObject({ tp: 1, predicted: 1, gold: 1 });
+  });
+
+  it("reads published OAEI files: namespace without '#', cid attributes and <location> text", async () => {
+    // shape of the OAEI Conference track references (e.g. conference-confOf.rdf)
+    const ref = await loadOaeiAlignment(`<?xml version='1.0' encoding='utf-8'?>
+<rdf:RDF xmlns='http://knowledgeweb.semanticweb.org/heterogeneity/alignment'
+         xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns:xsd='http://www.w3.org/2001/XMLSchema#'>
+<Alignment><xml>yes</xml><level>0</level><type>??</type>
+<onto1><Ontology rdf:about="http://conference"><location>http://nb.vse.cz/~svabo/oaei2010/Conference.owl</location></Ontology></onto1>
+<onto2><Ontology rdf:about="http://confOf"><location>http://nb.vse.cz/~svabo/oaei2010/confOf.owl</location></Ontology></onto2>
+  <map><Cell cid='1'><entity1 rdf:resource='http://conference#Poster'/><entity2 rdf:resource='http://confOf#Poster'/>
+    <measure rdf:datatype='xsd:float'>1.0</measure><relation>=</relation></Cell></map>
+  <map><Cell cid='2'><entity1 rdf:resource='http://conference#Paper'/><entity2 rdf:resource='http://confOf#Contribution'/>
+    <relation>&gt;</relation></Cell></map>
+</Alignment></rdf:RDF>`);
+    expect(ref).toEqual([
+      { e1: "http://conference#Poster", e2: "http://confOf#Poster", relation: "=", measure: 1 },
+      { e1: "http://conference#Paper", e2: "http://confOf#Contribution", relation: ">" },
+    ]);
+  });
+
+  it("scores unverified candidates above the threshold as equivalences (matcher-only ablations)", () => {
+    const out = thresholdUnverified(
+      [
+        { source: "a", target: "x", relation: "candidate", score: 0.9, verified: false },
+        { source: "b", target: "y", relation: "candidate", score: 0.6, verified: false },
+        { source: "c", target: "z", relation: "narrower", score: 0.95, verified: true },
+      ],
+      0.85,
+    );
+    expect(out.map((m) => m.relation)).toEqual(["equivalent", "candidate", "narrower"]);
   });
 
   it("scores held-out term recovery for the extension protocol", () => {

@@ -107,6 +107,8 @@ export function cliBinary(id: CliProviderId): string | undefined {
 const agyModels = new Map<string, { at: number; models: string[] }>();
 
 /** Native account catalog only; `agy models` does not start an inference session. */
+export const AGY_DISCOVERY_TIMEOUT_MS = 15_000;
+
 export function agyModelCatalog(): string[] {
   const binary = cliBinary("agy-cli");
   if (!localCliEnabled() || process.platform !== "darwin" || !binary || agyCompatibility(binary)) return [];
@@ -120,7 +122,9 @@ export function agyModelCatalog(): string[] {
       encoding: "utf8",
       cwd: tmpdir(),
       env,
-      timeout: 5000,
+      // `agy models` contacts the account service and takes 3–6 s; a 5 s bound
+      // made discovery fail intermittently, leaving only "default".
+      timeout: AGY_DISCOVERY_TIMEOUT_MS,
       maxBuffer: 128 * 1024,
       stdio: ["ignore", "pipe", "ignore"],
     });
@@ -135,6 +139,8 @@ export function agyModelCatalog(): string[] {
     ];
   } catch {
     // Discovery failure must not prevent the native default or a previously listed model.
+    // Without any discovered models, retry on the next call instead of caching the failure.
+    if (!models.length) return models;
   }
   agyModels.set(key, { at: Date.now(), models });
   return models;
@@ -155,9 +161,9 @@ export function cliModels(id: CliProviderId): string[] {
   );
 }
 const agyVersions = new Map<string, { at: number; reason?: string }>();
-export const AGY_SUPPORTED_VERSIONS = "1.4.4–1.4.7 and 1.5.9";
+export const AGY_SUPPORTED_VERSIONS = "1.4.4–1.4.7, 1.5.9 and 1.5.13";
 // Exact versions only: each addition requires checking the isolated runtime profile.
-export const agyVersionSupported = (version: string): boolean => ["1.4.4", "1.4.5", "1.4.6", "1.4.7", "1.5.9"].includes(version.trim());
+export const agyVersionSupported = (version: string): boolean => ["1.4.4", "1.4.5", "1.4.6", "1.4.7", "1.5.9", "1.5.13"].includes(version.trim());
 function agyCompatibility(binary: string): string | undefined {
   const cached = agyVersions.get(binary);
   if (cached && Date.now() - cached.at < 60_000) return cached.reason;
