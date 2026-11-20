@@ -135,6 +135,32 @@ export interface AlignOptions {
   maxSource?: number | null;
   /** turn matchers off for ablation studies */
   matchers?: { lexical?: boolean; semantic?: boolean; structural?: boolean };
+  /**
+   * How a cosine becomes the semantic score.
+   *   relative — 1 − (1 − cos) / (1 − r), r = the mean cosine of each term to its
+   *              nearest neighbours on the other side: how far a pair stands out
+   *              from its neighbourhood. Embedding models differ in where unrelated
+   *              texts land (MiniLM near 0.3, bge near 0.8), so a raw cosine has no
+   *              fixed meaning against the lexical scale; this does (CSLS-like).
+   *   raw      — the cosine itself (the original behaviour).
+   */
+  semanticCalibration?: "relative" | "raw";
+}
+
+/** Neighbourhood size for the relative semantic score. */
+const SEMANTIC_NEIGHBOURS = 10;
+
+/** Mean of the k largest values. */
+function topMean(values: number[], k: number): number {
+  if (!values.length) return 0;
+  const top = [...values].sort((a, b) => b - a).slice(0, k);
+  return top.reduce((a, b) => a + b, 0) / top.length;
+}
+
+/** 1 − (1 − cos) / (1 − r): 1 for an identical pair, 0 for a pair no closer than the neighbourhood. */
+export function relativeSimilarity(cos: number, neighbourhood: number): number {
+  if (neighbourhood >= 1) return cos >= 1 ? 1 : 0;
+  return Math.max(0, Math.min(1, 1 - (1 - cos) / (1 - neighbourhood)));
 }
 
 const CANDIDATE = 0.55;
@@ -161,6 +187,7 @@ export async function alignOntologies(
     semantic: opts.matchers?.semantic !== false,
     structural: opts.matchers?.structural !== false,
   };
+  const calibration = opts.semanticCalibration ?? "raw";
   const diagnostics: AlignmentDiagnostics = {
     sourceTerms: allSource.length,
     processedSourceTerms: src.length,
@@ -175,6 +202,7 @@ export async function alignOntologies(
     parameters: {
       maxSource: limit,
       prefilter: 0.4,
+      semanticCalibration: calibration,
       candidate: CANDIDATE,
       anchor: ANCHOR,
       structuralTiers: 3,
@@ -186,18 +214,41 @@ export async function alignOntologies(
   const sv = opts.embedder && use.semantic ? await opts.embedder.embed(src.map((t) => t.text)) : null;
   const tv = opts.embedder && use.semantic ? await opts.embedder.embed(tgt.map((t) => t.text)) : null;
 
+  // neighbourhood of every term: mean cosine to its nearest same-kind terms on the other side
+  const sameKind = (a: Term, b: Term) => a.kind === b.kind && a.propertyKind === b.propertyKind && a.uri !== b.uri;
+  let rs: number[] | null = null;
+  let rt: number[] | null = null;
+  if (sv && tv && calibration === "relative") {
+    const colCos: number[][] = tgt.map(() => []);
+    rs = src.map((s, i) => {
+      const row: number[] = [];
+      tgt.forEach((t, j) => {
+        if (!sameKind(s, t)) return;
+        const c = cosine(sv[i], tv[j]);
+        row.push(c);
+        colCos[j].push(c);
+      });
+      return topMean(row, SEMANTIC_NEIGHBOURS);
+    });
+    rt = colCos.map((col) => topMean(col, SEMANTIC_NEIGHBOURS));
+  }
+
   // element-level scores for every same-kind pair worth a look
-  type Pair = { s: Term; t: Term; lexical: number; semantic: number; cosine?: number; structural: number; score: number };
+  // `score` decides (calibrated semantic); `recall` retrieves candidates for the model
+  // (raw cosine), so calibration sharpens unverified decisions without hiding pairs from verification
+  type Pair = { s: Term; t: Term; lexical: number; semantic: number; rawSemantic: number; cosine?: number; structural: number; score: number; recall: number };
   const pairs: Pair[] = [];
   for (const [i, s] of src.entries()) {
     if (i > 0 && i % 16 === 0) await new Promise<void>((resolve) => setImmediate(resolve));
     tgt.forEach((t, j) => {
-      if (t.kind !== s.kind || t.propertyKind !== s.propertyKind || t.uri === s.uri) return;
+      if (!sameKind(s, t)) return;
       const lexical = use.lexical ? nameSimilarity(s.name, t.name) : 0;
       const rawCosine = sv && tv ? cosine(sv[i], tv[j]) : undefined;
-      const semantic = rawCosine == null ? 0 : Math.max(0, rawCosine);
+      const semantic = rawCosine == null ? 0 : rs && rt ? relativeSimilarity(rawCosine, (rs[i] + rt[j]) / 2) : Math.max(0, rawCosine);
+      const rawSemantic = rawCosine == null ? 0 : Math.max(0, rawCosine);
       const base = Math.max(lexical, semantic);
-      if (base >= 0.4) pairs.push({ s, t, lexical, semantic, cosine: rawCosine, structural: 0, score: base });
+      const recall = Math.max(lexical, rawSemantic);
+      if (Math.max(base, recall) >= 0.4) pairs.push({ s, t, lexical, semantic, rawSemantic, cosine: rawCosine, structural: 0, score: base, recall });
     });
   }
 
@@ -218,8 +269,10 @@ export async function alignOntologies(
         for (const x of a) if ([...(anchors.get(x) ?? [])].some((y) => b.has(y))) hits++;
         const structural = round3(Math.min(1, hits / Math.min(a.size, b.size)));
         const base = Math.max(p.lexical, p.semantic);
+        const rawBase = Math.max(p.lexical, p.rawSemantic);
         // structural agreement lifts a weak element-level match; it never lowers one
         const next = Math.max(base, structural > 0 ? 0.75 * base + 0.25 * structural : base);
+        p.recall = Math.max(rawBase, structural > 0 ? 0.75 * rawBase + 0.25 * structural : rawBase);
         if (structural !== p.structural || next !== p.score) changed = true;
         p.structural = structural;
         p.score = next;
@@ -232,8 +285,8 @@ export async function alignOntologies(
   for (const s of src) {
     kept.push(
       ...pairs
-        .filter((p) => p.s.uri === s.uri && p.score >= CANDIDATE)
-        .sort((a, b) => b.score - a.score)
+        .filter((p) => p.s.uri === s.uri && p.recall >= CANDIDATE)
+        .sort((a, b) => b.recall - a.recall || b.score - a.score)
         .slice(0, 2),
     );
   }
