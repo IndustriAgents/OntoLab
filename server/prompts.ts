@@ -254,7 +254,7 @@ export function systemPrompt(tbox: TBoxModel, mode: "extract" | "interactive" | 
   }
   if (opts.proposeTerms && !editing) {
     lines.push(
-      "MISSING VOCABULARY: when the documents state something important that NO class or property can express, do not force it onto a wrong term — list it in `proposedTerms` (kind, a PascalCase class or camelCase property name, a one-sentence definition, the closest existing parent class or domain/range, and a short verbatim quote) together with the fact itself: `subject` (the id of the individual it is about), and `value` or `object` (the target individual's id). Only genuinely missing ideas, at most 5 per call.",
+      "MISSING VOCABULARY: when the documents state something important that NO class or property can express, do not force it onto a wrong term — list it in `proposedTerms` (kind, a PascalCase class or camelCase property name, a one-sentence definition, the closest existing parent class or domain/range, and a short verbatim quote) together with the fact itself: `subject` (the id of the individual it is about), and `value` or `object` (the target individual's id). Only genuinely missing ideas, at most 5 per call. A more specific name for an existing property is not missing (\"albumArtist\" when `artist` exists): assert the existing property on the individual instead.",
     );
   }
   if (mode === "interactive") {

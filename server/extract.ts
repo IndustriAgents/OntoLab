@@ -7,6 +7,7 @@
 // conformAbox() before it reaches the client, so unknown terms, duplicate ids
 // and dangling links can never escape into the graph or the export.
 
+import { foldProposedFacts } from "./proposedFacts.ts";
 import type { TBoxModel } from "../src/types/tbox.ts";
 import type { ABoxResult, ABoxIndividual, ExtractDoc, ClarifyQuestion, Clarification } from "../src/types/abox.ts";
 import type { UnmatchedTerm } from "../src/types/project.ts";
@@ -122,8 +123,12 @@ export async function extractABox(req: ExtractRequest, ctx: CallContext): Promis
   const { data, usage: initialUsage } = await callStructured(request);
   let usage = initialUsage;
   const knownIds = new Set(req.knownIndividuals?.individuals.map((i) => i.id) ?? []);
-  const conformed = conformAbox(data.individuals, req.tbox, { knownIds });
-  const groundingNotes: string[] = [];
+  // proposals that are existing properties under another name become ordinary assertions first
+  const folded = req.proposeTerms
+    ? foldProposedFacts(data.individuals, data.proposedTerms, req.tbox, req.documents.map((d) => d.text ?? ""), knownIds)
+    : { individuals: data.individuals, proposedTerms: data.proposedTerms, notes: [] };
+  const conformed = conformAbox(folded.individuals, req.tbox, { knownIds });
+  const groundingNotes: string[] = [...folded.notes];
   if (req.requireEvidence && !req.documents.some((d) => d.asVision)) {
     const titles = omitUnlocatedTitleDuplicates(conformed.abox, req.assertionSubjects ?? { individuals: [] }, req.documents);
     conformed.abox = titles.abox;
@@ -157,7 +162,7 @@ export async function extractABox(req: ExtractRequest, ctx: CallContext): Promis
   }
   const { abox, notes, unmatched } = conformed;
   notes.push(...groundingNotes);
-  return { abox, usage, notes, unmatched: [...readProposedTerms(data.proposedTerms), ...unmatched] };
+  return { abox, usage, notes, unmatched: [...readProposedTerms(folded.proposedTerms), ...unmatched] };
 }
 
 /** Compact id index of earlier chunks' individuals (ids, classes, labels only). */

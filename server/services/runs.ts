@@ -108,7 +108,7 @@ const TERMINAL = new Set(["ready_for_review", "failed", "cancelled"]);
 const QA_DOC_CHARS = Number(process.env.QA_DOC_CHARS) || 200_000;
 const MAX_QA_ROUNDS = 8;
 /** Bump when prompts or schemas change, so cached results from older prompts are not reused. */
-export const PROMPT_VERSION = "2026-11-more-quotes-v11";
+export const PROMPT_VERSION = "2026-11-existing-terms-v12";
 
 /* ───────────────────────── stages ───────────────────────── */
 
