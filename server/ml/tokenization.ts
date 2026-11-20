@@ -85,6 +85,9 @@ export function embeddingProfile(id: string): EmbeddingProfile {
   return found;
 }
 const tokenizers = new Map<string, Promise<TokenCounter>>();
+const TOKENIZER_LOAD_ATTEMPTS = 3;
+const TOKENIZER_RETRY_MS = Number(process.env.TOKENIZER_RETRY_MS) || 500;
+
 export async function embeddingCounter(profile: EmbeddingProfile): Promise<TokenCounter> {
   if (profile.provider === "openai") return bpe("cl100k_base");
   if (profile.backend !== "local") return byteCounter;
@@ -94,14 +97,30 @@ export async function embeddingCounter(profile: EmbeddingProfile): Promise<Token
       try {
         const { AutoTokenizer, env } = await import("@huggingface/transformers");
         env.cacheDir = MODEL_CACHE_DIR;
-        const tokenizer = await AutoTokenizer.from_pretrained(profile.model);
+        // A load can fail transiently (another process writing the same model cache, a network
+        // blip on the revision check); retry before giving up, since giving up switches the
+        // whole process to the hash embedder.
+        let tokenizer: Awaited<ReturnType<typeof AutoTokenizer.from_pretrained>> | undefined;
+        let lastError: unknown;
+        for (let attempt = 0; attempt < TOKENIZER_LOAD_ATTEMPTS && !tokenizer; attempt++) {
+          try {
+            tokenizer = await AutoTokenizer.from_pretrained(profile.model);
+          } catch (e) {
+            lastError = e;
+            if (attempt + 1 < TOKENIZER_LOAD_ATTEMPTS) await new Promise((r) => setTimeout(r, TOKENIZER_RETRY_MS * (attempt + 1)));
+          }
+        }
+        if (!tokenizer) throw lastError;
         return {
           id: `${profile.model}:tokenizer-v1`,
           exact: true,
           inputLimit: Math.min(profile.inputLimit, tokenizer.model_max_length),
           count: (text: string) => tokenizer.encode(text, { add_special_tokens: true }).length,
         };
-      } catch {
+      } catch (e) {
+        // not remembered: the next request tries to load the tokenizer again
+        tokenizers.delete(profile.model);
+        console.warn(`[tokenizer] ${profile.model} unavailable after ${TOKENIZER_LOAD_ATTEMPTS} attempts (${e instanceof Error ? e.message : e})`);
         return {
           ...byteCounter,
           count: (text: string) => byteCounter.count(text) + 2,
