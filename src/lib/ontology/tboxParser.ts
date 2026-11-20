@@ -5,6 +5,10 @@ import { RDF, RDFS, OWL, XSD, localName, namespaceOf, isStandardTerm, defaultAbo
 const TYPE = RDF + "type";
 const LABEL = RDFS + "label";
 const COMMENT = RDFS + "comment";
+const SKOS = "http://www.w3.org/2004/02/skos/core#";
+// Fallbacks for ontologies that name terms with SKOS (EMMO, QUDT, many OBO-style vocabularies use opaque IRIs).
+const PREF_LABEL = SKOS + "prefLabel";
+const DEFINITION = SKOS + "definition";
 const DOMAIN = RDFS + "domain";
 const RANGE = RDFS + "range";
 const SUBCLASS = RDFS + "subClassOf";
@@ -120,6 +124,8 @@ export function parseTBox(text: string, baseIriOverride?: string, opts: { reason
   const typeOf = new Map<string, Set<string>>();
   const labels = new Map<string, { value: string; lang: string }[]>();
   const comments = new Map<string, { value: string; lang: string }[]>();
+  const prefLabels = new Map<string, { value: string; lang: string }[]>();
+  const definitions = new Map<string, { value: string; lang: string }[]>();
   const domainOf = new Map<string, string[]>();
   const rangeOf = new Map<string, string[]>();
   const subclassOf = new Map<string, string[]>();
@@ -207,6 +213,10 @@ export function parseTBox(text: string, baseIriOverride?: string, opts: { reason
       pushText(labels, s, o);
     } else if (p === COMMENT) {
       pushText(comments, s, o);
+    } else if (p === PREF_LABEL) {
+      pushText(prefLabels, s, o);
+    } else if (p === DEFINITION) {
+      pushText(definitions, s, o);
     } else if (p === DOMAIN) {
       push(domainOf, s, ...expand(o));
     } else if (p === RANGE) {
@@ -273,8 +283,8 @@ export function parseTBox(text: string, baseIriOverride?: string, opts: { reason
     const eq = equivClass.get(uri);
     classes.push({
       uri,
-      label: pickText(labels.get(uri) ?? []),
-      comment: pickText(comments.get(uri) ?? []),
+      label: pickText(labels.get(uri) ?? []) ?? pickText(prefLabels.get(uri) ?? []),
+      comment: pickText(comments.get(uri) ?? []) ?? pickText(definitions.get(uri) ?? []),
       ...(dj?.size ? { disjointWith: [...dj].sort() } : {}),
       ...(eq?.size ? { equivalentTo: [...eq].sort() } : {}),
     });
@@ -285,8 +295,8 @@ export function parseTBox(text: string, baseIriOverride?: string, opts: { reason
     const types = typeOf.get(uri);
     const prop: TBoxProperty = {
       uri,
-      label: pickText(labels.get(uri) ?? []),
-      comment: pickText(comments.get(uri) ?? []),
+      label: pickText(labels.get(uri) ?? []) ?? pickText(prefLabels.get(uri) ?? []),
+      comment: pickText(comments.get(uri) ?? []) ?? pickText(definitions.get(uri) ?? []),
       domain: domainOf.get(uri) ?? [],
       range: rangeOf.get(uri) ?? [],
       kind,
