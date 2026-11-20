@@ -105,19 +105,51 @@ export function entailmentProbabilities(logits: { data: ArrayLike<number>; dims:
   return out;
 }
 
+/** Longest premise window the cross-encoder sees at once (DeBERTa's 512 tokens is roughly 2,000 characters). */
+export const PREMISE_WINDOW_CHARS = 1500;
+
+/**
+ * Split a long premise into overlapping windows at sentence boundaries, so the
+ * cross-encoder never silently drops text past its input limit. A premise that
+ * fits is returned unchanged. Each window after the first repeats the previous
+ * window's last sentence, so a claim stated across a boundary is still seen whole.
+ */
+export function premiseWindows(premise: string, maxChars = PREMISE_WINDOW_CHARS): string[] {
+  if (premise.length <= maxChars) return [premise];
+  const sentences = premise.match(/[^.!?;\n]+(?:[.!?;]+|\n+|$)/g)?.map((x) => x.trim()).filter(Boolean) ?? [premise];
+  // a single sentence longer than a window is cut into hard slices
+  const parts = sentences.flatMap((x) => (x.length <= maxChars ? [x] : Array.from({ length: Math.ceil(x.length / maxChars) }, (_, i) => x.slice(i * maxChars, (i + 1) * maxChars))));
+  const windows: string[] = [];
+  let cur: string[] = [];
+  for (const part of parts) {
+    if (cur.length && [...cur, part].join(" ").length > maxChars) {
+      windows.push(cur.join(" "));
+      const last = cur[cur.length - 1];
+      cur = last.length + part.length + 1 <= maxChars ? [last] : [];
+    }
+    cur.push(part);
+  }
+  if (cur.length) windows.push(cur.join(" "));
+  return windows;
+}
+
 export const localScorer: NliScorer = {
   id: `local-${NLI_LOCAL_MODEL}`,
   backend: "local",
   async score(pairs) {
     const { tokenizer, model, entailIndex } = await loadLocal();
-    const out: number[] = [];
-    for (let i = 0; i < pairs.length; i += 8) {
-      const batch = pairs.slice(i, i + 8);
+    // every pair becomes one row per premise window; a pair scores its best window
+    const rows = pairs.flatMap((p, i) => premiseWindows(p.premise).map((premise) => ({ i, premise, hypothesis: p.hypothesis.slice(0, 500) })));
+    const out = new Array<number>(pairs.length).fill(0);
+    for (let k = 0; k < rows.length; k += 8) {
+      const batch = rows.slice(k, k + 8);
       const inputs = await tokenizer(
-        batch.map((p) => p.premise.slice(0, 1500)),
-        { text_pair: batch.map((p) => p.hypothesis.slice(0, 500)), padding: true, truncation: true },
+        batch.map((r) => r.premise),
+        { text_pair: batch.map((r) => r.hypothesis), padding: true, truncation: true },
       );
-      out.push(...entailmentProbabilities((await model(inputs)).logits, entailIndex));
+      entailmentProbabilities((await model(inputs)).logits, entailIndex).forEach((p, j) => {
+        out[batch[j].i] = Math.max(out[batch[j].i], p);
+      });
     }
     return out;
   },
@@ -145,6 +177,9 @@ const JUDGE_SCHEMA = {
   additionalProperties: false,
 };
 
+/** A model judge reads long context; the cap only bounds cost on pathological quotes. */
+const PROVIDER_PREMISE_CHARS = 6000;
+
 export function providerScorer(provider: ProviderId, model: string): NliScorer {
   return {
     id: `provider-${provider}-${model}`,
@@ -153,7 +188,7 @@ export function providerScorer(provider: ProviderId, model: string): NliScorer {
       const out: number[] = [];
       for (let i = 0; i < pairs.length; i += 20) {
         const batch = pairs.slice(i, i + 20);
-        const lead = batch.map((p, j) => `PAIR ${j + 1}\nQUOTE: ${p.premise.slice(0, 1500)}\nCLAIM: ${p.hypothesis.slice(0, 400)}`).join("\n\n");
+        const lead = batch.map((p, j) => `PAIR ${j + 1}\nQUOTE: ${p.premise.slice(0, PROVIDER_PREMISE_CHARS)}\nCLAIM: ${p.hypothesis.slice(0, 400)}`).join("\n\n");
         const { data } = await callStructured({
           provider,
           model,

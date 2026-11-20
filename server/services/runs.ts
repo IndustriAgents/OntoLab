@@ -77,7 +77,7 @@ import {
   LEASE_TTL_MS,
   MAX_ACTIVE_STEPS,
   NLI_BACKEND,
-  NLI_REVIEW_THRESHOLD,
+  nliReviewThreshold,
   PARALLEL_STEPS,
   PROMPT_STYLE,
   RELEVANCE_THRESHOLD,
@@ -108,7 +108,7 @@ const TERMINAL = new Set(["ready_for_review", "failed", "cancelled"]);
 const QA_DOC_CHARS = Number(process.env.QA_DOC_CHARS) || 200_000;
 const MAX_QA_ROUNDS = 8;
 /** Bump when prompts or schemas change, so cached results from older prompts are not reused. */
-export const PROMPT_VERSION = "2026-11-publication-section-titles-v10";
+export const PROMPT_VERSION = "2026-11-nary-relations-v13";
 
 /* ───────────────────────── stages ───────────────────────── */
 
@@ -293,7 +293,7 @@ export function runConfigFor(project: Project, options: RunOptions, embedder: Em
     schemaTopK: options.schemaTopK ?? SCHEMA_TOP_K,
     schemaMinTerms: SCHEMA_RETRIEVAL_MIN_TERMS,
     relevanceThreshold: RELEVANCE_THRESHOLD,
-    nliReviewThreshold: NLI_REVIEW_THRESHOLD,
+    nliReviewThreshold: nliReviewThreshold(project.settings.models?.nli ?? NLI_BACKEND),
     embedder: embedder?.id ?? null,
     nli: project.settings.models?.nli ?? NLI_BACKEND,
     evidenceGate: options.evidenceGate ?? "auto-accept",

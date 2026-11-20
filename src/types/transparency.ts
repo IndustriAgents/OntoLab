@@ -38,6 +38,8 @@ export interface AlignmentDiagnostics {
   parameters: {
     maxSource: number | null;
     prefilter: number;
+    /** how cosines became semantic scores; absent on runs before calibration existed */
+    semanticCalibration?: "relative" | "raw";
     candidate: number;
     anchor: number;
     structuralTiers: number;
