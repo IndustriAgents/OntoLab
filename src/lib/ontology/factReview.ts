@@ -112,7 +112,9 @@ export function autoReview(abox: ABoxResult, issues: ValidationIssue[], opts: Au
     if (held) return { status: "candidate", ...stamp, reason: "a validation finding points at it" };
     if (confidence == null) return { status: "candidate", ...stamp, reason: "no verified evidence" };
     if (confidence < acceptAt) return { status: "candidate", ...stamp, reason: `evidence entailment ${confidence.toFixed(2)} below ${acceptAt}` };
-    if ((evidence ?? []).some((e) => e.review)) return { status: "candidate", ...stamp, reason: "some evidence needs review" };
+    // One located quote that entails the claim at acceptAt is enough. A weaker extra
+    // quote for the same fact (another sentence, another chunk) does not hold it back:
+    // it stays flagged on its own reference for a reviewer to see.
     return { status: "accepted", ...stamp };
   };
 

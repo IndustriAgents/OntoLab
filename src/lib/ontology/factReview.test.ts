@@ -31,6 +31,29 @@ describe("autoReview", () => {
     expect(abox.individuals[0].review?.runId).toBe("r1");
   });
 
+  it("accepts a fact on one strong located quote even when another quote for it is weak", () => {
+    const abox: ABoxResult = {
+      individuals: [
+        {
+          id: "acme",
+          classUri: "http://ex/o#Supplier",
+          dataProperties: [
+            {
+              propUri: "http://ex/o#name",
+              value: "Acme",
+              evidence: [
+                { quote: "Acme GmbH is the supplier.", status: "verified", confidence: 0.93 },
+                { quote: "Acme was mentioned.", status: "verified", confidence: 0.3, review: true },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const rows = new Map(listFacts(autoReview(abox, [], { gate: "auto-accept", acceptAt: 0.8 }).abox).map((f) => [f.key, f]));
+    expect(rows.get("acme#data:http://ex/o#name|Acme||")).toMatchObject({ status: "accepted", confidence: 0.93 });
+  });
+
   it("holds facts that a validation finding points at", () => {
     const issues: ValidationIssue[] = [
       { severity: "warn", code: "range", message: "", where: "", id: "acme", prop: "http://ex/o#supplies" },
