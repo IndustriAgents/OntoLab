@@ -10,7 +10,7 @@ import type { ABoxIndividual, ABoxResult, EvidenceRef } from "../../src/types/ab
 import type { TBoxModel } from "../../src/types/tbox.ts";
 import { localName } from "../../src/lib/ontology/iri.ts";
 import { displayName } from "../../src/lib/ontology/resolution.ts";
-import { NLI_REVIEW_THRESHOLD } from "../config.ts";
+import { nliReviewThreshold } from "../config.ts";
 import type { NliScorer } from "../ml/nli.ts";
 
 const words = (s: string) =>
@@ -97,7 +97,8 @@ export async function verifyAbox(
   scorer: NliScorer,
   opts: { max?: number; threshold?: number; context?: (ref: EvidenceRef) => string | null } = {},
 ): Promise<VerifyResult> {
-  const threshold = opts.threshold ?? NLI_REVIEW_THRESHOLD;
+  // the backend the scorer actually used (a failed local model falls back to lexical)
+  const threshold = opts.threshold ?? nliReviewThreshold(scorer.backend);
   const max = opts.max ?? 4000;
   const byId = new Map(abox.individuals.map((i) => [i.id, i]));
   const out: ABoxIndividual[] = abox.individuals.map((i) => structuredClone(i));

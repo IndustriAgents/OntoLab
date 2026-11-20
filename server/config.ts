@@ -112,8 +112,21 @@ export const NLI_BACKEND: NliBackend = oneOf(
   MOCK_LLM ? "lexical" : "local",
 );
 export const NLI_LOCAL_MODEL = process.env.NLI_LOCAL_MODEL || "Xenova/nli-deberta-v3-xsmall";
-/** Claims whose entailment score falls below this go to review. */
-export const NLI_REVIEW_THRESHOLD = Number(process.env.NLI_REVIEW_THRESHOLD) || 0.5;
+/** The default local NLI model; its review threshold was calibrated on ContractNLI (dev split). */
+export const NLI_DEFAULT_LOCAL_MODEL = "Xenova/nli-deberta-v3-xsmall";
+/**
+ * Claims whose entailment score falls below this go to review. NLI_REVIEW_THRESHOLD overrides it
+ * for every backend. Otherwise the default local model uses 0.35: chosen on ContractNLI dev as the
+ * lowest threshold that passes at most 5% of contradicted claims, it passes 58% of entailed claims
+ * on test, against 52% at 0.5 (contradictions passed 3.2% against 1.8%). Other backends and models
+ * keep 0.5: the lexical heuristic and the provider judge's fixed scores were not calibrated.
+ */
+export function nliReviewThreshold(backend: string = NLI_BACKEND, model: string = NLI_LOCAL_MODEL): number {
+  const override = Number(process.env.NLI_REVIEW_THRESHOLD);
+  if (override) return override;
+  return backend === "local" && model === NLI_DEFAULT_LOCAL_MODEL ? 0.35 : 0.5;
+}
+export const NLI_REVIEW_THRESHOLD = nliReviewThreshold();
 /** A fact is trusted automatically when its verified evidence scores at least this (else it waits for review). */
 export const FACT_ACCEPT_THRESHOLD = Number(process.env.FACT_ACCEPT_THRESHOLD) || 0.8;
 
