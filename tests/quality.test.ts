@@ -216,6 +216,30 @@ describe("entity resolution", () => {
     expect(decided.individuals.map((i) => i.id)).toEqual(["acme", "beta", "sa"]);
   });
 
+  it("keeps the evidence of links that become identical after a merge", () => {
+    const { abox: merged } = applyMerge(
+      {
+        individuals: [
+          { id: "s1", classUri: `${NS}Organisation`, label: "Northgate" },
+          { id: "s2", classUri: `${NS}Organisation`, label: "Northgate Ltd" },
+          {
+            id: "c",
+            classUri: `${NS}Agreement`,
+            objectProperties: [
+              { propUri: `${NS}supplier`, targetId: "s1", evidence: [{ quote: "supplied by Northgate", status: "verified", start: 0, end: 21 }] },
+              { propUri: `${NS}supplier`, targetId: "s2", evidence: [{ quote: "Northgate Ltd shall supply", status: "verified", start: 90, end: 116 }] },
+            ],
+          },
+        ],
+      },
+      ["s1", "s2"],
+    );
+    const links = merged.individuals.find((i) => i.id === "c")!.objectProperties!;
+    expect(links).toHaveLength(1);
+    expect(links[0].targetId).toBe("s1");
+    expect(links[0].evidence?.map((e) => e.quote)).toEqual(["supplied by Northgate", "Northgate Ltd shall supply"]);
+  });
+
   it("exports grounding as owl:sameAs and reads it back", () => {
     const { turtle } = serializeABox({ individuals: [abox.individuals[1]] }, tbox);
     expect(turtle).toContain("wikidata.org/entity/Q1");
