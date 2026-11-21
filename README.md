@@ -1,4 +1,8 @@
 # OntoLab evaluation replay
+ 
+Download the [original replay ZIP](ontolab-evaluation-replay-v1.0.0.zip) and the separate
+[matched-citation Haiku replay ZIP](ontolab-matched-haiku-v1.0.0.zip). The [matched-run results](MATCHED-HAIKU.md)
+report two paired replicates and the complete native CLI cost accounting.
 
 This release contains experimental outputs and tools for checking the reported benchmark scores. For the public source code, see [IndustriAgents/OntoLab](https://github.com/IndustriAgents/OntoLab). `experiments/ONTOLAB_VERSION.md` identifies the source revisions and measurement patches.
 
