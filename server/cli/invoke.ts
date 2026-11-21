@@ -56,11 +56,27 @@ export interface CliCall {
   signal?: AbortSignal;
 }
 
-// A failed call is classified (quota, login, truncation) from what the CLI says, never from the model's own
-// output: an answer about "authors" or a "truncated abstract" is not a login or token-limit failure.
-const MODEL_OUTPUT_FIELDS = new Set(["structured_output", "response"]);
+// A failed call is classified (network, quota, login, truncation) only from the fields in which the CLI says why
+// it failed. The rest of a result event is the model's own output (structured_output, response: an answer about
+// "authors" is not a login failure) or metadata whose names match the patterns (every Claude CLI result carries
+// credential_expires_at, which made a dropped connection read as "needs authentication").
+const DIAGNOSTIC_FIELDS = [
+  "type",
+  "subtype",
+  "is_error",
+  "result",
+  "api_error",
+  "api_error_status",
+  "terminal_reason",
+  "errors",
+  "error",
+  "status",
+  "finished_reason",
+  "denied_actions",
+];
 export function cliDiagnostics(event: object): string {
-  return JSON.stringify(Object.fromEntries(Object.entries(event).filter(([k]) => !MODEL_OUTPUT_FIELDS.has(k))));
+  const e = event as Record<string, unknown>;
+  return JSON.stringify(Object.fromEntries(DIAGNOSTIC_FIELDS.filter((k) => e[k] !== undefined).map((k) => [k, e[k]])));
 }
 
 /** Each call has a fresh native session. OntoLab owns history, validation and commits. */
@@ -249,6 +265,16 @@ export async function callCli(call: CliCall): Promise<Parsed> {
     if (error || outcome.code !== 0 || !completed) {
       const detail = `${error}\n${outcome.stderr}`;
       if (/max.?tokens|output.?limit|token.?limit|truncat/i.test(detail)) throw new TruncatedOutputError(label);
+      if (
+        /connection.?(failed|refused|reset)|ECONNREFUSED|ECONNRESET|ETIMEDOUT|ENOTFOUND|EAI_AGAIN|network is unreachable|socket hang up/i.test(
+          detail,
+        )
+      )
+        throw new ProviderError(
+          `${label} could not reach its model service (network error). Retry when the connection is back.`,
+          503,
+          true,
+        );
       if (/rate.?limit|usage.?limit|quota|exhausted/i.test(detail))
         throw new ProviderError(
           `${label} reached an account quota or rate limit. Wait for it to reset or select another provider.`,
