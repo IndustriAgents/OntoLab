@@ -108,6 +108,29 @@ export function readProposedTerms(raw: unknown): UnmatchedTerm[] {
   return out;
 }
 
+/** Shortest source text for which an empty extraction is retried (headings and captions can legitimately hold no facts). */
+export const EMPTY_RETRY_MIN_CHARS = 200;
+
+/** True when a structured extraction answer holds no individuals and no proposed terms. */
+export function isEmptyExtraction(data: unknown): boolean {
+  const o = data && typeof data === "object" ? (data as Record<string, unknown>) : {};
+  const n = (v: unknown) => (Array.isArray(v) ? v.length : 0);
+  return n(o.individuals) === 0 && n(o.proposedTerms) === 0;
+}
+
+/** Characters of text the model was given (page images do not count). */
+export function extractableChars(docs: ExtractDoc[]): number {
+  return docs.reduce((sum, d) => sum + (d.asVision ? 0 : (d.text ?? "").trim().length), 0);
+}
+
+function addUsage(a: Usage, b: Usage): Usage {
+  return {
+    input_tokens: a.input_tokens + b.input_tokens,
+    output_tokens: a.output_tokens + b.output_tokens,
+    cache_read_input_tokens: (a.cache_read_input_tokens ?? 0) + (b.cache_read_input_tokens ?? 0),
+  };
+}
+
 export async function extractABox(req: ExtractRequest, ctx: CallContext): Promise<ExtractResponse> {
   const extra = [req.context, knownIndividualsText(req.knownIndividuals)].filter(Boolean).join("\n\n");
   const request = {
@@ -120,15 +143,30 @@ export async function extractABox(req: ExtractRequest, ctx: CallContext): Promis
     toolName: TOOL_NAME,
     toolDesc: TOOL_DESC,
   };
-  const { data, usage: initialUsage } = await callStructured(request);
-  let usage = initialUsage;
+  let { data, usage } = await callStructured(request);
+  // A chunk reaches extraction only after relevance screening, so an answer with
+  // nothing in it is suspicious: GPT-6 Luna at low reasoning effort returned empty
+  // lists for a third of Text2KGBench topics while spending thousands of output
+  // tokens. Accepted silently, that loses every fact in the chunk. Ask once more,
+  // and say so when the second answer is empty as well.
+  const retryNotes: string[] = [];
+  if (isEmptyExtraction(data) && extractableChars(req.documents) >= EMPTY_RETRY_MIN_CHARS) {
+    const second = await callStructured(request);
+    usage = addUsage(usage, second.usage);
+    if (isEmptyExtraction(second.data)) {
+      retryNotes.push("The model found no facts in this text, also when asked a second time. If the text does state facts, use a stronger model or a higher reasoning effort.");
+    } else {
+      data = second.data;
+      retryNotes.push("The model's first answer for this text was empty; a second request returned facts, which are used.");
+    }
+  }
   const knownIds = new Set(req.knownIndividuals?.individuals.map((i) => i.id) ?? []);
   // proposals that are existing properties under another name become ordinary assertions first
   const folded = req.proposeTerms
     ? foldProposedFacts(data.individuals, data.proposedTerms, req.tbox, req.documents.map((d) => d.text ?? ""), knownIds)
     : { individuals: data.individuals, proposedTerms: data.proposedTerms, notes: [] };
   const conformed = conformAbox(folded.individuals, req.tbox, { knownIds });
-  const groundingNotes: string[] = [...folded.notes];
+  const groundingNotes: string[] = [...retryNotes, ...folded.notes];
   if (req.requireEvidence && !req.documents.some((d) => d.asVision)) {
     const titles = omitUnlocatedTitleDuplicates(conformed.abox, req.assertionSubjects ?? { individuals: [] }, req.documents);
     conformed.abox = titles.abox;
