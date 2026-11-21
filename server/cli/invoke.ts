@@ -211,8 +211,10 @@ export async function callCli(call: CliCall): Promise<Parsed> {
           data = event.structured_output;
           text = typeof event.result === "string" ? event.result : "";
           if (event.is_error || String(event.subtype).startsWith("error")) error = JSON.stringify(event);
-          const u = event.usage as typeof usage | undefined;
-          usage.input_tokens = (u?.input_tokens ?? 0) + (u?.cache_read_input_tokens ?? 0);
+          const u = event.usage as (typeof usage & { cache_creation_input_tokens?: number }) | undefined;
+          // Claude reports uncached input, cache reads and cache writes separately; every call is a fresh
+          // session, so cache writes are often most of the prompt. Count all three as input.
+          usage.input_tokens = (u?.input_tokens ?? 0) + (u?.cache_read_input_tokens ?? 0) + (u?.cache_creation_input_tokens ?? 0);
           usage.output_tokens = u?.output_tokens ?? 0;
           usage.cache_read_input_tokens = u?.cache_read_input_tokens ?? 0;
         } else if (call.provider === "agy-cli" && event.event === "result") {
