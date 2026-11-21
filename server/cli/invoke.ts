@@ -56,6 +56,13 @@ export interface CliCall {
   signal?: AbortSignal;
 }
 
+// A failed call is classified (quota, login, truncation) from what the CLI says, never from the model's own
+// output: an answer about "authors" or a "truncated abstract" is not a login or token-limit failure.
+const MODEL_OUTPUT_FIELDS = new Set(["structured_output", "response"]);
+export function cliDiagnostics(event: object): string {
+  return JSON.stringify(Object.fromEntries(Object.entries(event).filter(([k]) => !MODEL_OUTPUT_FIELDS.has(k))));
+}
+
 /** Each call has a fresh native session. OntoLab owns history, validation and commits. */
 export async function callCli(call: CliCall): Promise<Parsed> {
   const label = CLI_DEFINITIONS[call.provider].label;
@@ -210,7 +217,7 @@ export async function callCli(call: CliCall): Promise<Parsed> {
           completed = true;
           data = event.structured_output;
           text = typeof event.result === "string" ? event.result : "";
-          if (event.is_error || String(event.subtype).startsWith("error")) error = JSON.stringify(event);
+          if (event.is_error || String(event.subtype).startsWith("error")) error = cliDiagnostics(event);
           const u = event.usage as typeof usage | undefined;
           usage.input_tokens = (u?.input_tokens ?? 0) + (u?.cache_read_input_tokens ?? 0);
           usage.output_tokens = u?.output_tokens ?? 0;
@@ -233,7 +240,7 @@ export async function callCli(call: CliCall): Promise<Parsed> {
               if (!Object.hasOwn(properties, name)) delete (data as Record<string, unknown>)[name];
           }
           text = r.response ?? "";
-          if (r.status !== "SUCCESS" || r.finished_reason || r.denied_actions?.length) error = JSON.stringify(r);
+          if (r.status !== "SUCCESS" || r.finished_reason || r.denied_actions?.length) error = cliDiagnostics(r);
           usage.input_tokens = r.usage?.input_tokens ?? 0;
           usage.output_tokens = r.usage?.output_tokens ?? 0;
         }
@@ -248,7 +255,7 @@ export async function callCli(call: CliCall): Promise<Parsed> {
           429,
           false,
         );
-      if (/auth|log.?in|sign.?in|credential|unauthorized/i.test(detail))
+      if (/authenticat|unauthori[sz]ed|\blog.?in\b|sign.?in|credential|oauth|\b401\b/i.test(detail))
         throw new ProviderError(`${label} needs authentication. Sign in using the official CLI on this server and retry.`, 401, false);
       throw new ProviderError(
         `${label} did not complete successfully. Check the CLI installation and login; no result was applied.`,

@@ -66,6 +66,11 @@ process.stdin.on('end', () => {
    console.log(JSON.stringify({type:'result',is_error:true, result: prompt.includes('fixture:quota') ? 'quota exceeded secret-token' : 'authentication required secret-token'})); return;
  }
  let data = prompt.includes('fixture:invalid-schema') ? {answer:42} : {answer:'ok'};
+ // model output full of words the error classifier must ignore (OAEI conference ontologies have Author, Authorization, ...)
+ if (prompt.includes('fixture:wordy-output')) data = {answer:'Author authorization; abstract truncated; quota exhausted; please sign in'};
+ if (prompt.includes('fixture:claude-error-with-output')) {
+   console.log(JSON.stringify({type:'result',subtype:'error_during_execution',is_error:true,structured_output:data})); return;
+ }
  if (prompt.includes('fixture:graph')) {
    data = prompt.includes('cli_0_0') ? {answer:'The graph contains 2 items [Q1].', calls:[]} :
     {answer:'', calls:[{name:'sparql_query', arguments:JSON.stringify({query: prompt.includes('fixture:graph-invalid') ? 42 : 'SELECT * WHERE { ?s ?p ?o } LIMIT 2'})}]};
@@ -246,6 +251,12 @@ describe("local CLI provider contract", () => {
     expect(error.status).toBe(status);
     expect(error.message).not.toContain("secret-token");
   });
+  it("classifies a failed call by the CLI's diagnostics, not by words in the model's output", async () => {
+    enable();
+    const error = await invoke("fixture:claude-error-with-output fixture:wordy-output").catch((e) => e);
+    expect(error.status).toBe(502);
+    expect(error.message).toMatch(/did not complete successfully/);
+  });
   it("cancels an in-flight CLI and releases the queue", async () => {
     enable();
     const controller = new AbortController();
@@ -410,6 +421,8 @@ console.log('gemini-3.8-flash-low\tGemini 3.8 Flash (Low)');
       "gemini-3.8-flash-medium",
     );
     await expect(request("fixture:partial")).rejects.toMatchObject({ status: 502 });
+    // a timed-out answer that mentions authors is still a timeout, not a login problem
+    await expect(request("fixture:partial fixture:wordy-output")).rejects.toMatchObject({ status: 502 });
     await expect(request("fixture:denied")).rejects.toMatchObject({ status: 502 });
     await expect(request("fixture:invalid-schema")).rejects.toThrow("does not match");
   });
