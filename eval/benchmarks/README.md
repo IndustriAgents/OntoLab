@@ -14,7 +14,10 @@ This offline comparison scores frozen OntoLab predictions and archived OAEI 2023
 | LogMap (2025) | 177 | 218 | 0.812 | 0.580 | 0.677 |
 | Matcha (2025) | 171 | 202 | 0.847 | 0.561 | 0.675 |
 | OntoLab + Luna | 169 | 213 | 0.793 | 0.554 | 0.653 |
+| MDMapper (2025) | 161 | 202 | 0.797 | 0.528 | 0.635 |
 | Agent-OM (2025) | 183 | 275 | 0.665 | 0.600 | 0.631 |
+
+The table shows each archived system once, using its higher-scoring campaign year, down to Agent-OM. The [CSV](oaei-conference.csv) lists every submission from both years.
 
 With Gemini, OntoLab recovered as many reference equivalences as the highest-scoring archived 2025 submission and made 53 fewer predictions. The result is model-dependent. GraphMatcher scored higher on this reference, and the OAEI organizers report that GraphMatcher used reference alignments in cross-validation. This replay uses the public reference. The official campaigns use the blind `rar2-M3` reference for their main rankings.
 
