@@ -78,7 +78,7 @@ process.stdin.on('end', () => {
    console.log(JSON.stringify({type:'item.completed', item:{type:'agent_message', text:JSON.stringify(data)}}));
    console.log(JSON.stringify({type:'turn.completed', usage:{input_tokens:100,output_tokens:10,cached_input_tokens:4}}));
  } else {
-   console.log(JSON.stringify({type:'result',subtype:'success',structured_output:data,usage:{input_tokens:100,output_tokens:10,cache_read_input_tokens:4}}));
+   console.log(JSON.stringify({type:'result',subtype:'success',structured_output:data,usage:{input_tokens:100,output_tokens:10,cache_read_input_tokens:4,cache_creation_input_tokens:20}}));
  }
 });
 `,
@@ -180,7 +180,7 @@ describe("local CLI provider contract", () => {
     vi.stubEnv("ANTHROPIC_API_KEY", "secret-anthropic");
     vi.stubEnv("API_TOKEN", "secret-app-token");
     const result = await invoke("fixture:valid " + "x".repeat(100_000));
-    expect(result).toMatchObject({ data: { answer: "ok" }, usage: { input_tokens: 104, output_tokens: 10 } });
+    expect(result).toMatchObject({ data: { answer: "ok" }, usage: { input_tokens: 124, output_tokens: 10, cache_read_input_tokens: 4 } });
     const call = await lastCall();
     expect(call.args).toContain("--restricted");
     expect(call.args[call.args.indexOf("--tools") + 1]).toBe("");
@@ -332,7 +332,7 @@ describe("local CLI provider contract", () => {
     });
     expect(exec).toHaveBeenCalledWith("cli_0_0", "sparql_query", { query: "SELECT * WHERE { ?s ?p ?o } LIMIT 2" });
     expect(result.text).toContain("[Q1]");
-    expect(result.usage.input).toBe(208);
+    expect(result.usage.input).toBe(248); // 2 rounds x (100 uncached + 4 cache read + 20 cache write)
     expect(emit).toHaveBeenCalledWith({ type: "round_end", hadTools: true });
   });
   it.skipIf(process.platform !== "darwin")("discovers and caches Antigravity model IDs, preserving explicit allowlists", async () => {

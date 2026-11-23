@@ -176,7 +176,9 @@ async function callClaude(call: StructuredCall): Promise<Parsed> {
   return {
     data: toolUse.input as Record<string, unknown>,
     usage: {
-      input_tokens: message.usage.input_tokens,
+      // All input the request used: uncached, read from the prompt cache, and written to it.
+      input_tokens:
+        message.usage.input_tokens + (message.usage.cache_read_input_tokens ?? 0) + (message.usage.cache_creation_input_tokens ?? 0),
       output_tokens: message.usage.output_tokens,
       cache_read_input_tokens: message.usage.cache_read_input_tokens ?? undefined,
     },
