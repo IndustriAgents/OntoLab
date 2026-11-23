@@ -56,6 +56,29 @@ export interface CliCall {
   signal?: AbortSignal;
 }
 
+// A failed call is classified (network, quota, login, truncation) only from the fields in which the CLI says why
+// it failed. The rest of a result event is the model's own output (structured_output, response: an answer about
+// "authors" is not a login failure) or metadata whose names match the patterns (every Claude CLI result carries
+// credential_expires_at, which made a dropped connection read as "needs authentication").
+const DIAGNOSTIC_FIELDS = [
+  "type",
+  "subtype",
+  "is_error",
+  "result",
+  "api_error",
+  "api_error_status",
+  "terminal_reason",
+  "errors",
+  "error",
+  "status",
+  "finished_reason",
+  "denied_actions",
+];
+export function cliDiagnostics(event: object): string {
+  const e = event as Record<string, unknown>;
+  return JSON.stringify(Object.fromEntries(DIAGNOSTIC_FIELDS.filter((k) => e[k] !== undefined).map((k) => [k, e[k]])));
+}
+
 /** Each call has a fresh native session. OntoLab owns history, validation and commits. */
 export async function callCli(call: CliCall): Promise<Parsed> {
   const label = CLI_DEFINITIONS[call.provider].label;
@@ -210,7 +233,7 @@ export async function callCli(call: CliCall): Promise<Parsed> {
           completed = true;
           data = event.structured_output;
           text = typeof event.result === "string" ? event.result : "";
-          if (event.is_error || String(event.subtype).startsWith("error")) error = JSON.stringify(event);
+          if (event.is_error || String(event.subtype).startsWith("error")) error = cliDiagnostics(event);
           const u = event.usage as typeof usage | undefined;
           usage.input_tokens = (u?.input_tokens ?? 0) + (u?.cache_read_input_tokens ?? 0);
           usage.output_tokens = u?.output_tokens ?? 0;
@@ -233,7 +256,7 @@ export async function callCli(call: CliCall): Promise<Parsed> {
               if (!Object.hasOwn(properties, name)) delete (data as Record<string, unknown>)[name];
           }
           text = r.response ?? "";
-          if (r.status !== "SUCCESS" || r.finished_reason || r.denied_actions?.length) error = JSON.stringify(r);
+          if (r.status !== "SUCCESS" || r.finished_reason || r.denied_actions?.length) error = cliDiagnostics(r);
           usage.input_tokens = r.usage?.input_tokens ?? 0;
           usage.output_tokens = r.usage?.output_tokens ?? 0;
         }
@@ -242,13 +265,23 @@ export async function callCli(call: CliCall): Promise<Parsed> {
     if (error || outcome.code !== 0 || !completed) {
       const detail = `${error}\n${outcome.stderr}`;
       if (/max.?tokens|output.?limit|token.?limit|truncat/i.test(detail)) throw new TruncatedOutputError(label);
+      if (
+        /connection.?(failed|refused|reset)|ECONNREFUSED|ECONNRESET|ETIMEDOUT|ENOTFOUND|EAI_AGAIN|network is unreachable|socket hang up/i.test(
+          detail,
+        )
+      )
+        throw new ProviderError(
+          `${label} could not reach its model service (network error). Retry when the connection is back.`,
+          503,
+          true,
+        );
       if (/rate.?limit|usage.?limit|quota|exhausted/i.test(detail))
         throw new ProviderError(
           `${label} reached an account quota or rate limit. Wait for it to reset or select another provider.`,
           429,
           false,
         );
-      if (/auth|log.?in|sign.?in|credential|unauthorized/i.test(detail))
+      if (/authenticat|unauthori[sz]ed|\blog.?in\b|sign.?in|credential|oauth|\b401\b/i.test(detail))
         throw new ProviderError(`${label} needs authentication. Sign in using the official CLI on this server and retry.`, 401, false);
       throw new ProviderError(
         `${label} did not complete successfully. Check the CLI installation and login; no result was applied.`,

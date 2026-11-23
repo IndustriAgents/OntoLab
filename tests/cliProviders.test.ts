@@ -66,6 +66,15 @@ process.stdin.on('end', () => {
    console.log(JSON.stringify({type:'result',is_error:true, result: prompt.includes('fixture:quota') ? 'quota exceeded secret-token' : 'authentication required secret-token'})); return;
  }
  let data = prompt.includes('fixture:invalid-schema') ? {answer:42} : {answer:'ok'};
+ // model output full of words the error classifier must ignore (OAEI conference ontologies have Author, Authorization, ...)
+ if (prompt.includes('fixture:wordy-output')) data = {answer:'Author authorization; abstract truncated; quota exhausted; please sign in'};
+ // shape of a real Claude CLI result after a dropped connection: every result carries credential_expires_at
+ if (prompt.includes('fixture:network')) {
+   console.log(JSON.stringify({type:'result',subtype:'success',is_error:true,api_error_status:null,api_error:'connection_failed',terminal_reason:'api_error',result:'API Error: Connection refused — a firewall or proxy may be blocking it (ECONNREFUSED)',credential_expires_at:'2026-12-02T08:53:20.436Z',usage:{input_tokens:0,output_tokens:0}})); return;
+ }
+ if (prompt.includes('fixture:claude-error-with-output')) {
+   console.log(JSON.stringify({type:'result',subtype:'error_during_execution',is_error:true,structured_output:data,credential_expires_at:'2026-12-02T08:53:20.436Z'})); return;
+ }
  if (prompt.includes('fixture:graph')) {
    data = prompt.includes('cli_0_0') ? {answer:'The graph contains 2 items [Q1].', calls:[]} :
     {answer:'', calls:[{name:'sparql_query', arguments:JSON.stringify({query: prompt.includes('fixture:graph-invalid') ? 42 : 'SELECT * WHERE { ?s ?p ?o } LIMIT 2'})}]};
@@ -246,6 +255,18 @@ describe("local CLI provider contract", () => {
     expect(error.status).toBe(status);
     expect(error.message).not.toContain("secret-token");
   });
+  it("classifies a failed call by the CLI's diagnostics, not by words in the model's output", async () => {
+    enable();
+    const error = await invoke("fixture:claude-error-with-output fixture:wordy-output").catch((e) => e);
+    expect(error.status).toBe(502);
+    expect(error.message).toMatch(/did not complete successfully/);
+  });
+  it("reports a dropped connection as a retryable network failure, not a login problem", async () => {
+    enable();
+    const error = await invoke("fixture:network").catch((e) => e);
+    expect(error).toMatchObject({ status: 503, retryable: true });
+    expect(error.message).toMatch(/could not reach/);
+  });
   it("cancels an in-flight CLI and releases the queue", async () => {
     enable();
     const controller = new AbortController();
@@ -410,6 +431,8 @@ console.log('gemini-3.8-flash-low\tGemini 3.8 Flash (Low)');
       "gemini-3.8-flash-medium",
     );
     await expect(request("fixture:partial")).rejects.toMatchObject({ status: 502 });
+    // a timed-out answer that mentions authors is still a timeout, not a login problem
+    await expect(request("fixture:partial fixture:wordy-output")).rejects.toMatchObject({ status: 502 });
     await expect(request("fixture:denied")).rejects.toMatchObject({ status: 502 });
     await expect(request("fixture:invalid-schema")).rejects.toThrow("does not match");
   });
